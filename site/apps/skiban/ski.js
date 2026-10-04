@@ -178,8 +178,8 @@
       } else {
         const dx = s.x - yeti.x, dy = s.y - yeti.y, d = Math.hypot(dx, dy);
         const v = 8.4 * k;
-        yeti.x += dx / d * v; yeti.y += dy / d * v;
         if (d < 10) { yeti.eating = 0.001; s.state = "eaten"; s.speed = 0; }
+        else { yeti.x += dx / d * v; yeti.y += dy / d * v; }
       }
     }
   }

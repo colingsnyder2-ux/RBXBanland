@@ -18,9 +18,9 @@ OUT = os.path.join(PORT, "site", "data")
 
 DRIVE_C = "home/username/.wine/drive_c"
 CLIENT = "2008M"
-MAP_CLIENT = {"2006": "2007M", "2007": "2007M", "2008": "2008M"}
+MAP_CLIENT = {"2006": "2007M", "2007": "2007M", "2008": "2008M", "2009": "2009E", "2010": "2010L"}
 CLIENT_DIR = os.path.join(PORT, "clients", CLIENT)
-MAP_YEARS = ("2006", "2007", "2008")
+MAP_YEARS = ("2006", "2007", "2008", "2009", "2010")
 SETTINGS_FILE = {"2008M": "GlobalSettings7.xml"}
 
 BLOCKED_HOSTS = ["roblox.com", "www.roblox.com", "api.roblox.com", "assetgame.roblox.com",
@@ -134,6 +134,7 @@ def build_maps(client_zips):
                     "visits": int(hashlib.md5(mid.encode()).hexdigest()[:6], 16) % 900000 + 12000,
                     "hue": int(hashlib.md5(mid.encode()).hexdigest()[6:8], 16) * 360 // 256,
                     "client": MAP_CLIENT[year],
+                    "thumb": os.path.exists(os.path.join(PORT, "site", "img", "thumbs", mid + ".png")),
                 })
     with open(os.path.join(OUT, "maps.json"), "w", encoding="utf-8") as fp:
         json.dump({"client": CLIENT, "clientZips": client_zips, "maps": catalog}, fp, indent=1)
@@ -144,5 +145,5 @@ if __name__ == "__main__":
     os.makedirs(OUT, exist_ok=True)
     if "--skip-root" not in sys.argv:
         build_root()
-    zips = {"2007M": build_client("2007M"), CLIENT: build_client(CLIENT)}
+    zips = {name: build_client(name) for name in ("2007M", "2008M", "2009E", "2010L")}
     build_maps(zips)

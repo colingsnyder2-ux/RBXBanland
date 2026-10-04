@@ -2,7 +2,9 @@
  "client": "2008M",
  "clientZips": {
   "2007M": "client-2007M-2f2bd71b.zip",
-  "2008M": "client-2008M-317d93e4.zip"
+  "2008M": "client-2008M-317d93e4.zip",
+  "2009E": "client-2009E-da3c62ea.zip",
+  "2010L": "client-2010L-58f51cf7.zip"
  },
  "maps": [
   {
@@ -15,7 +17,8 @@
    "zipKB": 532,
    "visits": 576835,
    "hue": 95,
-   "client": "2007M"
+   "client": "2007M",
+   "thumb": false
   },
   {
    "id": "2006e-room-environment",
@@ -27,7 +30,8 @@
    "zipKB": 7,
    "visits": 511983,
    "hue": 99,
-   "client": "2007M"
+   "client": "2007M",
+   "thumb": false
   },
   {
    "id": "2006l-chaos-canyon",
@@ -39,7 +43,8 @@
    "zipKB": 137,
    "visits": 74755,
    "hue": 118,
-   "client": "2007M"
+   "client": "2007M",
+   "thumb": false
   },
   {
    "id": "2006l-community-construction-site",
@@ -51,7 +56,8 @@
    "zipKB": 104,
    "visits": 404837,
    "hue": 160,
-   "client": "2007M"
+   "client": "2007M",
+   "thumb": false
   },
   {
    "id": "2006l-grey-city",
@@ -63,7 +69,8 @@
    "zipKB": 378,
    "visits": 29656,
    "hue": 167,
-   "client": "2007M"
+   "client": "2007M",
+   "thumb": false
   },
   {
    "id": "2006l-haunted-mansion",
@@ -75,7 +82,8 @@
    "zipKB": 239,
    "visits": 130058,
    "hue": 164,
-   "client": "2007M"
+   "client": "2007M",
+   "thumb": false
   },
   {
    "id": "2006l-pirate-ship",
@@ -87,7 +95,8 @@
    "zipKB": 77,
    "visits": 495673,
    "hue": 132,
-   "client": "2007M"
+   "client": "2007M",
+   "thumb": false
   },
   {
    "id": "2006l-roblox-world-headquarters-replica",
@@ -99,7 +108,8 @@
    "zipKB": 328,
    "visits": 290697,
    "hue": 160,
-   "client": "2007M"
+   "client": "2007M",
+   "thumb": false
   },
   {
    "id": "2006l-santa-s-winter-stronghold",
@@ -111,7 +121,8 @@
    "zipKB": 249,
    "visits": 306609,
    "hue": 358,
-   "client": "2007M"
+   "client": "2007M",
+   "thumb": false
   },
   {
    "id": "2006m-crossroads",
@@ -123,7 +134,8 @@
    "zipKB": 146,
    "visits": 808662,
    "hue": 12,
-   "client": "2007M"
+   "client": "2007M",
+   "thumb": false
   },
   {
    "id": "2006m-stairway-to-heaven",
@@ -135,7 +147,8 @@
    "zipKB": 285,
    "visits": 910697,
    "hue": 16,
-   "client": "2007M"
+   "client": "2007M",
+   "thumb": false
   },
   {
    "id": "2007e-roblox-world-headquarters",
@@ -147,7 +160,8 @@
    "zipKB": 304,
    "visits": 189629,
    "hue": 275,
-   "client": "2007M"
+   "client": "2007M",
+   "thumb": false
   },
   {
    "id": "2007e-rocketship-rally",
@@ -159,7 +173,8 @@
    "zipKB": 74,
    "visits": 871400,
    "hue": 258,
-   "client": "2007M"
+   "client": "2007M",
+   "thumb": false
   },
   {
    "id": "2007l-be-crushed-by-a-speeding-wall",
@@ -171,7 +186,8 @@
    "zipKB": 40,
    "visits": 801684,
    "hue": 253,
-   "client": "2007M"
+   "client": "2007M",
+   "thumb": false
   },
   {
    "id": "2007l-dodge-the-teapots-of-doom",
@@ -183,7 +199,8 @@
    "zipKB": 15,
    "visits": 372569,
    "hue": 52,
-   "client": "2007M"
+   "client": "2007M",
+   "thumb": false
   },
   {
    "id": "2007l-thrillville-park-theme-park-v3-99-8",
@@ -195,7 +212,8 @@
    "zipKB": 2485,
    "visits": 96561,
    "hue": 206,
-   "client": "2007M"
+   "client": "2007M",
+   "thumb": false
   },
   {
    "id": "2007m-happy-home-in-robloxia",
@@ -207,7 +225,8 @@
    "zipKB": 140,
    "visits": 644243,
    "hue": 279,
-   "client": "2007M"
+   "client": "2007M",
+   "thumb": false
   },
   {
    "id": "2007m-glass-houses",
@@ -219,7 +238,8 @@
    "zipKB": 244,
    "visits": 700818,
    "hue": 36,
-   "client": "2007M"
+   "client": "2007M",
+   "thumb": false
   },
   {
    "id": "2007m-minigame-world-0-75",
@@ -231,7 +251,8 @@
    "zipKB": 224,
    "visits": 39242,
    "hue": 251,
-   "client": "2007M"
+   "client": "2007M",
+   "thumb": false
   },
   {
    "id": "2007m-mustafar",
@@ -243,7 +264,8 @@
    "zipKB": 145,
    "visits": 619006,
    "hue": 15,
-   "client": "2007M"
+   "client": "2007M",
+   "thumb": false
   },
   {
    "id": "2007m-roblox-world-headquarters",
@@ -255,7 +277,8 @@
    "zipKB": 445,
    "visits": 278766,
    "hue": 81,
-   "client": "2007M"
+   "client": "2007M",
+   "thumb": false
   },
   {
    "id": "2007m-stairway-to-heaven",
@@ -267,7 +290,8 @@
    "zipKB": 332,
    "visits": 895767,
    "hue": 88,
-   "client": "2007M"
+   "client": "2007M",
+   "thumb": true
   },
   {
    "id": "2007m-timmy-and-the-killbots",
@@ -279,7 +303,8 @@
    "zipKB": 79,
    "visits": 542503,
    "hue": 208,
-   "client": "2007M"
+   "client": "2007M",
+   "thumb": false
   },
   {
    "id": "2007m-train-crashing",
@@ -291,7 +316,8 @@
    "zipKB": 844,
    "visits": 172486,
    "hue": 165,
-   "client": "2007M"
+   "client": "2007M",
+   "thumb": false
   },
   {
    "id": "2007m-millons-of-roblox-kill-them",
@@ -303,7 +329,8 @@
    "zipKB": 416,
    "visits": 730596,
    "hue": 21,
-   "client": "2007M"
+   "client": "2007M",
+   "thumb": false
   },
   {
    "id": "2008e-balance",
@@ -315,7 +342,8 @@
    "zipKB": 6,
    "visits": 221055,
    "hue": 293,
-   "client": "2008M"
+   "client": "2008M",
+   "thumb": false
   },
   {
    "id": "2008e-nuke-the-whales",
@@ -327,7 +355,8 @@
    "zipKB": 49,
    "visits": 403872,
    "hue": 53,
-   "client": "2008M"
+   "client": "2008M",
+   "thumb": false
   },
   {
    "id": "2008e-roblox-hq-2-0",
@@ -339,7 +368,8 @@
    "zipKB": 388,
    "visits": 407257,
    "hue": 196,
-   "client": "2008M"
+   "client": "2008M",
+   "thumb": false
   },
   {
    "id": "2008e-rocket-arena",
@@ -351,7 +381,8 @@
    "zipKB": 135,
    "visits": 42722,
    "hue": 5,
-   "client": "2008M"
+   "client": "2008M",
+   "thumb": false
   },
   {
    "id": "2008e-sword-fight-on-the-heights-original",
@@ -363,7 +394,8 @@
    "zipKB": 30,
    "visits": 648415,
    "hue": 255,
-   "client": "2008M"
+   "client": "2008M",
+   "thumb": false
   },
   {
    "id": "2008e-sword-fights-on-the-heights-ii",
@@ -375,7 +407,8 @@
    "zipKB": 61,
    "visits": 879728,
    "hue": 119,
-   "client": "2008M"
+   "client": "2008M",
+   "thumb": false
   },
   {
    "id": "2008l-sword-fights-on-the-heights-iv",
@@ -387,7 +420,8 @@
    "zipKB": 125,
    "visits": 291184,
    "hue": 215,
-   "client": "2008M"
+   "client": "2008M",
+   "thumb": false
   },
   {
    "id": "2008m-crossroads",
@@ -399,7 +433,8 @@
    "zipKB": 138,
    "visits": 106884,
    "hue": 73,
-   "client": "2008M"
+   "client": "2008M",
+   "thumb": false
   },
   {
    "id": "2008m-down-hill-smash",
@@ -411,7 +446,8 @@
    "zipKB": 106,
    "visits": 209790,
    "hue": 112,
-   "client": "2008M"
+   "client": "2008M",
+   "thumb": false
   },
   {
    "id": "2008m-grow-a-brick",
@@ -423,7 +459,8 @@
    "zipKB": 51,
    "visits": 554589,
    "hue": 60,
-   "client": "2008M"
+   "client": "2008M",
+   "thumb": false
   },
   {
    "id": "2008m-happy-home-in-robloxia",
@@ -435,7 +472,8 @@
    "zipKB": 109,
    "visits": 19945,
    "hue": 243,
-   "client": "2008M"
+   "client": "2008M",
+   "thumb": false
   },
   {
    "id": "2008m-sword-fight-on-the-heights-iii",
@@ -447,7 +485,177 @@
    "zipKB": 83,
    "visits": 675207,
    "hue": 253,
-   "client": "2008M"
+   "client": "2008M",
+   "thumb": false
+  },
+  {
+   "id": "2009e-chaos-canyon",
+   "name": "Chaos Canyon",
+   "era": "2009E",
+   "year": 2009,
+   "description": "A version of Chaos Canyon with more spawns and post-2007 brick battle weapons.",
+   "sizeKB": 4518,
+   "zipKB": 142,
+   "visits": 707741,
+   "hue": 284,
+   "client": "2009E",
+   "thumb": false
+  },
+  {
+   "id": "2009e-happy-home-in-robloxia",
+   "name": "Happy Home in Robloxia",
+   "era": "2009E",
+   "year": 2009,
+   "description": "A nice peaceful starting place with a house and some bricks to build with.\n\nHappy Home in Robloxia from March 19th, 2009, to October 19th, 2009.",
+   "sizeKB": 3135,
+   "zipKB": 107,
+   "visits": 365875,
+   "hue": 109,
+   "client": "2009E",
+   "thumb": false
+  },
+  {
+   "id": "2009e-roblox-bowling-alley",
+   "name": "ROBLOX Bowling Alley",
+   "era": "2009E",
+   "year": 2009,
+   "description": "Bowling Alley now open! Hit the computer screens to regenerate the pins. Come on in and get yourself a drink and some pizza.",
+   "sizeKB": 3871,
+   "zipKB": 405,
+   "visits": 44596,
+   "hue": 16,
+   "client": "2009E",
+   "thumb": false
+  },
+  {
+   "id": "2009e-rotris",
+   "name": "ROtris",
+   "era": "2009E",
+   "year": 2009,
+   "description": "",
+   "sizeKB": 202,
+   "zipKB": 20,
+   "visits": 491982,
+   "hue": 26,
+   "client": "2009E",
+   "thumb": false
+  },
+  {
+   "id": "2009e-the-undead-coming-v1-3",
+   "name": "The Undead Coming v1.3",
+   "era": "2009E",
+   "year": 2009,
+   "description": "Zombies have unearthed in a small forest surrounding an abandoned house. Humans must survive randomly selected player Zombies within 15 minutes to win! If you die, you will automatically switch to the Zombie team. If you become a zombie, chat \"/fastzombie\" to change to that class of zombie if it is unlocked in the current match. Chat \"/kamizombie\" to change to the last class of zombie once it gets unlocked in the game. Fast Zombies get unlocked after 5 minutes into the match, and Kamikaze Zombies get unlocked 10 minutes into the match! If you wish to switch back to a normal zombie, just chat \"/zombie\".",
+   "sizeKB": 3543,
+   "zipKB": 4255,
+   "visits": 286057,
+   "hue": 351,
+   "client": "2009E",
+   "thumb": false
+  },
+  {
+   "id": "2009e-the-underground-war",
+   "name": "The Underground War",
+   "era": "2009E",
+   "year": 2009,
+   "description": "Swuvle is a sword and a shuvle. To dig with it, simply put it in a dirt block and click the dirt block. For the sniper, press z to zoom in on where your mouse is. Also for the sniper, press k to reset.",
+   "sizeKB": 3897,
+   "zipKB": 278,
+   "visits": 807273,
+   "hue": 158,
+   "client": "2009E",
+   "thumb": false
+  },
+  {
+   "id": "2009l-happy-home-in-robloxia",
+   "name": "Happy Home in Robloxia",
+   "era": "2009L",
+   "year": 2009,
+   "description": "A nice peaceful level with a starting house and a car. Hop in your car and explore the world! Insert furniture into your house! Start a garden! Add houses for friends! Grow your starting level into a huge city! Spice your game up with some hilarious weapons! A police station! A bank! A mountain lair for a criminal mastermind! Your imagination is the limit! Welcome to ROBLOX!\n\nHappy Home in Robloxia from December 1st, 2009 to August 15th, 2011.",
+   "sizeKB": 7293,
+   "zipKB": 254,
+   "visits": 719555,
+   "hue": 167,
+   "client": "2009E",
+   "thumb": false
+  },
+  {
+   "id": "2009m-jj5x5-s-house",
+   "name": "JJ5x5's House",
+   "era": "2009M",
+   "year": 2009,
+   "description": "Built with my own hands really. I plan to add more and make it silly. Maybe more eventful and expand it into an actual neighborhood! \n\nI opened it back up for people to see, it'll be under construction for a bit. I'd love to hear some feedback once in a while if you guys would like to see this made into something more! \n\nThanks c:",
+   "sizeKB": 2685,
+   "zipKB": 230,
+   "visits": 152510,
+   "hue": 277,
+   "client": "2009E",
+   "thumb": false
+  },
+  {
+   "id": "2010e-a-bridge-too-far",
+   "name": "A Bridge too far",
+   "era": "2010E",
+   "year": 2010,
+   "description": "Thought it might be fun to build a bridge. Thought it might be fun to blow it up. Dunno. 9000 parts - may lag on slow machines.",
+   "sizeKB": 21259,
+   "zipKB": 630,
+   "visits": 204113,
+   "hue": 126,
+   "client": "2010L",
+   "thumb": false
+  },
+  {
+   "id": "2010e-galleons-v4-2",
+   "name": "Galleons v4.2",
+   "era": "2010E",
+   "year": 2010,
+   "description": "New in v4.2: Added 4th ship type, this one with rigging and lateen mizzen-mast. Smaller and more lightly gunned, but faster and more manueverable. As always, thanks for all the visits and have fun!",
+   "sizeKB": 3131,
+   "zipKB": 500,
+   "visits": 166908,
+   "hue": 116,
+   "client": "2010L",
+   "thumb": false
+  },
+  {
+   "id": "2010m-fall-down-stairs",
+   "name": " Fall Down Stairs!",
+   "era": "2010M",
+   "year": 2010,
+   "description": "-> (Take a screenshot if you have the highest score) Highest score by SierraTheGreat: 1,398,675 <- Fall down the stairs and get points! \\/This game is not responsible for broken bones, internal bleeding, broken necks, pulled muscles, or death\\/ Say \"regen\" to regen everything. Go to new servers for updates. VIP: http://www.roblox.com/Item.aspx?ID=7760939",
+   "sizeKB": 1564,
+   "zipKB": 125,
+   "visits": 575288,
+   "hue": 135,
+   "client": "2010L",
+   "thumb": false
+  },
+  {
+   "id": "2010m-ultimate-build",
+   "name": "Ultimate Build",
+   "era": "2010M",
+   "year": 2010,
+   "description": "",
+   "sizeKB": 5472,
+   "zipKB": 519,
+   "visits": 83952,
+   "hue": 230,
+   "client": "2010L",
+   "thumb": false
+  },
+  {
+   "id": "2010m-work-at-a-pizza-place",
+   "name": "Work at a Pizza Place",
+   "era": "2010M",
+   "year": 2010,
+   "description": "Use team work to get pizzas to the customers. There are many fun jobs you can choose from. Home button teleports you to your house. The vote manager button lets you vote who you want to be manager.",
+   "sizeKB": 6703,
+   "zipKB": 471,
+   "visits": 581919,
+   "hue": 258,
+   "client": "2010L",
+   "thumb": false
   }
  ]
 }

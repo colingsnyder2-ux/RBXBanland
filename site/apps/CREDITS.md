@@ -49,6 +49,11 @@ Everything is served from this site. Nothing is hotlinked at runtime.
 - Original code, gameplay, vector icon, and visuals by RBXBanland app builder.
 - No external runtime assets or libraries.
 
+## BlockBan
+
+- Original code, gameplay, visuals, and vector icon by RBXBanland app builder.
+- No external runtime assets or libraries.
+
 ## WordPadBan
 
 - Original code, UI, editor behavior, and vector icon by RBXBanland app builder.

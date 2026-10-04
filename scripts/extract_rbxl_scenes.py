@@ -1,3 +1,5 @@
+import base64
+import hashlib
 import json
 import pathlib
 import re
@@ -64,6 +66,21 @@ def publish_asset(path):
     return f"/data/scenes/assets/{name}"
 
 
+def publish_embedded(binary):
+    try:
+        raw = base64.b64decode(binary)
+    except (ValueError, TypeError):
+        return None
+    ext = ".png" if raw[:8] == b"\x89PNG\r\n\x1a\n" else ".jpg" if raw[:2] == b"\xff\xd8" else ".gif" if raw[:6] in (b"GIF87a", b"GIF89a") else None
+    if ext is None:
+        return None
+    ASSET_OUT.mkdir(parents=True, exist_ok=True)
+    target = ASSET_OUT / f"embedded_{hashlib.sha1(raw).hexdigest()[:16]}{ext}"
+    if not target.exists():
+        target.write_bytes(raw)
+    return f"/data/scenes/assets/{target.name}"
+
+
 def content_texture(props, texture_name="Texture"):
     names = (texture_name,) if isinstance(texture_name, str) else texture_name
     content = next((child(props, name) for name in names if child(props, name) is not None), None) if props is not None else None
@@ -71,7 +88,8 @@ def content_texture(props, texture_name="Texture"):
         return None
     binary = content.find("binary")
     if binary is not None and binary.text:
-        return {"data": binary.text}
+        embedded = publish_embedded(binary.text)
+        return {"url": embedded} if embedded else {"data": binary.text}
     url = content.find("url")
     path = asset_file(url.text.strip() if url is not None and url.text else "")
     return {"url": publish_asset(path)} if path is not None else None

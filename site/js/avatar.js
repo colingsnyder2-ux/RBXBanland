@@ -63,6 +63,8 @@ const RBAvatar = (() => {
         if (!im) return null;
         const t = new THREE.Texture(im);
         t.colorSpace = THREE.SRGBColorSpace;
+        t.wrapS = THREE.ClampToEdgeWrapping;
+        t.wrapT = THREE.ClampToEdgeWrapping;
         t.anisotropy = 4;
         t.needsUpdate = true;
         return t;
@@ -113,19 +115,18 @@ const RBAvatar = (() => {
   }
   function templateBevelBox(sx, sy, sz, tiles) {
     const b = Math.min(0.045, sx * 0.12, sy * 0.12, sz * 0.12);
-    const ix = sx - b * 2, iy = sy - b * 2, iz = sz - b * 2;
     const shape = new THREE.Shape();
-    shape.moveTo(-ix / 2 + b, -iy / 2);
-    shape.lineTo(ix / 2 - b, -iy / 2);
-    shape.quadraticCurveTo(ix / 2, -iy / 2, ix / 2, -iy / 2 + b);
-    shape.lineTo(ix / 2, iy / 2 - b);
-    shape.quadraticCurveTo(ix / 2, iy / 2, ix / 2 - b, iy / 2);
-    shape.lineTo(-ix / 2 + b, iy / 2);
-    shape.quadraticCurveTo(-ix / 2, iy / 2, -ix / 2, iy / 2 - b);
-    shape.lineTo(-ix / 2, -iy / 2 + b);
-    shape.quadraticCurveTo(-ix / 2, -iy / 2, -ix / 2 + b, -iy / 2);
-    const g = new THREE.ExtrudeGeometry(shape, { depth: iz, bevelEnabled: true, bevelSegments: 1, steps: 1, bevelSize: b, bevelThickness: b });
-    g.translate(0, 0, -iz / 2);
+    shape.moveTo(-sx / 2 + b, -sy / 2);
+    shape.lineTo(sx / 2 - b, -sy / 2);
+    shape.quadraticCurveTo(sx / 2, -sy / 2, sx / 2, -sy / 2 + b);
+    shape.lineTo(sx / 2, sy / 2 - b);
+    shape.quadraticCurveTo(sx / 2, sy / 2, sx / 2 - b, sy / 2);
+    shape.lineTo(-sx / 2 + b, sy / 2);
+    shape.quadraticCurveTo(-sx / 2, sy / 2, -sx / 2, sy / 2 - b);
+    shape.lineTo(-sx / 2, -sy / 2 + b);
+    shape.quadraticCurveTo(-sx / 2, -sy / 2, -sx / 2 + b, -sy / 2);
+    const g = new THREE.ExtrudeGeometry(shape, { depth: sz, bevelEnabled: true, bevelSegments: 1, steps: 1, bevelSize: b, bevelThickness: b });
+    g.translate(0, 0, -sz / 2);
     g.computeVertexNormals();
     const pos = g.attributes.position, nor = g.attributes.normal, uv = g.attributes.uv;
     const half = [sx / 2, sy / 2, sz / 2];
@@ -194,13 +195,6 @@ const RBAvatar = (() => {
       const m = new THREE.Mesh(templateBevelBox(size[0], size[1], size[2], tiles), mat(partCanvas(color, layers, tiles, res)));
       m.position.set(...pos);
       group.add(m);
-      const cap = new THREE.BoxGeometry(Math.max(0.01, size[0] - 0.09), 0.03, Math.max(0.01, size[2] - 0.09));
-      for (const y of [-1, 1]) {
-        if (pos[1] < 0 && y > 0) continue;
-        const join = new THREE.Mesh(cap, new THREE.MeshLambertMaterial({ color }));
-        join.position.set(pos[0], pos[1] + y * (size[1] / 2 - 0.015), pos[2]);
-        group.add(join);
-      }
       return m;
     };
     part([2, 2, 1], [0, 0, 0], TORSO, hexOf(items, colors.torso, "#0d69ac"), [pantsIm, shirtIm]);

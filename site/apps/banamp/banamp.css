@@ -8,8 +8,8 @@ html[data-os="vaporwave"] {
   --frame-a: #4a4a4a; --frame-b: #252525; --edge-l: #909090; --gold: #c8c8c8; --gold-dim: #686868;
   --green: #00e400; --green-dim: #0d3a12; --btn-a: #d0d0d0; --btn-b: #858585;
 }
-html, body { background: #111118; }
-body { overflow: auto; }
+html, body { background: #111118; overflow: hidden; }
+body { overflow: hidden; }
 #App { width: 275px; position: relative; transform-origin: 0 0; }
 #App.double { zoom: 2; }
 canvas { display: block; image-rendering: pixelated; }

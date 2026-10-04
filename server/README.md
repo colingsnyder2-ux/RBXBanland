@@ -94,6 +94,7 @@ Errors come back as `{ "error": "message" }` with a 4xx status.
 | POST | `/friends/:name/accept` | yes | |
 | POST | `/friends/:name/remove` | yes | unfriend / decline / cancel |
 | GET | `/forums` | yes | categories, boards, counts, last post |
+| GET | `/forums/search?q=` | yes | up to 50 threads matching title or post body |
 | GET | `/forums/boards/:id?page=` | yes | threads (20 per page, pinned first) |
 | GET | `/forums/threads/:id?page=N or last` | yes | posts (15 per page) with author post count, join date, signature, avatar |
 | POST | `/forums/boards/:id/threads` | yes | `{title, body}` |

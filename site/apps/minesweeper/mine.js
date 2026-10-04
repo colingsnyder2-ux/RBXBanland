@@ -117,7 +117,7 @@
 
   function startTimer() {
     playing = true;
-    elapsed = 1;
+    elapsed = 0;
     timer = setInterval(() => { if (elapsed < 999) { elapsed++; drawLed(W - 56, 16, elapsed); } }, 1000);
   }
 

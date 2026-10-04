@@ -250,10 +250,13 @@ def scene(zip_path):
         clothing = {}
         while owner in parents:
             owner = parents[owner]
+            if owner.get("class") == "Model" and not clothing:
+                clothing = clothes(owner)
             if owner.find("./Item[@class='Humanoid']") is not None:
                 character = True
                 clothing = clothes(owner)
                 break
+        character = character or bool(clothing)
         brick = child(props, "BrickColor")
         brick_id = int(brick.text) if brick is not None and brick.text else 194
         mesh = item.find("./Item[@class='SpecialMesh']") or item.find("./Item[@class='CylinderMesh']") or item.find("./Item[@class='BlockMesh']")

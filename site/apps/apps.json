@@ -9,5 +9,6 @@
   {"id": "hoverban", "title": "HoverBan", "icon": "hoverban/icon.svg", "url": "hoverban/index.html", "width": 640, "height": 480, "resizable": true, "startMenuFolder": "Games", "desktopIcon": true},
   {"id": "clippyban", "title": "ClippyBan", "icon": "clippyban/icon.svg", "url": "clippyban/index.html", "width": 620, "height": 430, "resizable": true, "startMenuFolder": "Accessories", "desktopIcon": false},
   {"id": "buddyban", "title": "BuddyBan", "icon": "buddyban/icon.svg", "url": "buddyban/index.html", "width": 600, "height": 420, "resizable": true, "startMenuFolder": "Internet", "desktopIcon": false},
-  {"id": "pinballban", "title": "PinballBan", "icon": "pinballban/icon.svg", "url": "pinballban/index.html", "width": 520, "height": 620, "resizable": true, "startMenuFolder": "Games", "desktopIcon": true}
+  {"id": "pinballban", "title": "PinballBan", "icon": "pinballban/icon.svg", "url": "pinballban/index.html", "width": 520, "height": 620, "resizable": true, "startMenuFolder": "Games", "desktopIcon": true},
+  {"id": "wordpadban", "title": "WordPadBan", "icon": "wordpadban/icon.svg", "url": "wordpadban/index.html", "width": 700, "height": 520, "resizable": true, "startMenuFolder": "Accessories", "desktopIcon": false}
 ]

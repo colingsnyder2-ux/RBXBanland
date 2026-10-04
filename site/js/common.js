@@ -1,6 +1,11 @@
 // Shared helpers for every RBXBanland app page: API calls, the logged-in user, the 2008-style
 // header/footer, place catalog + thumbnails, and talking to the desktop shell when we run inside one of its windows.
 // play.html depends on: RB.mount, RB.catalog, RB.map, RB.param, RB.playerName, RB.esc.
+(() => {
+  let t = "classic2008";
+  try { t = localStorage.getItem("rb.siteTheme") || t; } catch { /* ignore */ }
+  if (/^(classic2008|blue2010|transition2012)$/.test(t)) document.documentElement.dataset.siteTheme = t;
+})();
 const RB = {
   // Apps the desktop knows how to open. url is relative to the site root.
   apps: {

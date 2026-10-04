@@ -23,6 +23,16 @@
   --bg: #f8fcff;
   color-scheme: light;
 }
+html[data-site-theme="blue2010"] {
+  --nav: #4c78a8; --nav-dark: #2f557f; --page: #f1f7fd; --page-edge: #b7cde3;
+  --link: #164f91; --row: #f4f8fc; --button: #d4e2f0; --button-text: #294d70;
+  --bg-top: #d9ebfb; --bg: #fff;
+}
+html[data-site-theme="transition2012"] {
+  --nav: #2b5d92; --nav-dark: #1d4168; --page: #fff; --page-edge: #d8e1eb;
+  --link: #1b4f86; --row: #f5f7fa; --button: #e2e8ef; --button-text: #23476d;
+  --bg-top: #fff; --bg: #fff;
+}
 
 * { box-sizing: border-box; }
 html { background: var(--bg); }
@@ -46,6 +56,9 @@ img { max-width: 100%; }
   border-right: 5px solid var(--page-edge);
   min-height: 100vh;
 }
+html[data-site-theme="blue2010"] #Container { max-width: 980px; border-width: 2px; }
+html[data-site-theme="transition2012"] body { background: #fff; }
+html[data-site-theme="transition2012"] #Container { max-width: 1000px; border: 0; }
 html.rb-embedded #Container { max-width: none; border: 0; }
 html.rb-embedded body { background: var(--page); }
 
@@ -60,6 +73,10 @@ html.rb-embedded body { background: var(--page); }
     linear-gradient(#bfe0ff, #8ec1f0 60%, #7db2e6);
   border-bottom: 1px solid #5b87b8;
 }
+html[data-site-theme="blue2010"] #Banner { background: linear-gradient(#d8ebfb, #a9c9e7); }
+html[data-site-theme="transition2012"] #Banner { min-height: 58px; background: linear-gradient(#3d73a8, #234f80); border-bottom-color: #163858; }
+html[data-site-theme="transition2012"] #Logo .word { color: #fff; -webkit-text-stroke-color: #173b61; }
+html[data-site-theme="transition2012"] #Authentication { background: rgba(255,255,255,.16); border-color: rgba(255,255,255,.55); }
 #Logo { display: flex; align-items: center; gap: 8px; text-decoration: none !important; position: relative; }
 #Logo .brick {
   width: 40px; height: 34px; border-radius: 3px; position: relative; flex: none;
@@ -90,6 +107,10 @@ html.rb-embedded body { background: var(--page); }
 #Authentication .Robux { color: #d6ffd6; } #Authentication .Tix { color: #ffe680; }
 
 .Navigation { background: var(--nav); border-top: 1px solid #fff; }
+html[data-site-theme="blue2010"] .Navigation { border-top: 0; }
+html[data-site-theme="transition2012"] .Navigation { background: #edf2f7; border-top: 1px solid #c6d2df; border-bottom: 1px solid #b7c7d8; }
+html[data-site-theme="transition2012"] .Navigation li a, html[data-site-theme="transition2012"] .Navigation li a:visited { color: #234d79; border-left-color: #c6d2df; }
+html[data-site-theme="transition2012"] .Navigation li a.current { background: #d7e3ef; color: #163e68; }
 .Navigation ul { display: flex; flex-wrap: wrap; list-style: none; margin: 0; padding: 0 4px; }
 .Navigation li a, .Navigation li a:visited {
   display: block; color: #fff; padding: 0 10px; border-left: 1px solid #fff;

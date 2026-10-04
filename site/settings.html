@@ -28,6 +28,9 @@
   .p-win7 i { background: rgba(160,200,240,.7); border-radius: 4px 4px 0 0; border-color: #123; }
   .p-win7 i::before { display: none; }
   .p-win7 b { background: rgba(10,20,40,.8); border-top-color: #5a7; }
+  .p-site2008 { background: linear-gradient(#bfe0ff, #7db2e6); } .p-site2008 i::before { background: #6e99c9; }
+  .p-site2010 { background: #f7fbff; } .p-site2010 i { background: #fff; border-color: #4c78a8; } .p-site2010 i::before { background: #4c78a8; }
+  .p-site2012 { background: #fff; } .p-site2012 i { background: #fff; border-color: #2b5d92; } .p-site2012 i::before { background: #2b5d92; } .p-site2012 b { background: #dce5ef; }
 </style>
 </head>
 <body>
@@ -35,6 +38,17 @@
   <header id="Header"></header>
   <main id="Main">
     <h2 class="PageTitle">Settings</h2>
+    <div class="StandardBox">
+      <div class="StandardBoxHeader">Website Era</div>
+      <div class="BoxBody">
+        <div class="ThemePick SiteThemePick" id="SiteThemePick">
+          <label><input type="radio" name="siteTheme" value="classic2008"><div class="Preview p-site2008"><i></i><b></b></div>Classic 2008</label>
+          <label><input type="radio" name="siteTheme" value="blue2010"><div class="Preview p-site2010"><i></i><b></b></div>Blue/White 2010</label>
+          <label><input type="radio" name="siteTheme" value="transition2012"><div class="Preview p-site2012"><i></i><b></b></div>Transition 2011/12</label>
+        </div>
+        <p class="Hint">Changes RBXBanland page styling only. Desktop OS theme stays separate.</p>
+      </div>
+    </div>
     <div class="StandardBox">
       <div class="StandardBoxHeader">Desktop Theme</div>
       <div class="BoxBody">
@@ -89,6 +103,16 @@
     const t = e.target.value;
     try { localStorage.setItem("rbx.theme", t); } catch { /* ignore */ }
     RB.desktop()?.setTheme(t);
+  });
+  let siteTheme = "classic2008";
+  try { siteTheme = localStorage.getItem("rb.siteTheme") || siteTheme; } catch { /* ignore */ }
+  const siteRadio = document.querySelector("[name=siteTheme][value=\"" + siteTheme + "\"]");
+  if (siteRadio) siteRadio.checked = true;
+  $("SiteThemePick").addEventListener("change", (e) => {
+    const t = e.target.value;
+    if (!/^(classic2008|blue2010|transition2012)$/.test(t)) return;
+    try { localStorage.setItem("rb.siteTheme", t); } catch { /* ignore */ }
+    document.documentElement.dataset.siteTheme = t;
   });
 
   const me = await RB.page("Settings", { auth: false });

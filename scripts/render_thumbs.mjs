@@ -24,8 +24,11 @@ for (const map of data.maps.filter((item) => !requested.size || requested.has(it
   const url = `http://127.0.0.1:${port}/thumb-render.html?id=${encodeURIComponent(map.id)}&name=${encodeURIComponent(map.name)}&hue=${map.hue}`;
   await page.goto(url);
   await page.waitForFunction(() => document.title === "done", null, { timeout: 180000 });
-  const png = await page.locator("canvas").evaluate((canvas) => canvas.toDataURL("image/png").split(",")[1]);
-  fs.writeFileSync(path.join(out, `${map.id}.png`), Buffer.from(png, "base64"));
+  const canvas = await page.locator("canvas").evaluate((canvas) => ({ width: canvas.width, height: canvas.height, png: canvas.toDataURL("image/png").split(",")[1] }));
+  if (canvas.width !== 320 || canvas.height !== 180) throw new Error(`${map.id}: thumbnail canvas must be 320x180`);
+  const pngPath = path.join(out, `${map.id}.png`);
+  fs.writeFileSync(pngPath, Buffer.from(canvas.png, "base64"));
+  if (!fs.statSync(pngPath).size) throw new Error(`${map.id}: empty thumbnail`);
   map.thumb = true;
   console.log(`OK ${map.id}: camera=${await page.evaluate(() => window.cameraUsed)}`);
   await page.close();

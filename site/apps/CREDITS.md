@@ -54,6 +54,11 @@ Everything is served from this site. Nothing is hotlinked at runtime.
 - Original code, UI, editor behavior, and vector icon by RBXBanland app builder.
 - No external runtime assets or libraries; document persistence uses browser local storage only.
 
+## SnakeBan
+
+- Original code, gameplay, visuals, and vector icon by RBXBanland app builder.
+- No external runtime assets or libraries.
+
 ## BuddyBan
 
 - Original code, UI, conversation text, and vector icon by RBXBanland app builder.

@@ -169,10 +169,6 @@ const RBAvatar = (() => {
     g.fillStyle = color;
     g.fillRect(0, 0, TW, TH);
     for (const im of layers) if (im) g.drawImage(im, 0, 0, TW, TH);
-    // A faint darker rim on every tile reads as the slight bevel of old Roblox parts.
-    g.lineWidth = 3;
-    g.strokeStyle = "rgba(0,0,0,.16)";
-    for (const [x, y, w, h] of Object.values(tiles)) g.strokeRect(x + 1.5, y + 1.5, w - 3, h - 3);
     const t = new THREE.CanvasTexture(c);
     t.colorSpace = THREE.SRGBColorSpace;
     t.anisotropy = 4;

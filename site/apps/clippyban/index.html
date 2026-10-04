@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ClippyBan</title>
+<link rel="icon" href="icon.svg">
+<link rel="stylesheet" href="../_lib/win.css">
+<style>
+  :root { --paper:#fff; --ink:#111; --blue:#000080; --gold:#ffe873; --sky:#b9d9ff; }
+  body { display:flex; flex-direction:column; background:var(--sky); overflow:hidden; }
+  #Desk { flex:1; min-height:0; display:grid; grid-template-columns:minmax(260px,1fr) 214px; gap:8px; padding:8px; }
+  #Stage { position:relative; min-width:0; overflow:hidden; border:2px inset #fff; background:linear-gradient(#78b8ea 0 63%,#5a9a47 63%); }
+  #Scene { display:block; width:100%; height:100%; image-rendering:pixelated; }
+  #Bubble { position:absolute; left:18px; top:18px; max-width:240px; padding:7px 9px; color:#000; background:#fffef0; border:1px solid #554d2c; box-shadow:2px 2px #555; font:12px Arial,sans-serif; }
+  #Bubble:after { content:""; position:absolute; left:28px; bottom:-9px; width:12px; height:9px; background:#fffef0; border-right:1px solid #554d2c; transform:skew(-28deg); }
+  #Panel { padding:8px; border:2px inset #fff; background:#c0c0c0; font:12px Arial,sans-serif; }
+  #Panel h2 { margin:0 0 8px; font:bold 15px Arial,sans-serif; color:var(--blue); }
+  #Panel p { margin:6px 0; line-height:1.3; }
+  .ask { display:block; width:100%; margin:5px 0; text-align:left; }
+  #Meter { height:12px; border:2px inset #fff; background:#333; margin:8px 0; }
+  #Fill { height:100%; width:0; background:#00a000; }
+  #Score { font:bold 12px "Courier New",monospace; white-space:pre; }
+  #Tip { margin-top:9px; padding:5px; background:#ffffd8; border:1px solid #888; font-size:11px; }
+  html[data-os="vaporwave"] body { --sky:#28134b; } html[data-os="vaporwave"] #Stage { background:linear-gradient(#36216f 0 63%,#3d754a 63%); }
+  @media (max-width:560px) { #Desk { grid-template-columns:1fr; } #Panel { overflow:auto; max-height:150px; } }
+</style>
+<script src="../_lib/app.js"></script>
+</head>
+<body>
+<div id="Menu"></div>
+<main id="Desk">
+  <section id="Stage"><canvas id="Scene" aria-label="ClippyBan scene"></canvas><div id="Bubble" role="status">It looks like you're trying to have fun.</div></section>
+  <aside id="Panel">
+    <h2>ClippyBan</h2>
+    <p>What are you trying to do?</p>
+    <button class="btn ask" data-act="letter">Write a letter</button>
+    <button class="btn ask" data-act="website">Make a web page</button>
+    <button class="btn ask" data-act="game">Play a game</button>
+    <button class="btn ask" data-act="nothing">Do nothing</button>
+    <button class="btn ask" data-act="pet">Pet Clippy</button>
+    <div id="Meter" aria-label="Productivity"><div id="Fill"></div></div>
+    <div id="Score">Helpful: 0
+Interruptions: 0</div>
+    <div id="Tip">Tip: Clippy loves attention. Probably too much.</div>
+  </aside>
+</main>
+<script src="clippy.js"></script>
+</body>
+</html>

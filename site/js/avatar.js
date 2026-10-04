@@ -107,7 +107,7 @@ const RBAvatar = (() => {
       const s = p[0] * right[0] + p[1] * right[1] + p[2] * right[2] + 0.5;
       const t = 0.5 - (p[0] * up[0] + p[1] * up[1] + p[2] * up[2]);
       const [x, y, w, h] = tiles[key];
-      const pad = 2;
+      const pad = 0.75;
       uv.setXY(i, (x + pad + s * (w - pad * 2)) / TW, 1 - (y + pad + t * (h - pad * 2)) / TH);
     }
     uv.needsUpdate = true;
@@ -142,7 +142,7 @@ const RBAvatar = (() => {
       const s = Math.max(0, Math.min(1, p[0] * right[0] + p[1] * right[1] + p[2] * right[2] + 0.5));
       const t = Math.max(0, Math.min(1, 0.5 - (p[0] * up[0] + p[1] * up[1] + p[2] * up[2])));
       const [x, y, w, h] = tiles[key];
-      const pad = 2;
+      const pad = 0.75;
       uv.setXY(i, (x + pad + s * (w - pad * 2)) / TW, 1 - (y + pad + t * (h - pad * 2)) / TH);
     }
     uv.needsUpdate = true;

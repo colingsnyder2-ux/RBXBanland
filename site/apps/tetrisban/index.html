@@ -476,6 +476,33 @@ body {
     0%, 100% { background: rgba(255,255,255,0.08); }
     50% { background: rgba(0,212,255,0.4); }
 }
+/* Win95 skin: ugly, flat, useful */
+body { font-family: Tahoma, Arial, sans-serif; background: #008080; color: #000; padding: 4px; }
+.game-container { gap: 4px; }
+.left-panel, .right-panel { gap: 4px; min-width: 132px; max-width: 150px; }
+.panel { background: #c0c0c0; border: 2px outset #fff; border-radius: 0; padding: 5px; box-shadow: none; backdrop-filter: none; }
+.panel h3 { color: #000080; font-size: 11px; letter-spacing: 0; text-transform: none; margin-bottom: 3px; }
+.panel .value { color: #000; font-size: 18px; text-shadow: none; }
+.game-area { background: #c0c0c0; border: 2px outset #fff; border-radius: 0; padding: 4px; box-shadow: none; }
+#gameCanvas { border-radius: 0; border: 2px inset #808080; }
+.preview-canvas { background: #000; border-radius: 0; border: 2px inset #808080; }
+.lang-switcher { gap: 2px; }
+.lang-btn, .btn { background: #c0c0c0; border: 2px outset #fff; border-radius: 0; color: #000; padding: 4px 8px; font: 11px Tahoma, Arial, sans-serif; letter-spacing: 0; text-transform: none; transition: none; }
+.lang-btn.active { background: #000080; color: #fff; }
+.lang-btn:hover, .btn:hover { background: #d8d8d8; transform: none; box-shadow: none; }
+.lang-btn:active, .btn:active { border-style: inset; transform: none; }
+.btn.danger, .btn.secondary { background: #c0c0c0; color: #000; }
+.overlay { background: #c0c0c0; border-radius: 0; border: 2px outset #fff; }
+.overlay h2 { color: #000080; text-shadow: none; font-size: 22px; }
+.high-scores li { background: #fff; border: 1px inset #808080; border-radius: 0; padding: 3px 5px; }
+.controls-info { color: #000; }
+.touch-btn { background: #c0c0c0; border: 2px outset #fff; border-radius: 0; color: #000; }
+.touch-btn:active { background: #808080; }
+.modal-backdrop { background: rgba(0,0,0,.35); backdrop-filter: none; animation: none; }
+.modal { background: #c0c0c0; border: 2px outset #fff; border-radius: 0; padding: 12px; box-shadow: none; animation: none; }
+.modal-title { color: #000080; }
+.modal-message { color: #000; }
+.modal-icon { font-size: 28px; }
 </style>
 </head>
 <body>
@@ -776,10 +803,7 @@ function clearLines() {
 }
 
 function drawBlock(ctx, x, y, color, size = BLOCK_SIZE) {
-    const gradient = ctx.createLinearGradient(x*size, y*size, x*size+size, y*size+size);
-    gradient.addColorStop(0, color);
-    gradient.addColorStop(1, shadeColor(color, -30));
-    ctx.fillStyle = gradient;
+    ctx.fillStyle = color;
     ctx.fillRect(x*size, y*size, size, size);
     
     const edge = Math.max(2, size * 0.1);

@@ -12,5 +12,6 @@
   {"id": "pinballban", "title": "PinballBan", "icon": "pinballban/icon.svg", "url": "pinballban/index.html", "width": 520, "height": 620, "resizable": true, "startMenuFolder": "Games", "desktopIcon": true},
   {"id": "wordpadban", "title": "WordPadBan", "icon": "wordpadban/icon.svg", "url": "wordpadban/index.html", "width": 700, "height": 520, "resizable": true, "startMenuFolder": "Accessories", "desktopIcon": false},
   {"id": "snakeban", "title": "SnakeBan", "icon": "snakeban/icon.svg", "url": "snakeban/index.html", "width": 520, "height": 560, "resizable": true, "startMenuFolder": "Games", "desktopIcon": true},
-  {"id": "blockban", "title": "BlockBan", "icon": "blockban/icon.svg", "url": "blockban/index.html", "width": 520, "height": 560, "resizable": true, "startMenuFolder": "Games", "desktopIcon": true}
+  {"id": "blockban", "title": "BlockBan", "icon": "blockban/icon.svg", "url": "blockban/index.html", "width": 520, "height": 560, "resizable": true, "startMenuFolder": "Games", "desktopIcon": true},
+  {"id": "breakoutban", "title": "BreakoutBan", "icon": "breakoutban/icon.svg", "url": "breakoutban/index.html", "width": 520, "height": 560, "resizable": true, "startMenuFolder": "Games", "desktopIcon": true}
 ]

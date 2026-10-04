@@ -16,6 +16,11 @@ const sun = new THREE.DirectionalLight(0xffffff, 2.2); sun.position.set(-8, 16, 
 const parts = await fetch(`/work/rbxl-scenes/${id}.json`).then((r) => r.json());
 const bounds = new THREE.Box3();
 let studs = 0;
+const textures = new Map(), loader = new THREE.TextureLoader();
+const textureFor = async (data) => {
+  if (!textures.has(data)) textures.set(data, new Promise((resolve) => loader.load(`data:image/png;base64,${data}`, resolve, undefined, () => resolve(null))));
+  return textures.get(data);
+};
 for (const part of parts) {
   let geometry = new THREE.BoxGeometry(...part.s);
   if (part.mesh) {
@@ -24,7 +29,12 @@ for (const part of parts) {
     geometry.scale(part.s[0] * part.mesh.scale[0], part.s[1] * part.mesh.scale[1], part.s[2] * part.mesh.scale[2]);
   }
   const material = new THREE.MeshLambertMaterial({ color: part.c, transparent: part.t > 0, opacity: 1 - part.t, flatShading: true });
-  const mesh = new THREE.Mesh(geometry, material), m = new THREE.Matrix4();
+  let materials = material;
+  if (part.texture) {
+    const texture = await textureFor(part.texture.data);
+    if (texture) { materials = Array.from({ length: 6 }, (_, i) => i === part.texture.face ? new THREE.MeshLambertMaterial({ map: texture, transparent: true, flatShading: true }) : material); }
+  }
+  const mesh = new THREE.Mesh(geometry, materials), m = new THREE.Matrix4();
   m.set(part.r[0][0], part.r[0][1], part.r[0][2], part.p[0], part.r[1][0], part.r[1][1], part.r[1][2], part.p[1], part.r[2][0], part.r[2][1], part.r[2][2], part.p[2], 0, 0, 0, 1);
   mesh.matrixAutoUpdate = false; mesh.matrix.copy(m); mesh.updateMatrixWorld(true); scene.add(mesh); bounds.expandByObject(mesh);
   if (part.stud && studs < 800 && part.s[0] < 16 && part.s[2] < 16 && part.s[1] > .2) {

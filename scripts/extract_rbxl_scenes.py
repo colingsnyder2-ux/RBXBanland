@@ -53,7 +53,18 @@ def scene(zip_path):
             mp = mesh.find("Properties")
             mesh_type = child(mp, "MeshType") if mp is not None else None
             mesh_data = {"type": int(mesh_type.text) if mesh_type is not None and mesh_type.text else 0, "scale": vector(mp, "Scale") if mp is not None else [1, 1, 1]}
-        parts.append({"p": pos, "r": rot, "s": size, "c": COLORS.get(brick_id, "#a3a2a5"), "stud": child(props, "TopSurface").text == "3" if child(props, "TopSurface") is not None else False, "t": transparency, "wedge": item.get("class") == "WedgePart", "mesh": mesh_data})
+        texture = None
+        for child_item in item.findall("./Item"):
+            if child_item.get("class") not in ("Decal", "Texture"):
+                continue
+            cp = child_item.find("Properties")
+            content = child(cp, "Texture") if cp is not None else None
+            binary = content.find("binary") if content is not None else None
+            if binary is not None and binary.text:
+                face = child(cp, "Face") if cp is not None else None
+                texture = {"face": int(face.text) if face is not None and face.text else 5, "data": binary.text}
+                break
+        parts.append({"p": pos, "r": rot, "s": size, "c": COLORS.get(brick_id, "#a3a2a5"), "stud": child(props, "TopSurface").text == "3" if child(props, "TopSurface") is not None else False, "t": transparency, "wedge": item.get("class") == "WedgePart", "mesh": mesh_data, "texture": texture})
     parts.sort(key=lambda q: q["s"][0] * q["s"][1] * q["s"][2], reverse=True)
     return parts[:2500]
 

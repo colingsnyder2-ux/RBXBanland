@@ -9,7 +9,6 @@
   {"id": "heartsban", "title": "Hearts", "icon": "heartsban/icon.svg", "url": "heartsban/index.html", "width": 980, "height": 720, "resizable": true, "startMenuFolder": "Games", "desktopIcon": true},
   {"id": "pipes", "title": "3D Pipes", "icon": "pipes/icon.png", "url": "pipes/index.html", "width": 640, "height": 480, "resizable": true, "startMenuFolder": "Accessories/Screen Savers", "desktopIcon": false},
   {"id": "skiban", "title": "Ski", "icon": "skiban/icon.png", "url": "skiban/index.html", "width": 640, "height": 480, "resizable": true, "startMenuFolder": "Games", "desktopIcon": true},
-  {"id": "hoverban", "title": "Hover", "icon": "hoverban/icon.svg", "url": "hoverban/index.html", "width": 640, "height": 480, "resizable": true, "startMenuFolder": "Games", "desktopIcon": true},
   {"id": "clippyban", "title": "Clippy", "icon": "clippyban/icon.svg", "url": "clippyban/index.html", "width": 620, "height": 430, "resizable": true, "startMenuFolder": "Accessories", "desktopIcon": false},
   {"id": "buddyban", "title": "Buddy", "icon": "buddyban/icon.svg", "url": "buddyban/index.html", "width": 600, "height": 420, "resizable": true, "startMenuFolder": "Internet", "desktopIcon": false},
   {"id": "pinballban", "title": "Pinball", "icon": "pinballban/icon.svg", "url": "pinballban/index.html", "width": 520, "height": 620, "resizable": true, "startMenuFolder": "Games", "desktopIcon": true},

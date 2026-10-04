@@ -54,9 +54,6 @@ Everything is served from this site. Nothing is hotlinked at runtime.
 ## Ski
 - Original code and pixel sprites by RBXBanland app builder.
 - SkiFree (1991, Chris Pirih) is the reference; no SkiFree code or assets are copied.
-## Hover
-
-- Browser build from the MIT-licensed Hover source port by Dmitri Shuralyov, https://github.com/shurcooL/Hover.
 - Local `main.wasm` and `wasm_exec.js` are the source port's browser build; wrapper/icon by RBXBanland.
 
 

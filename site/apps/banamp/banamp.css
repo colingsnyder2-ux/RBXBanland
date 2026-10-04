@@ -1,12 +1,12 @@
-/* BanAmp: an original "classic" skin in the spirit of 1999-era MP3 players. Pixel sizes follow the 275px-wide layout. */
+/* Classic Winamp 2.x-style skin. Pixel sizes follow 275px layout. */
 :root {
-  --frame-a: #44445e; --frame-b: #24243a; --edge-l: #7a7a9c; --edge-d: #0a0a12;
-  --lcd: #000; --green: #00e400; --green-dim: #0d3a12; --gold: #d4ae3a; --gold-dim: #6e6750;
-  --btn-a: #d2d2de; --btn-b: #8c8ca2; --btn-edge: #121219; --glyph: #20202c;
+  --frame-a: #4a4a4a; --frame-b: #252525; --edge-l: #909090; --edge-d: #080808;
+  --lcd: #000; --green: #00e400; --green-dim: #0d3a12; --gold: #c8c8c8; --gold-dim: #686868;
+  --btn-a: #d0d0d0; --btn-b: #858585; --btn-edge: #101010; --glyph: #101010;
 }
 html[data-os="vaporwave"] {
-  --frame-a: #5b2c83; --frame-b: #2a1544; --edge-l: #b07fe0; --gold: #ff71ce; --gold-dim: #8a4c86;
-  --green: #01cdfe; --green-dim: #0b3446; --btn-a: #f3d1ff; --btn-b: #b388d6;
+  --frame-a: #4a4a4a; --frame-b: #252525; --edge-l: #909090; --gold: #c8c8c8; --gold-dim: #686868;
+  --green: #00e400; --green-dim: #0d3a12; --btn-a: #d0d0d0; --btn-b: #858585;
 }
 html, body { background: #111118; }
 body { overflow: auto; }
@@ -20,7 +20,7 @@ button { padding: 0; border: 0; background: none; cursor: default; outline: none
 
 /* ----- Title bars ----- */
 .tbar { position: absolute; left: 0; top: 0; width: 275px; height: 14px; display: flex; align-items: center; padding: 0 3px 0 6px;
-  background: linear-gradient(#2a2a3e, #17171f); box-shadow: inset 0 1px #5d5d78, inset 0 -1px #07070b; }
+  background: linear-gradient(#315a9b, #17376e); box-shadow: inset 0 1px #7298d0, inset 0 -1px #07152c; }
 .tb-grip { flex: 1; height: 7px; margin: 0 4px; background: repeating-linear-gradient(180deg, var(--gold) 0 1px, transparent 1px 2px); opacity: .9; }
 body.blur .tb-grip { background: repeating-linear-gradient(180deg, var(--gold-dim) 0 1px, transparent 1px 2px); }
 .tb-title { flex: none; display: flex; }

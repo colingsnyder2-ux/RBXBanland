@@ -127,6 +127,7 @@ def scene(zip_path):
     raw = re.sub(rb"&#(?:x([0-9a-fA-F]+)|([0-9]+));", lambda m: b"" if not (lambda n: n in (9, 10, 13) or 32 <= n <= 55295 or 57344 <= n <= 1114111)(int(m.group(1) or m.group(2), 16 if m.group(1) else 10)) else m.group(0), raw)
     raw = bytes(b for b in raw if b in (9, 10, 13) or b >= 32)
     root = ET.fromstring(raw)
+    parents = {child_item: parent for parent in root.iter() for child_item in parent}
     view, view_source = find_view(root)
     sky, sky_source = find_sky(root)
     parts = []
@@ -147,6 +148,15 @@ def scene(zip_path):
         transparency = number(props, "Transparency")
         if transparency >= 1:
             continue
+        name_node = child(props, "Name")
+        part_name = name_node.text if name_node is not None and name_node.text else ""
+        owner = item
+        character = False
+        while owner in parents:
+            owner = parents[owner]
+            if owner.find("./Item[@class='Humanoid']") is not None:
+                character = True
+                break
         brick = child(props, "BrickColor")
         brick_id = int(brick.text) if brick is not None and brick.text else 194
         mesh = item.find("./Item[@class='SpecialMesh']") or item.find("./Item[@class='CylinderMesh']") or item.find("./Item[@class='BlockMesh']")
@@ -166,8 +176,8 @@ def scene(zip_path):
                 face = child(cp, "Face") if cp is not None else None
                 texture = {"face": int(face.text) if face is not None and face.text else 5, "data": binary.text}
                 break
-        parts.append({"p": pos, "r": rot, "s": size, "c": COLORS.get(brick_id, "#a3a2a5"), "stud": child(props, "TopSurface").text == "3" if child(props, "TopSurface") is not None else False, "t": transparency, "wedge": item.get("class") == "WedgePart", "mesh": mesh_data, "texture": texture})
-    important = [q for q in parts if q["mesh"] or q["texture"]]
+        parts.append({"p": pos, "r": rot, "s": size, "c": COLORS.get(brick_id, "#a3a2a5"), "name": part_name, "character": character, "stud": child(props, "TopSurface").text == "3" if child(props, "TopSurface") is not None else False, "t": transparency, "wedge": item.get("class") == "WedgePart", "mesh": mesh_data, "texture": texture})
+    important = [q for q in parts if q["mesh"] or q["texture"] or q["character"]]
     structural = sorted((q for q in parts if q not in important), key=lambda q: q["s"][0] * q["s"][1] * q["s"][2], reverse=True)
     return {"parts": (important + structural)[:2500], "view": view, "viewSource": view_source,
             "sky": sky, "skySource": sky_source}

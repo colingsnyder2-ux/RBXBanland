@@ -19,7 +19,8 @@ const bounds = new THREE.Box3();
 let studs = 0;
 const textures = new Map(), loader = new THREE.TextureLoader();
 const textureFor = async (data) => {
-  if (!textures.has(data)) textures.set(data, new Promise((resolve) => loader.load(`data:image/png;base64,${data}`, resolve, undefined, () => resolve(null))));
+  const key = data.startsWith("url:") ? data : `data:image/png;base64,${data}`;
+  if (!textures.has(data)) textures.set(data, new Promise((resolve) => loader.load(key.replace("url:", ""), resolve, undefined, () => resolve(null))));
   return textures.get(data);
 };
 for (const part of parts) {
@@ -34,9 +35,10 @@ for (const part of parts) {
   }
   const material = new THREE.MeshLambertMaterial({ color: part.c, transparent: part.t > 0, opacity: 1 - part.t, flatShading: true });
   let materials = material;
-  if (part.texture) {
-    const texture = await textureFor(part.texture.data);
-    if (texture) { materials = Array.from({ length: 6 }, (_, i) => i === part.texture.face ? new THREE.MeshLambertMaterial({ map: texture, transparent: true, flatShading: true }) : material); }
+  const faceData = part.texture?.data || (/head/i.test(part.name || "") ? "url:/img/catalog/faces/2006Face.png" : null);
+  if (faceData) {
+    const texture = await textureFor(faceData);
+    if (texture) { materials = Array.from({ length: 6 }, (_, i) => i === (part.texture?.face ?? 5) ? new THREE.MeshLambertMaterial({ map: texture, transparent: true, flatShading: true }) : material); }
   }
   const mesh = new THREE.Mesh(geometry, materials), m = new THREE.Matrix4();
   m.set(part.r[0][0], part.r[0][1], part.r[0][2], part.p[0], part.r[1][0], part.r[1][1], part.r[1][2], part.p[1], part.r[2][0], part.r[2][1], part.r[2][2], part.p[2], 0, 0, 0, 1);

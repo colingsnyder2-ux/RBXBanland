@@ -62,6 +62,7 @@ for (const part of parts) {
   const mesh = part.truss ? truss(part.s, materials) : new THREE.Mesh(geometry, materials), m = new THREE.Matrix4();
   m.set(part.r[0][0], part.r[0][1], part.r[0][2], part.p[0], part.r[1][0], part.r[1][1], part.r[1][2], part.p[1], part.r[2][0], part.r[2][1], part.r[2][2], part.p[2], 0, 0, 0, 1);
   mesh.matrixAutoUpdate = false; mesh.matrix.copy(m); mesh.updateMatrixWorld(true); scene.add(mesh); bounds.expandByObject(mesh);
+  if (part.surface === 4 && !part.wedge) { const inset = new THREE.Mesh(new THREE.BoxGeometry(part.s[0] * .7, .02, part.s[2] * .7), new THREE.MeshLambertMaterial({ color: new THREE.Color(part.c).multiplyScalar(.6) })); inset.position.set(0, part.s[1] / 2 + .011, 0); inset.applyMatrix4(m); scene.add(inset); }
   if (part.stud && studs < 800 && part.s[0] < 16 && part.s[2] < 16 && part.s[1] > .2) {
     for (let x = -part.s[0] / 2 + .5; x < part.s[0] / 2 && studs < 800; x += 1) for (let z = -part.s[2] / 2 + .5; z < part.s[2] / 2 && studs < 800; z += 1) {
       const stud = new THREE.Mesh(new THREE.CylinderGeometry(.11, .11, .08, 8), new THREE.MeshLambertMaterial({ color: part.c }));

@@ -255,7 +255,8 @@ def scene(zip_path):
                 if child_item.get("class") == "Texture":
                     texture["tile"] = [number(cp, "StudsPerTileU", 1), number(cp, "StudsPerTileV", 1)]
                 textures.append(texture)
-        parts.append({"p": pos, "r": rot, "s": size, "c": COLORS.get(brick_id, "#a3a2a5"), "name": part_name, "character": character, "clothes": clothing, "stud": child(props, "TopSurface").text == "3" if child(props, "TopSurface") is not None else False, "t": transparency, "wedge": item.get("class") == "WedgePart", "truss": item.get("class") == "TrussPart", "terrain": item.get("class") == "Terrain", "mesh": mesh_data, "textures": textures})
+        top = int(child(props, "TopSurface").text) if child(props, "TopSurface") is not None and child(props, "TopSurface").text else 0
+        parts.append({"p": pos, "r": rot, "s": size, "c": COLORS.get(brick_id, "#a3a2a5"), "name": part_name, "character": character, "clothes": clothing, "surface": top, "stud": top == 3, "t": transparency, "wedge": item.get("class") == "WedgePart", "truss": item.get("class") == "TrussPart", "terrain": item.get("class") == "Terrain", "mesh": mesh_data, "textures": textures})
     important = [q for q in parts if q["mesh"] or q["textures"] or q["character"]]
     structural = sorted((q for q in parts if q not in important), key=lambda q: q["s"][0] * q["s"][1] * q["s"][2], reverse=True)
     return {"parts": (important + structural)[:2500], "view": view, "viewSource": view_source,

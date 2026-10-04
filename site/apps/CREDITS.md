@@ -43,6 +43,10 @@ Everything is served from this site. Nothing is hotlinked at runtime.
 - jQuery, jQuery UI, Touch Punch, card art, fonts, and sounds remain local copies from the FreecellJS distribution; no CDN runtime.
 - RBXBanland only supplies the app registration, icon, and removal of external font/help links.
 
+## TetrisBan
+- Local vendored single-file Tetris source from https://github.com/tetrisjs/tetrisjs.github.io. MIT License, see `tetrisban/LICENSE.txt`.
+- RBXBanland supplies the app registration, icon, and English-first default language.
+
 ## 3D Pipes
 - `pipes/vendor/pipes/`: "3D Pipes Screensaver" by Isaiah Odhner, https://github.com/1j01/pipes. MIT License, see `pipes/vendor/pipes/LICENSE`. It bundles three.js r98 (MIT, (c) three.js authors) plus OrbitControls and TeapotBufferGeometry from the three.js examples (MIT). The textures in `pipes/images/textures/` come from the same repo.
 - `pipes/index.html` is a rewritten host page that uses only local scripts and drops the GitHub ribbon and the CDN.

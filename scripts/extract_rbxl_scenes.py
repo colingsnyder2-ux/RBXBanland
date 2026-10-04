@@ -5,7 +5,7 @@ import zipfile
 import xml.etree.ElementTree as ET
 
 ROOT = pathlib.Path(__file__).resolve().parents[1]
-OUT = ROOT / "work" / "rbxl-scenes"
+OUT = ROOT / "site" / "data" / "scenes"
 SKY_OUT = OUT / "sky"
 COLORS = {v["id"]: v["hex"] for v in json.loads((ROOT / "server/catalog.json").read_text())["colors"]}
 # rbxasset:// resolves against the client's content folder; Novetus maps point "../../../shareddata"
@@ -46,7 +46,7 @@ def publish_sky(files):
         target = SKY_OUT / name
         if not target.exists():
             target.write_bytes(path.read_bytes())
-        urls[face] = f"/work/rbxl-scenes/sky/{name}"
+        urls[face] = f"/data/scenes/sky/{name}"
     return urls
 
 

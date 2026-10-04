@@ -18,6 +18,10 @@
       <div class="Label" id="PlaceEra"></div>
       <p></p>
       <div class="PlaceThumb" id="PlaceThumb"></div>
+      <p><a class="PlayButton" id="ViewerButton" href="#">Explore map <small>Drag to spin; WASD/Q/E freecam</small></a></p>
+      <div id="MapViewerSlot" hidden style="width:420px;height:230px;border:1px solid #555;margin:0 0 12px;background:#111">
+        <iframe id="MapViewer" title="Map explorer" style="width:100%;height:100%;border:0"></iframe>
+      </div>
       <a class="PlayButton" id="PlayButton" href="#">Play<small>Opens RobloxApp.exe and runs the real 2008 client in your browser</small></a>
       <div class="StandardBox">
         <div class="StandardBoxHeader">Description</div>
@@ -74,6 +78,18 @@ You earn Tix for playing (a few times a day)!</p>
   $("PlaceName").textContent = m.name;
   $("PlaceEra").textContent = "A place from " + m.era;
   $("PlaceThumb").innerHTML = RB.thumb(m, 420, 230);
+  $("ViewerButton").addEventListener("click", (e) => {
+    e.preventDefault();
+    const slot = $("MapViewerSlot");
+    if (slot.hidden) {
+      $("MapViewer").src = "map-viewer.html?id=" + encodeURIComponent(m.id);
+      slot.hidden = false;
+      $("ViewerButton").firstChild.textContent = "Hide map ";
+    } else {
+      slot.hidden = true;
+      $("ViewerButton").firstChild.textContent = "Explore map ";
+    }
+  });
   $("PlaceDescription").textContent = m.description || "No description.";
   $("StatEra").textContent = m.era;
   $("StatClient").textContent = cat.client;

@@ -14,7 +14,7 @@ const renderer = new THREE.WebGLRenderer({ canvas: document.getElementById("c"),
 renderer.setSize(W, H, false); renderer.outputColorSpace = THREE.SRGBColorSpace;
 scene.add(new THREE.HemisphereLight(0xffffff, 0x456078, 1.8));
 const sun = new THREE.DirectionalLight(0xffffff, 2.2); sun.position.set(-8, 16, 10); scene.add(sun);
-const source = await fetch(`/work/rbxl-scenes/${id}.json`).then((r) => r.json()), parts = source.parts;
+const source = await fetch(`/data/scenes/${id}.json`).then((r) => r.json()), parts = source.parts;
 const bounds = new THREE.Box3();
 let studs = 0;
 const textures = new Map(), loader = new THREE.TextureLoader();

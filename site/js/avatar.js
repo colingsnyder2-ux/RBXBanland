@@ -193,7 +193,15 @@ const RBAvatar = (() => {
     const group = new THREE.Group();
     const mat = (tex) => new THREE.MeshLambertMaterial({ map: tex });
     const part = (size, pos, tiles, color, layers) => {
-      const m = new THREE.Mesh(templateBevelBox(size[0], size[1], size[2], tiles), mat(partCanvas(color, layers, tiles, res)));
+      const g = templateBevelBox(size[0], size[1], size[2], tiles).toNonIndexed();
+      const nor = g.attributes.normal;
+      g.clearGroups();
+      for (let i = 0; i < nor.count; i += 3) {
+        let x = 0, y = 0, z = 0;
+        for (let j = 0; j < 3; j++) { x += Math.abs(nor.getX(i + j)); y += Math.abs(nor.getY(i + j)); z += Math.abs(nor.getZ(i + j)); }
+        g.addGroup(i, 3, (x > 0.15 && y > 0.15) || (x > 0.15 && z > 0.15) || (y > 0.15 && z > 0.15) ? 1 : 0);
+      }
+      const m = new THREE.Mesh(g, [mat(partCanvas(color, layers, tiles, res)), new THREE.MeshLambertMaterial({ color })]);
       m.position.set(...pos);
       group.add(m);
       return m;

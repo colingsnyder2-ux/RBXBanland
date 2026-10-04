@@ -114,7 +114,7 @@ const RBAvatar = (() => {
     return g;
   }
   function templateBevelBox(sx, sy, sz, tiles) {
-    const b = Math.min(0.045, sx * 0.12, sy * 0.12, sz * 0.12);
+    const b = Math.min(0.0225, sx * 0.12, sy * 0.12, sz * 0.12);
     const shape = new THREE.Shape();
     shape.moveTo(-sx / 2 + b, -sy / 2);
     shape.lineTo(sx / 2 - b, -sy / 2);

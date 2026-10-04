@@ -115,18 +115,19 @@ const RBAvatar = (() => {
   }
   function templateBevelBox(sx, sy, sz, tiles) {
     const b = Math.min(0.045, sx * 0.12, sy * 0.12, sz * 0.12);
+    const ix = sx - b * 2, iy = sy - b * 2, iz = sz - b * 2;
     const shape = new THREE.Shape();
-    shape.moveTo(-sx / 2 + b, -sy / 2);
-    shape.lineTo(sx / 2 - b, -sy / 2);
-    shape.quadraticCurveTo(sx / 2, -sy / 2, sx / 2, -sy / 2 + b);
-    shape.lineTo(sx / 2, sy / 2 - b);
-    shape.quadraticCurveTo(sx / 2, sy / 2, sx / 2 - b, sy / 2);
-    shape.lineTo(-sx / 2 + b, sy / 2);
-    shape.quadraticCurveTo(-sx / 2, sy / 2, -sx / 2, sy / 2 - b);
-    shape.lineTo(-sx / 2, -sy / 2 + b);
-    shape.quadraticCurveTo(-sx / 2, -sy / 2, -sx / 2 + b, -sy / 2);
-    const g = new THREE.ExtrudeGeometry(shape, { depth: sz, bevelEnabled: true, bevelSegments: 1, steps: 1, bevelSize: b, bevelThickness: b });
-    g.translate(0, 0, -sz / 2);
+    shape.moveTo(-ix / 2 + b, -iy / 2);
+    shape.lineTo(ix / 2 - b, -iy / 2);
+    shape.quadraticCurveTo(ix / 2, -iy / 2, ix / 2, -iy / 2 + b);
+    shape.lineTo(ix / 2, iy / 2 - b);
+    shape.quadraticCurveTo(ix / 2, iy / 2, ix / 2 - b, iy / 2);
+    shape.lineTo(-ix / 2 + b, iy / 2);
+    shape.quadraticCurveTo(-ix / 2, iy / 2, -ix / 2, iy / 2 - b);
+    shape.lineTo(-ix / 2, -iy / 2 + b);
+    shape.quadraticCurveTo(-ix / 2, -iy / 2, -ix / 2 + b, -iy / 2);
+    const g = new THREE.ExtrudeGeometry(shape, { depth: iz, bevelEnabled: true, bevelSegments: 1, steps: 1, bevelSize: b, bevelThickness: b });
+    g.translate(0, 0, -iz / 2);
     g.computeVertexNormals();
     const pos = g.attributes.position, nor = g.attributes.normal, uv = g.attributes.uv;
     const half = [sx / 2, sy / 2, sz / 2];

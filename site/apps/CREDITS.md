@@ -38,6 +38,11 @@ Everything is served from this site. Nothing is hotlinked at runtime.
 - Card faces: `solitaire/vendor/js-solitaire/cards.png`, decoded from `src/sprite.js` of js-solitaire by Radovan Janjic, https://github.com/rjanjic/js-solitaire. MIT License, see `solitaire/vendor/js-solitaire/LICENSE`.
 - Card backs are drawn in code (`solitaire/backs.js`). Game code is original.
 
+## FreeCellBan
+- Local vendored game source from FreecellJS by Brent Ely, https://github.com/gitbrent/FreecellJS. MIT License, see `freecellban/LICENSE.txt`.
+- jQuery, jQuery UI, Touch Punch, card art, fonts, and sounds remain local copies from the FreecellJS distribution; no CDN runtime.
+- RBXBanland only supplies the app registration, icon, and removal of external font/help links.
+
 ## 3D Pipes
 - `pipes/vendor/pipes/`: "3D Pipes Screensaver" by Isaiah Odhner, https://github.com/1j01/pipes. MIT License, see `pipes/vendor/pipes/LICENSE`. It bundles three.js r98 (MIT, (c) three.js authors) plus OrbitControls and TeapotBufferGeometry from the three.js examples (MIT). The textures in `pipes/images/textures/` come from the same repo.
 - `pipes/index.html` is a rewritten host page that uses only local scripts and drops the GitHub ribbon and the CDN.

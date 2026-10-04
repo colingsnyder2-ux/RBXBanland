@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>BuddyBan</title>
+<link rel="icon" href="icon.svg">
+<link rel="stylesheet" href="../_lib/win.css">
+<style>
+  :root { --a:#17558f; --b:#d9ecff; --ink:#111; }
+  body { display:flex; flex-direction:column; background:var(--b); overflow:hidden; }
+  #App { flex:1; min-height:0; display:grid; grid-template-columns:154px 1fr; gap:6px; padding:6px; }
+  #Buddies, #Chat { min-height:0; border:2px inset #fff; background:#fff; }
+  #Buddies { background:#e8f2ff; overflow:auto; }
+  #Buddies h2 { margin:0; padding:5px 7px; color:#fff; background:linear-gradient(#4d99d3,#19558c); font:bold 13px Arial; }
+  .buddy { display:flex; gap:6px; align-items:center; width:100%; padding:7px 5px; border:0; background:transparent; text-align:left; font:12px Arial; cursor:pointer; }
+  .buddy:hover, .buddy.active { background:#b9dcff; }
+  .dot { width:9px; height:9px; border:1px solid #124; border-radius:50%; background:#27a832; flex:none; }
+  .dot.away { background:#e2b719; } .dot.off { background:#888; }
+  #Chat { display:flex; flex-direction:column; }
+  #Title { padding:5px 8px; color:#fff; background:linear-gradient(#4d99d3,#19558c); font:bold 13px Arial; }
+  #Log { flex:1; min-height:0; overflow:auto; padding:8px; background:#fff; font:12px Arial; }
+  .msg { margin:4px 0; line-height:1.35; } .msg b { color:#17558f; } .msg.me b { color:#6d278a; }
+  .nudge { padding:5px; color:#6b5300; background:#fff3a7; border:1px solid #d2ae28; text-align:center; font-weight:bold; animation:shake .18s linear 2; }
+  @keyframes shake { 25% { transform:translateX(-3px) } 75% { transform:translateX(3px) } }
+  #Compose { display:flex; gap:5px; padding:6px; border-top:2px inset #fff; background:#c0c0c0; }
+  #Text { flex:1; min-width:0; padding:3px; border:2px inset #fff; font:12px Arial; }
+  #Bar { display:flex; gap:6px; padding:4px 6px; color:#334; background:#c0c0c0; font:11px Arial; }
+  #Status { color:#16558d; font-weight:bold; } 
+  html[data-os="vaporwave"] body { --b:#301a55; } html[data-os="vaporwave"] #Buddies { background:#eadcff; }
+  @media (max-width:460px) { #App { grid-template-columns:118px 1fr; } }
+</style>
+<script src="../_lib/app.js"></script>
+</head>
+<body>
+<div id="Menu"></div>
+<main id="App">
+  <aside id="Buddies"><h2>Buddy List</h2><button class="buddy active" data-id="sam"><span class="dot"></span><span>SamBan<br><small>totally real human</small></span></button><button class="buddy" data-id="mike"><span class="dot away"></span><span>mike_2001<br><small>brb pizza</small></span></button><button class="buddy" data-id="roblox"><span class="dot"></span><span>R0BLOX_K1NG<br><small>building stuff</small></span></button><button class="buddy" data-id="ghost"><span class="dot off"></span><span>GhostUser<br><small>offline</small></span></button></aside>
+  <section id="Chat"><div id="Title">SamBan — online</div><div id="Log" aria-live="polite"></div><div id="Compose"><input id="Text" aria-label="Message" autocomplete="off" placeholder="Type message..."><button class="btn" id="Send">Send</button><button class="btn" id="Nudge">Nudge</button></div></section>
+</main>
+<div id="Bar"><span id="Status">Online</span><span>BuddyBan local messenger</span></div>
+<script src="buddy.js"></script>
+</body>
+</html>

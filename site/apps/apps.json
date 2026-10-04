@@ -7,5 +7,6 @@
   {"id": "solitaire", "title": "Solitaire", "icon": "solitaire/icon.png", "url": "solitaire/index.html", "width": 620, "height": 470, "resizable": true, "startMenuFolder": "Games", "desktopIcon": true},
   {"id": "pipes", "title": "3D Pipes", "icon": "pipes/icon.png", "url": "pipes/index.html", "width": 640, "height": 480, "resizable": true, "startMenuFolder": "Accessories/Screen Savers", "desktopIcon": false},
   {"id": "hoverban", "title": "HoverBan", "icon": "hoverban/icon.svg", "url": "hoverban/index.html", "width": 640, "height": 480, "resizable": true, "startMenuFolder": "Games", "desktopIcon": true},
-  {"id": "clippyban", "title": "ClippyBan", "icon": "clippyban/icon.svg", "url": "clippyban/index.html", "width": 620, "height": 430, "resizable": true, "startMenuFolder": "Accessories", "desktopIcon": false}
+  {"id": "clippyban", "title": "ClippyBan", "icon": "clippyban/icon.svg", "url": "clippyban/index.html", "width": 620, "height": 430, "resizable": true, "startMenuFolder": "Accessories", "desktopIcon": false},
+  {"id": "buddyban", "title": "BuddyBan", "icon": "buddyban/icon.svg", "url": "buddyban/index.html", "width": 600, "height": 420, "resizable": true, "startMenuFolder": "Internet", "desktopIcon": false}
 ]

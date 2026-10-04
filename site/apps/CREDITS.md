@@ -49,6 +49,11 @@ Everything is served from this site. Nothing is hotlinked at runtime.
 - Original code, gameplay, vector icon, and visuals by RBXBanland app builder.
 - No external runtime assets or libraries.
 
+## BuddyBan
+
+- Original code, UI, conversation text, and vector icon by RBXBanland app builder.
+- No external runtime assets, libraries, accounts, or network messaging.
+
 ## ClippyBan
 
 - Original code, character art, UI, and vector icon by RBXBanland app builder.

@@ -14,7 +14,7 @@
 
   const saveCfg = () => AppKit.save(CFG, cfg);
   const changed = () => ed.value !== savedText;
-  function setTitle() { document.title = `${name} - Notepad`; $("#Doc").textContent = cur ? `Saved in BanDocs as "${name}"` : "Not saved yet"; }
+  function setTitle() { document.title = `${changed() ? "* " : ""}${name} - Notepad`; $("#Doc").textContent = cur ? `Saved in BanDocs as "${name}"` : "Not saved yet"; }
   function applyCfg() {
     ed.classList.toggle("wrap", cfg.wrap);
     document.documentElement.classList.toggle("status", cfg.status && !cfg.wrap);
@@ -267,7 +267,7 @@
   });
   // Tab inserts a tab character instead of moving focus.
   ed.addEventListener("keydown", (e) => { if (e.key === "Tab" && !e.ctrlKey && !e.altKey) { e.preventDefault(); document.execCommand("insertText", false, "\t"); } });
-  ed.addEventListener("input", () => { if (!cur) return; });
+  ed.addEventListener("input", () => { setTitle(); if (!cur) return; });
   // Keep a crash-safe draft of unsaved text.
   ed.addEventListener("input", () => { clearTimeout(t); t = setTimeout(() => AppKit.save("rbx.notepad.draft", { cur, name, text: ed.value, saved: !changed() }), 400); });
 

@@ -42,8 +42,9 @@ Everything is served from this site. Nothing is hotlinked at runtime.
 - `pipes/vendor/pipes/`: "3D Pipes Screensaver" by Isaiah Odhner, https://github.com/1j01/pipes. MIT License, see `pipes/vendor/pipes/LICENSE`. It bundles three.js r98 (MIT, (c) three.js authors) plus OrbitControls and TeapotBufferGeometry from the three.js examples (MIT). The textures in `pipes/images/textures/` come from the same repo.
 - `pipes/index.html` is a rewritten host page that uses only local scripts and drops the GitHub ribbon and the CDN.
 
-## SkiBan (not in apps.json)
-- Original code and sprites. It is a tribute to SkiFree (1991, Chris Pirih) but uses none of its assets.
+## SkiBan
+- Original code and pixel sprites by RBXBanland app builder.
+- SkiFree (1991, Chris Pirih) is the reference; no SkiFree code or assets are copied.
 ## HoverBan
 
 - Browser build from the MIT-licensed Hover source port by Dmitri Shuralyov, https://github.com/shurcooL/Hover.

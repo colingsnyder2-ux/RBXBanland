@@ -19,7 +19,7 @@ Everything is served from this site. Nothing is hotlinked at runtime.
 ## Minesweeper
 - All art (tiles, digits, LED counters, smiley faces) is drawn in code in `minesweeper/mine.js`. It was traced by eye to match the original Windows 98 Minesweeper (Microsoft). The reference was the sprite sheet in 1j01/98 (https://github.com/1j01/98). No image files were copied.
 
-## BanAmp
+## Amp
 - The player, skin and pixel font are original code and art. The look is a tribute to Winamp 2.x, but no Winamp/Nullsoft assets are used.
 - Bundled music in `banamp/music/`. Every track is **CC0 1.0** (public domain dedication) from OpenGameArt.org:
   - `junkala-stage1.ogg`, `junkala-boss-fight.ogg`, `junkala-stage-select.ogg`: Juhani Junkala, "4 Chiptunes (Adventure)", https://opengameart.org/node/74001 (CC0)
@@ -38,16 +38,11 @@ Everything is served from this site. Nothing is hotlinked at runtime.
 - Card faces: `solitaire/vendor/js-solitaire/cards.png`, decoded from `src/sprite.js` of js-solitaire by Radovan Janjic, https://github.com/rjanjic/js-solitaire. MIT License, see `solitaire/vendor/js-solitaire/LICENSE`.
 - Card backs are drawn in code (`solitaire/backs.js`). Game code is original.
 
-## FreeCellBan
-- Local vendored game source from FreecellJS by Brent Ely, https://github.com/gitbrent/FreecellJS. MIT License, see `freecellban/LICENSE.txt`.
-- jQuery, jQuery UI, Touch Punch, card art, fonts, and sounds remain local copies from the FreecellJS distribution; no CDN runtime.
-- RBXBanland only supplies the app registration, icon, and removal of external font/help links.
-
-## TetrisBan
+## Tetris
 - Local vendored single-file Tetris source from https://github.com/tetrisjs/tetrisjs.github.io. MIT License, see `tetrisban/LICENSE.txt`.
 - RBXBanland supplies the app registration, icon, and English-first default language.
 
-## HeartsBan
+## Hearts
 - Local vendored HTML5 Hearts source by Yujian Yao, https://github.com/yyjhao/html5-hearts. BSD-style license, see `heartsban/LICENSE.txt`.
 - jQuery and RequireJS remain local copies from the source distribution; GitHub ribbon and analytics removed.
 - RBXBanland supplies the app registration and icon.
@@ -56,47 +51,47 @@ Everything is served from this site. Nothing is hotlinked at runtime.
 - `pipes/vendor/pipes/`: "3D Pipes Screensaver" by Isaiah Odhner, https://github.com/1j01/pipes. MIT License, see `pipes/vendor/pipes/LICENSE`. It bundles three.js r98 (MIT, (c) three.js authors) plus OrbitControls and TeapotBufferGeometry from the three.js examples (MIT). The textures in `pipes/images/textures/` come from the same repo.
 - `pipes/index.html` is a rewritten host page that uses only local scripts and drops the GitHub ribbon and the CDN.
 
-## SkiBan
+## Ski
 - Original code and pixel sprites by RBXBanland app builder.
 - SkiFree (1991, Chris Pirih) is the reference; no SkiFree code or assets are copied.
-## HoverBan
+## Hover
 
 - Browser build from the MIT-licensed Hover source port by Dmitri Shuralyov, https://github.com/shurcooL/Hover.
 - Local `main.wasm` and `wasm_exec.js` are the source port's browser build; wrapper/icon by RBXBanland.
 
 
-## BreakoutBan
+## Breakout
 
 - Original code, gameplay, visuals, and vector icon by RBXBanland app builder.
 - No external runtime assets or libraries.
 
-## BlockBan
+## Block
 
 - Original code, gameplay, visuals, and vector icon by RBXBanland app builder.
 - No external runtime assets or libraries.
 
-## WordPadBan
+## WordPad
 
 - Original code, UI, editor behavior, and vector icon by RBXBanland app builder.
 - No external runtime assets or libraries; document persistence uses browser local storage only.
 
-## SnakeBan
+## Snake
 
 - Original code, gameplay, visuals, and vector icon by RBXBanland app builder.
 - No external runtime assets or libraries.
 
-## BuddyBan
+## Buddy
 
 - Original code, UI, conversation text, and vector icon by RBXBanland app builder.
 - No external runtime assets, libraries, accounts, or network messaging.
 
-## PinballBan
+## Pinball
 
-- Browser/WebAssembly port by lrusso, https://github.com/lrusso/3DPinballSpaceCadet.
-- Based on the MIT-licensed SpaceCadetPinball engine by Andrey Muzychenko, https://github.com/alula/SpaceCadetPinball.
-- Local wrapper/icon by RBXBanland; no runtime network dependency.
+- Local JavaScript game source by lrusso, https://github.com/lrusso/Pinball.
+- Local game files and icon; no runtime network dependency.
 
-## ClippyBan
+## Clippy
 
 - Original code, character art, UI, and vector icon by RBXBanland app builder.
 - No external runtime assets or libraries.
+

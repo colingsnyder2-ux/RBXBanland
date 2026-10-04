@@ -3,10 +3,10 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>BanAmp</title>
+<title>Amp</title>
 <link rel="icon" href="icon.png">
 <link rel="stylesheet" href="../_lib/win.css">
-<link rel="stylesheet" href="banamp.css">
+<link rel="stylesheet" href="Amp.css">
 <script src="../_lib/app.js"></script>
 <script src="pixfont.js"></script>
 </head>
@@ -16,7 +16,7 @@
   <section id="Main" class="bw">
     <div class="tbar" data-drag>
       <button class="tb-btn tb-menu" data-act="menu" title="Main menu"></button>
-      <span class="tb-grip l"></span><span class="tb-title" data-text="BANAMP"></span><span class="tb-grip r"></span>
+      <span class="tb-grip l"></span><span class="tb-title" data-text="Amp"></span><span class="tb-grip r"></span>
       <button class="tb-btn tb-min" data-act="minimize" title="Minimize"></button>
       <button class="tb-btn tb-shade" data-act="shade" title="Windowshade mode"></button>
       <button class="tb-btn tb-close" data-act="close" title="Close"></button>
@@ -46,13 +46,13 @@
     <button class="tp eject" data-act="open" title="Open file(s)"></button>
     <button id="BtnShuffle" class="tog shuffle" data-act="shuffle" title="Toggle shuffle"><i></i><span data-text="SHUFFLE"></span></button>
     <button id="BtnRepeat" class="tog repeat" data-act="repeat" title="Toggle repeat"><i></i><span data-text="REP"></span></button>
-    <button class="logo" data-act="about" title="About BanAmp"></button>
+    <button class="logo" data-act="about" title="About Amp"></button>
   </section>
 
   <!-- ===== Equalizer (275x116) ===== -->
   <section id="EQ" class="bw">
     <div class="tbar">
-      <span class="tb-grip l"></span><span class="tb-title" data-text="BANAMP EQUALIZER"></span><span class="tb-grip r"></span>
+      <span class="tb-grip l"></span><span class="tb-title" data-text="Amp EQUALIZER"></span><span class="tb-grip r"></span>
       <button class="tb-btn tb-close" data-act="toggleEQ" title="Close equalizer"></button>
     </div>
     <button id="EqOn" class="tog eqon" data-act="eqOn"><i></i><span data-text="ON"></span></button>
@@ -66,7 +66,7 @@
   <!-- ===== Playlist ===== -->
   <section id="PL" class="bw">
     <div class="tbar">
-      <span class="tb-grip l"></span><span class="tb-title" data-text="BANAMP PLAYLIST"></span><span class="tb-grip r"></span>
+      <span class="tb-grip l"></span><span class="tb-title" data-text="Amp PLAYLIST"></span><span class="tb-grip r"></span>
       <button class="tb-btn tb-close" data-act="togglePL" title="Close playlist"></button>
     </div>
     <div class="pl-body">
@@ -91,6 +91,6 @@
 </div>
 <input type="file" id="FileIn" accept="audio/*,.mp3,.ogg,.wav,.flac,.m4a,.aac,.opus,.webm" multiple hidden>
 <div id="Drop" hidden><span>Drop music files to add them to the playlist</span></div>
-<script src="banamp.js"></script>
+<script src="Amp.js"></script>
 </body>
 </html>

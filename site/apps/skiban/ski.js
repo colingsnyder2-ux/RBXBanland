@@ -1,4 +1,4 @@
-// SkiBan: a SkiFree-style downhill game. Original pixel sprites drawn here.
+// Ski: a SkiFree-style downhill game. Original pixel sprites drawn here.
 // Steer with the mouse or arrow keys, F to go fast, F2 for a new run. Watch out after 2000m.
 (() => {
   "use strict";
@@ -240,8 +240,8 @@
       { label: "E&xit", action: () => AppKit.host.close() },
     ] },
     { label: "&Help", items: [
-      { label: "&How to Play", key: "F1", action: () => AppKit.alert("SkiBan", "Steer with the mouse or the arrow keys.\nF toggles fast skiing. Hit the jumps for style points, dodge trees and rocks.\nF3 pauses, F2 starts over.\n\nRumor has it something lives past the 2000m mark...", "info") },
-      { label: "&About SkiBan", action: () => AppKit.alert("About SkiBan", "SkiBan 1.0\nA tribute to the classic 1991 downhill game.\nAll sprites drawn for RBXBanland.", "info") },
+      { label: "&How to Play", key: "F1", action: () => AppKit.alert("Ski", "Steer with the mouse or the arrow keys.\nF toggles fast skiing. Hit the jumps for style points, dodge trees and rocks.\nF3 pauses, F2 starts over.\n\nRumor has it something lives past the 2000m mark...", "info") },
+      { label: "&About Ski", action: () => AppKit.alert("About Ski", "Ski 1.0\nA tribute to the classic 1991 downhill game.\nAll sprites drawn for RBXBanland.", "info") },
     ] },
   ]);
   reset();

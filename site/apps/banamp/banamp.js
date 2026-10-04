@@ -1,4 +1,4 @@
-// BanAmp: a classic two-point-x style MP3 player. Web Audio graph: <audio> -> preamp -> 10-band EQ -> analyser -> volume -> balance.
+// Amp: a classic two-point-x style MP3 player. Web Audio graph: <audio> -> preamp -> 10-band EQ -> analyser -> volume -> balance.
 // Local files are served back through sw.js (Cache Storage) so they play under the site's strict CSP.
 (() => {
   "use strict";
@@ -18,7 +18,7 @@
     "Soft Rock": [2.5, 2.5, 1.5, 0, -2.5, -3.5, -2, 0, 1.5, 5.5], "Techno": [5, 3.5, 0, -3.5, -3, 0, 5, 6, 6, 5.5],
     "Vaporwave": [4, 3, 1, -2, -3, -1, 2, 3, 2, 1],
   };
-  const LS = "rbx.banamp";
+  const LS = "rbx.Amp";
   const S = Object.assign({
     vol: 0.75, bal: 0, eq: new Array(10).fill(0), pre: 0, eqOn: true, eqAuto: false, shuffle: false, repeat: false,
     double: false, showEQ: true, showPL: true, shade: false, vis: 0, remaining: false, list: null, cur: 0,
@@ -336,7 +336,7 @@
     if (marqueeOverride) return marqueeOverride;
     if (errorText) return errorText;
     const t = playlist[current];
-    if (!t) return "BANAMP 2.91 - DROP SOME TUNES IN THE PLAYLIST";
+    if (!t) return "Amp 2.91 - DROP SOME TUNES IN THE PLAYLIST";
     return `${current + 1}. ${t.title} (${fmt(t.dur || audio.duration || 0)})`;
   }
   function drawMarquee() {
@@ -444,7 +444,7 @@
     $("#Volume").style.setProperty("--track", `hsl(${Math.round(120 - 120 * S.vol)} 85% 32%)`);
     $("#Balance").style.setProperty("--track", `hsl(${Math.round(120 - 120 * Math.abs(S.bal))} 85% 32%)`);
     bands.forEach((b, i) => setBand(b, i === 0 ? S.pre : S.eq[i - 1]));
-    document.title = playlist[current] && state !== "stopped" ? `${current + 1}. ${playlist[current].title} - BanAmp` : "BanAmp";
+    document.title = playlist[current] && state !== "stopped" ? `${current + 1}. ${playlist[current].title} - Amp` : "Amp";
   }
 
   // ---------- Sliders ----------
@@ -577,15 +577,15 @@
         setTimeout(res, 3000);
       });
       return !!navigator.serviceWorker.controller;
-    }).catch((e) => { console.warn("BanAmp: service worker unavailable", e); return false; });
+    }).catch((e) => { console.warn("Amp: service worker unavailable", e); return false; });
   }
-  const CACHE = "banamp-local-v1";
+  const CACHE = "Amp-local-v1";
   async function addFiles(files) {
     files = [...files].filter((f) => /^audio\//.test(f.type) || /\.(mp3|ogg|oga|wav|flac|m4a|aac|opus|webm)$/i.test(f.name));
     if (!files.length) return;
     const ok = swReady && await swReady;
     if (!ok || !("caches" in window)) {
-      AppKit.alert("BanAmp", "Local files need a service worker, which this browser blocked here.\nThe bundled tracks still play.", "error");
+      AppKit.alert("Amp", "Local files need a service worker, which this browser blocked here.\nThe bundled tracks still play.", "error");
       return;
     }
     const cache = await caches.open(CACHE);
@@ -661,8 +661,8 @@
     n.style.cssText = "min-width:260px;line-height:1.6";
     n.innerHTML = `<b>${AppKit.esc(t.title)}</b><br>Length: ${t.dur ? fmt(t.dur) : "unknown"}<br>` +
       (t.size ? `Size: ${(t.size / 1048576).toFixed(2)} MB<br>` : "") +
-      `Source: ${t.local ? "your computer (stored in this browser)" : "bundled with BanAmp"}` + (t.license ? `<br>License: ${AppKit.esc(t.license)}` : "");
-    AppKit.dialog({ title: "BanAmp File Info", node: n });
+      `Source: ${t.local ? "your computer (stored in this browser)" : "bundled with Amp"}` + (t.license ? `<br>License: ${AppKit.esc(t.license)}` : "");
+    AppKit.dialog({ title: "Amp File Info", node: n });
   }
 
   // ---------- Layout / window ----------
@@ -680,11 +680,11 @@
   AppKit.onTheme(() => { readColors(); labels(); updateAll(); renderList(); });
 
   function about() {
-    AppKit.alert("About BanAmp", "BanAmp 2.91 (RBXBanland Edition)\n\nIt really whips the banhammer.\n\nA from-scratch tribute to the classic skinnable MP3 players of 1999.\nBundled music is CC0 - see CREDITS.md.\n\nKeys: Z prev, X play, C pause, V stop, B next, L open,\narrows seek/volume, Ctrl+D double size.", "info");
+    AppKit.alert("About Amp", "Amp 2.91 (RBXBanland Edition)\n\nIt really whips the banhammer.\n\nA from-scratch tribute to the classic skinnable MP3 players of 1999.\nBundled music is CC0 - see CREDITS.md.\n\nKeys: Z prev, X play, C pause, V stop, B next, L open,\narrows seek/volume, Ctrl+D double size.", "info");
   }
   function mainMenu(x, y) {
     AppKit.popup(x, y, [
-      { label: "&About BanAmp...", action: about },
+      { label: "&About Amp...", action: about },
       "-",
       { label: "Play &file...", key: "L", action: openFiles },
       "-",
@@ -724,7 +724,7 @@
       { label: "Spectrum analyzer", radio: true, checked: () => S.vis === 0, action: () => { S.vis = 0; save(); } },
       { label: "Oscilloscope", radio: true, checked: () => S.vis === 1, action: () => { S.vis = 1; save(); } },
       { label: "No visualization", radio: true, checked: () => S.vis === 2, action: () => { S.vis = 2; save(); } }]); },
-    ontop: () => AppKit.alert("BanAmp", "BanAmp is already on top of your heart.", "info"),
+    ontop: () => AppKit.alert("Amp", "Amp is already on top of your heart.", "info"),
     info: () => fileInfo(current),
     double: () => toggle("double"),
     minimize: () => AppKit.host.minimize(),
@@ -790,6 +790,6 @@
     if (e.key === "ArrowUp" || e.key === "ArrowDown") { S.vol = Math.max(0, Math.min(1, S.vol + (e.key === "ArrowUp" ? 0.02 : -0.02))); applyVol(); updateAll(); save(); e.preventDefault(); }
   });
 
-  window.__banamp = { get state() { return { state, current, n: playlist.length, time: audio.currentTime, dur: audio.duration, ch: channels }; }, playlist: () => playlist };
+  window.__Amp = { get state() { return { state, current, n: playlist.length, time: audio.currentTime, dur: audio.duration, ch: channels }; }, playlist: () => playlist };
   init();
 })();

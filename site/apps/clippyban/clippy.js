@@ -1,4 +1,4 @@
-// ClippyBan: original interactive desktop toy. All character art drawn in code.
+// Clippy: original interactive desktop toy. All character art drawn in code.
 (() => {
   "use strict";
   const cv = document.getElementById("Scene"), ctx = cv.getContext("2d"), bubble = document.getElementById("Bubble"), fill = document.getElementById("Fill"), scoreEl = document.getElementById("Score"), tip = document.getElementById("Tip");
@@ -31,6 +31,6 @@
   document.querySelectorAll(".ask").forEach((b) => b.addEventListener("click", () => doAction(b.dataset.act)));
   cv.addEventListener("pointerdown", () => doAction("pet"));
   addEventListener("keydown", (e) => { if (e.key === "F2") { helpful = 0; interrupts = 0; mood = 0; say("Fresh page, fresh possibilities."); scoreEl.textContent = "Helpful: 0\nInterruptions: 0"; } });
-  AppKit.menubar(document.getElementById("Menu"), [{ label: "&Clippy", items: [{ label: "&New Session", key: "F2", action: () => { helpful = 0; interrupts = 0; mood = 0; say("Fresh page, fresh possibilities."); scoreEl.textContent = "Helpful: 0\nInterruptions: 0"; } }, { label: "&Snooze", key: "F4", action: () => say("I will be quiet for four seconds. Probably.") }, "-", { label: "E&xit", action: () => AppKit.host.close() }] }, { label: "&Help", items: [{ label: "&About ClippyBan", action: () => AppKit.alert("About ClippyBan", "ClippyBan 1.0\nAn original paperclip toy for RBXBanland.\nAll art and code are local and drawn in code.", "info") }] }]);
+  AppKit.menubar(document.getElementById("Menu"), [{ label: "&Clippy", items: [{ label: "&New Session", key: "F2", action: () => { helpful = 0; interrupts = 0; mood = 0; say("Fresh page, fresh possibilities."); scoreEl.textContent = "Helpful: 0\nInterruptions: 0"; } }, { label: "&Snooze", key: "F4", action: () => say("I will be quiet for four seconds. Probably.") }, "-", { label: "E&xit", action: () => AppKit.host.close() }] }, { label: "&Help", items: [{ label: "&About Clippy", action: () => AppKit.alert("About Clippy", "Clippy 1.0\nAn original paperclip toy for RBXBanland.\nAll art and code are local and drawn in code.", "info") }] }]);
   resize(); requestAnimationFrame(frame);
 })();

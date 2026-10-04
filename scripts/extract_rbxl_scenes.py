@@ -29,7 +29,7 @@ def scene(zip_path):
     root = ET.fromstring(raw)
     parts = []
     for item in root.iter("Item"):
-        if item.get("class") not in ("Part", "WedgePart", "SpawnLocation"):
+        if item.get("class") not in ("Part", "WedgePart", "SpawnLocation", "TrussPart"):
             continue
         props = item.find("Properties")
         if props is None:
@@ -47,7 +47,13 @@ def scene(zip_path):
             continue
         brick = child(props, "BrickColor")
         brick_id = int(brick.text) if brick is not None and brick.text else 194
-        parts.append({"p": pos, "r": rot, "s": size, "c": COLORS.get(brick_id, "#a3a2a5"), "stud": child(props, "TopSurface").text == "3" if child(props, "TopSurface") is not None else False, "t": transparency, "wedge": item.get("class") == "WedgePart"})
+        mesh = item.find("./Item[@class='SpecialMesh']") or item.find("./Item[@class='CylinderMesh']") or item.find("./Item[@class='BlockMesh']")
+        mesh_data = None
+        if mesh is not None:
+            mp = mesh.find("Properties")
+            mesh_type = child(mp, "MeshType") if mp is not None else None
+            mesh_data = {"type": int(mesh_type.text) if mesh_type is not None and mesh_type.text else 0, "scale": vector(mp, "Scale") if mp is not None else [1, 1, 1]}
+        parts.append({"p": pos, "r": rot, "s": size, "c": COLORS.get(brick_id, "#a3a2a5"), "stud": child(props, "TopSurface").text == "3" if child(props, "TopSurface") is not None else False, "t": transparency, "wedge": item.get("class") == "WedgePart", "mesh": mesh_data})
     parts.sort(key=lambda q: q["s"][0] * q["s"][1] * q["s"][2], reverse=True)
     return parts[:2500]
 

@@ -17,7 +17,12 @@ const parts = await fetch(`/work/rbxl-scenes/${id}.json`).then((r) => r.json());
 const bounds = new THREE.Box3();
 let studs = 0;
 for (const part of parts) {
-  const geometry = part.wedge ? new THREE.BoxGeometry(...part.s) : new THREE.BoxGeometry(...part.s);
+  let geometry = new THREE.BoxGeometry(...part.s);
+  if (part.mesh) {
+    if (part.mesh.type === 0 || part.mesh.type === 3) geometry = new THREE.SphereGeometry(.5, 12, 8);
+    else if (part.mesh.type === 4 || part.mesh.type === 5) geometry = new THREE.CylinderGeometry(.5, .5, 1, 12);
+    geometry.scale(part.s[0] * part.mesh.scale[0], part.s[1] * part.mesh.scale[1], part.s[2] * part.mesh.scale[2]);
+  }
   const material = new THREE.MeshLambertMaterial({ color: part.c, transparent: part.t > 0, opacity: 1 - part.t, flatShading: true });
   const mesh = new THREE.Mesh(geometry, material), m = new THREE.Matrix4();
   m.set(part.r[0][0], part.r[0][1], part.r[0][2], part.p[0], part.r[1][0], part.r[1][1], part.r[1][2], part.p[1], part.r[2][0], part.r[2][1], part.r[2][2], part.p[2], 0, 0, 0, 1);

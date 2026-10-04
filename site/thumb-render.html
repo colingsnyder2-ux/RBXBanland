@@ -3,17 +3,18 @@
 <style>html,body{margin:0;background:#000;overflow:hidden}canvas{display:block}</style>
 <canvas id="c" width="320" height="180"></canvas>
 <script type="module">
+// Renders a place thumbnail from the scene JSON made by scripts/extract_rbxl_scenes.py:
+// the map's own saved camera (CFrame + FieldOfView) and its skybox (or the 2008 default sky).
 import * as THREE from "/vendor/three/three.module.min.js";
 
 const p = new URLSearchParams(location.search), id = p.get("id") || "map";
+const W = 320, H = 180;
 const scene = new THREE.Scene();
-const camera = new THREE.OrthographicCamera(-12, 12, 6.75, -6.75, .1, 100);
-camera.position.set(18, 14, 20); camera.lookAt(0, 2, 0);
 const renderer = new THREE.WebGLRenderer({ canvas: document.getElementById("c"), antialias: true, preserveDrawingBuffer: true });
-renderer.setSize(320, 180, false); renderer.outputColorSpace = THREE.SRGBColorSpace;
+renderer.setSize(W, H, false); renderer.outputColorSpace = THREE.SRGBColorSpace;
 scene.add(new THREE.HemisphereLight(0xffffff, 0x456078, 1.8));
 const sun = new THREE.DirectionalLight(0xffffff, 2.2); sun.position.set(-8, 16, 10); scene.add(sun);
-const parts = await fetch(`/work/rbxl-scenes/${id}.json`).then((r) => r.json());
+const source = await fetch(`/work/rbxl-scenes/${id}.json`).then((r) => r.json()), parts = source.parts;
 const bounds = new THREE.Box3();
 let studs = 0;
 const textures = new Map(), loader = new THREE.TextureLoader();
@@ -24,9 +25,12 @@ const textureFor = async (data) => {
 for (const part of parts) {
   let geometry = new THREE.BoxGeometry(...part.s);
   if (part.mesh) {
+    // SpecialMesh Scale multiplies the part size, except FileMesh (5), which scales the mesh
+    // file's own units; we don't have those files, so FileMeshes keep the part's box.
     if (part.mesh.type === 0 || part.mesh.type === 3) geometry = new THREE.SphereGeometry(.5, 12, 8);
-    else if (part.mesh.type === 4 || part.mesh.type === 5) geometry = new THREE.CylinderGeometry(.5, .5, 1, 12);
-    geometry.scale(part.s[0] * part.mesh.scale[0], part.s[1] * part.mesh.scale[1], part.s[2] * part.mesh.scale[2]);
+    else if (part.mesh.type === 4) geometry = new THREE.CylinderGeometry(.5, .5, 1, 12);
+    else if (part.mesh.type !== 5) geometry = new THREE.BoxGeometry(1, 1, 1);
+    if (part.mesh.type !== 5) geometry.scale(part.s[0] * part.mesh.scale[0], part.s[1] * part.mesh.scale[1], part.s[2] * part.mesh.scale[2]);
   }
   const material = new THREE.MeshLambertMaterial({ color: part.c, transparent: part.t > 0, opacity: 1 - part.t, flatShading: true });
   let materials = material;
@@ -45,9 +49,108 @@ for (const part of parts) {
     }
   }
 }
+
+// Camera: Roblox cameras look down their CFrame's -Z, like three.js; FieldOfView is vertical degrees.
 const center = bounds.getCenter(new THREE.Vector3()), size = bounds.getSize(new THREE.Vector3());
-camera.position.set(center.x + size.x * .8, center.y + size.y * .7, center.z + size.z * .9); camera.lookAt(center);
-const span = Math.max(size.x, size.z, size.y * 1.4, 12); camera.left = -span / 2; camera.right = span / 2; camera.top = span * .28125; camera.bottom = -span * .28125; camera.far = span * 5; camera.updateProjectionMatrix();
-scene.background = new THREE.Color(0x9bc7e8); scene.fog = new THREE.Fog(scene.background, span * 1.5, span * 4);
+const span = Math.max(size.x, size.y, size.z, 12);
+const view = source.view;
+const camera = new THREE.PerspectiveCamera(view ? view.fov : 70, W / H, 0.5, Math.max(4000, span * 6));
+// Share of a 16x9 grid of rays that hit an opaque part, and how many distinct parts they hit.
+const solids = scene.children.filter((o) => o.isMesh && !(o.material.opacity < 0.5));
+const viewStats = (cam) => {
+  const ray = new THREE.Raycaster(), seen = new Set();
+  let any = 0;
+  for (let i = 0; i < 16; i++) for (let j = 0; j < 9; j++) {
+    ray.setFromCamera(new THREE.Vector2((i + .5) / 8 - 1, (j + .5) / 4.5 - 1), cam);
+    const hit = ray.intersectObjects(solids, false)[0];
+    if (hit) { any++; seen.add(hit.object); }
+  }
+  return { any: any / 144, parts: seen.size };
+};
+const overview = (heading) => {
+  // Deterministic fallback: look down at the middle of the place, backed off to frame most of its
+  // parts (median/percentiles keep far-off baseplates, sea walls and stray bricks from shrinking
+  // it). Tries 8 compass headings starting from the saved camera's, 3 pitches and 2 distances,
+  // and keeps the first view that shows the most distinct parts.
+  const median = (k) => { const v = parts.map((q) => q.p[k]).sort((x, y) => x - y); return v[v.length >> 1] || 0; };
+  const mid = parts.length ? new THREE.Vector3(median(0), median(1), median(2)) : center;
+  const dists = parts.map((q) => mid.distanceTo(new THREE.Vector3(...q.p))).sort((x, y) => x - y);
+  const radius = Math.max(dists[Math.floor(dists.length * 0.8)] || span / 2, 16);
+  const start = heading && heading.lengthSq() > 1e-6 ? Math.atan2(-heading.x, -heading.z) : Math.PI / 4;
+  camera.matrixAutoUpdate = true;
+  camera.fov = 70; camera.updateProjectionMatrix();
+  const place = ([yaw, pitch, scale]) => {
+    const dir = new THREE.Vector3(Math.sin(yaw) * Math.cos(pitch), Math.sin(pitch), Math.cos(yaw) * Math.cos(pitch));
+    camera.position.copy(mid).addScaledVector(dir, scale * radius / Math.tan(THREE.MathUtils.degToRad(35)));
+    camera.lookAt(mid);
+    camera.updateMatrixWorld(true);
+  };
+  let best = null, bestScore = -1;
+  for (const scale of [1, 2]) for (const pitch of [30, 50, 70]) for (let k = 0; k < 8; k++) {
+    const pose = [start + k * Math.PI / 4, THREE.MathUtils.degToRad(pitch), scale];
+    place(pose);
+    const score = viewStats(camera).parts;
+    if (score > bestScore) { best = pose; bestScore = score; }
+  }
+  place(best);
+};
+let cameraUsed = "fallback";
+if (view) {
+  const r = view.r;
+  camera.matrixAutoUpdate = false;
+  camera.matrix.set(r[0][0], r[0][1], r[0][2], view.p[0], r[1][0], r[1][1], r[1][2], view.p[1], r[2][0], r[2][1], r[2][2], view.p[2], 0, 0, 0, 1);
+  camera.matrixWorld.copy(camera.matrix);
+  camera.matrixWorldInverse.copy(camera.matrix).invert();
+  cameraUsed = source.viewSource;
+  // A saved camera stuck inside a wall or up against one or two big parts shows nothing of the
+  // place: the frame is (almost) all geometry from at most five parts. Use the overview then.
+  const stats = viewStats(camera);
+  if (stats.any >= 0.85 && stats.parts <= 5) {
+    overview(new THREE.Vector3(-r[0][2], 0, -r[2][2])); cameraUsed = `fallback (saved view blocked: ${stats.parts} parts)`; }
+} else overview();
+window.cameraUsed = cameraUsed;
+
+// Skybox: six planes around the camera, drawn before the scene. Face placement follows the
+// G3D "Quake" cube convention the 2007-08 clients inherited (Lf -Z, Bk +X, Rt +Z, Ft -X); each
+// face is shown as seen from inside, upright, unmirrored. Edge-matching all map skies confirms
+// the ring Ft>Lf>Bk>Rt turning right and the Up/Dn rotations below. (three's CubeTexture
+// background mirrors faces, so it can't show these images the right way round.)
+const X = new THREE.Vector3(1, 0, 0), Y = new THREE.Vector3(0, 1, 0), Z = new THREE.Vector3(0, 0, 1);
+const SKY_FACES = { // face: [outward direction, image right, image up]
+  lf: [Z.clone().negate(), X, Y], bk: [X, Z, Y], rt: [Z, X.clone().negate(), Y], ft: [X.clone().negate(), Z.clone().negate(), Y],
+  up: [Y, X.clone().negate(), Z.clone().negate()], dn: [Y.clone().negate(), X.clone().negate(), Z],
+};
+const skyScene = new THREE.Scene(), sky = source.sky;
+if (sky) {
+  await Promise.all(Object.entries(SKY_FACES).map(([face, [dir, right, up]]) => new Promise((resolve) => loader.load(sky[face], (texture) => {
+    texture.colorSpace = THREE.SRGBColorSpace;
+    texture.wrapS = texture.wrapT = THREE.ClampToEdgeWrapping;
+    const plane = new THREE.Mesh(new THREE.PlaneGeometry(2, 2), new THREE.MeshBasicMaterial({ map: texture, depthWrite: false }));
+    plane.matrixAutoUpdate = false;
+    plane.matrix.makeBasis(right, up, right.clone().cross(up)).setPosition(dir);
+    plane.updateMatrixWorld(true);
+    skyScene.add(plane);
+    resolve();
+  }, undefined, resolve))));
+}
+// ?look=yaw,pitch[,fov] (degrees) points the camera from the saved position; used to check the sky.
+if (p.get("look")) {
+  const [yaw, pitch, fov] = p.get("look").split(",").map(Number), rad = THREE.MathUtils.degToRad;
+  camera.matrixAutoUpdate = true;
+  camera.position.setFromMatrixPosition(camera.matrixWorld);
+  camera.fov = fov || camera.fov; camera.updateProjectionMatrix();
+  camera.lookAt(camera.position.clone().add(new THREE.Vector3(-Math.sin(rad(yaw)) * Math.cos(rad(pitch)), Math.sin(rad(pitch)), -Math.cos(rad(yaw)) * Math.cos(rad(pitch)))));
+  camera.updateMatrixWorld(true);
+}
+const skyCamera = new THREE.PerspectiveCamera(camera.fov, W / H, 0.1, 10);
+skyCamera.matrixAutoUpdate = false;
+skyCamera.matrixWorld.extractRotation(camera.matrixWorld);
+skyCamera.matrixWorldInverse.copy(skyCamera.matrixWorld).invert();
+renderer.setClearColor(0x9bc7e8);
+renderer.autoClear = false;
+renderer.clear();
+renderer.render(skyScene, skyCamera);
+renderer.clearDepth();
 renderer.render(scene, camera);
+document.title = "done";
 </script>

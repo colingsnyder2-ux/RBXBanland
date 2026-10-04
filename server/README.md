@@ -27,6 +27,29 @@ RBX_DATA_DIR=/tmp/rbx-test node server.mjs 8091
 
 The token gate and everything else work the same; only the SQLite file location changes.
 
+## Playing from phones and other computers
+
+**One click:** double-click `start-rbxbanland.bat` in the project folder. It starts the server on port 8090 (unless it's
+already running) and opens it in your browser. It then asks whether to also start an internet tunnel.
+
+The startup banner lists every way in:
+
+- **This PC:** `http://localhost:8090/?key=TOKEN`
+- **Same Wi-Fi:** `http://192.168.x.x:8090/?key=TOKEN`. The server listens on all interfaces, and the gate and login
+  cookies work over plain http. Allow Node through the Windows Firewall (private networks) the first time.
+  **Limitation:** browsers only give the emulator SharedArrayBuffer on secure pages (https or localhost).
+  On a plain-http LAN address the site works, but games won't run. The desktop warns before launching one.
+- **Internet / phones (recommended): Cloudflare quick tunnel.** Install `cloudflared` once with
+  `winget install --id Cloudflare.cloudflared` (no account needed). Then answer Y in `start-rbxbanland.bat`,
+  or run `node server/tunnel.mjs 8090`. It prints a public
+  `https://<random>.trycloudflare.com/?key=TOKEN` link. That link is https, so games work on phones too. The address
+  changes every time the tunnel restarts; keep its window open. Rate limiting uses the real visitor IP
+  (`CF-Connecting-IP`).
+- **LAN https (alternative, no internet):** run `node server/tools/make-cert.mjs`, which uses Git's openssl to write a
+  self-signed certificate for localhost, this PC's name and its LAN IPs to `server/tls/`. Then add `"httpsPort": 8443`
+  to `config.json` (or set `RBX_HTTPS_PORT`) and restart. Open `https://192.168.x.x:8443/?key=TOKEN` and accept the
+  certificate warning once. Re-run make-cert if the PC's IP changes. Tested in Edge: the page is then cross-origin isolated.
+
 ## The access token (site gate)
 
 - Lives in **`server/config.json`** as `"accessToken"`. It is generated on first run if missing.

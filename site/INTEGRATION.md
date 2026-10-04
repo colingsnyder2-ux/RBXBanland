@@ -35,6 +35,16 @@ Notes:
 - Fallback: if the iframe never posts anything within 25 s of loading, the window is revealed anyway (for an older play.html).
 - Visits are still recorded by the place page before launching.
 
+## Touch controls (phones/tablets)
+
+On touch devices the revealed game window gets an on-screen joystick (W/A/S/D), JUMP (Space) and zoom (I/O).
+They are sent as synthetic `KeyboardEvent`s (`keydown`/`keyup` with `code`, `key` and `keyCode`) dispatched on
+**play.html's `#Emu` iframe window**. The BoxedWine shell listens there with `window.addEventListener("keydown", ...)`.
+- If `#Emu` is renamed or moved, keep an element with id `Emu`. Otherwise handle
+  `{ rb: "input", kind: "key", code, key, keyCode, down }`, which the desktop posts to play.html when `#Emu` isn't found.
+- Touch on the game itself still reaches the emulator as mouse clicks. Right-drag camera turning isn't available on touch.
+- Pages that aren't cross-origin isolated (plain http on a LAN IP) get a warning before launching. See server/README.md.
+
 ## (a) Player name and avatar
 
 - **Name, nothing to change:** whenever any page loads `/api/me`, `common.js` writes the logged-in

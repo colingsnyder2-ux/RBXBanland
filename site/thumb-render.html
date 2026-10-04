@@ -1,0 +1,41 @@
+<!doctype html>
+<meta charset="utf-8">
+<style>html,body{margin:0;background:#000;overflow:hidden}canvas{display:block}</style>
+<canvas id="c" width="320" height="180"></canvas>
+<script type="module">
+import * as THREE from "/vendor/three/three.module.min.js";
+
+const p = new URLSearchParams(location.search), id = p.get("id") || "map", hue = Number(p.get("hue") || 120), name = decodeURIComponent(p.get("name") || "");
+const hash = [...id].reduce((n, c) => (n * 33 + c.charCodeAt(0)) >>> 0, 17);
+const pick = (n) => ((hash >>> (n % 24)) & 255) / 255;
+const color = (h, s, l) => new THREE.Color().setHSL(((h % 360) + 360) % 360 / 360, s, l);
+const scene = new THREE.Scene();
+scene.background = color(hue + 12, .55, .72);
+scene.fog = new THREE.Fog(scene.background, 28, 55);
+const camera = new THREE.OrthographicCamera(-12, 12, 6.75, -6.75, .1, 100);
+camera.position.set(18, 15, 20); camera.lookAt(0, 2, 0);
+const renderer = new THREE.WebGLRenderer({ canvas: document.getElementById("c"), antialias: true, preserveDrawingBuffer: true });
+renderer.setSize(320, 180, false); renderer.outputColorSpace = THREE.SRGBColorSpace;
+scene.add(new THREE.HemisphereLight(0xffffff, 0x456078, 1.8));
+const sun = new THREE.DirectionalLight(0xffffff, 2.2); sun.position.set(-8, 16, 10); scene.add(sun);
+const mat = (h, s = .65, l = .5) => new THREE.MeshLambertMaterial({ color: color(h, s, l), flatShading: true });
+const box = (x, y, z, sx, sy, sz, m, ry = 0) => { const o = new THREE.Mesh(new THREE.BoxGeometry(sx, sy, sz), m); o.position.set(x, y, z); o.rotation.y = ry; scene.add(o); return o; };
+const cyl = (x, y, z, r, h, m) => { const o = new THREE.Mesh(new THREE.CylinderGeometry(r, r, h, 8), m); o.position.set(x, y, z); scene.add(o); return o; };
+const tree = (x, z, scale = 1) => { box(x, 1 * scale, z, .5 * scale, 2 * scale, .5 * scale, mat(28, .55, .3)); cyl(x, 2.5 * scale, z, 1.3 * scale, 2 * scale, mat(106, .55, .35)); };
+const lower = name.toLowerCase();
+const ground = lower.includes("snow") || lower.includes("winter") ? mat(205, .25, .83) : mat(hue + 145, .45, .38);
+box(0, -.5, 0, 34, 1, 24, ground);
+for (let i = 0; i < 10; i++) {
+  const x = (pick(i * 3) - .5) * 20, z = (pick(i * 3 + 1) - .5) * 12;
+  box(x, .35 + pick(i * 3 + 2) * 1.5, z, 1.5 + pick(i) * 2, 1 + pick(i + 1) * 2, 1.5 + pick(i + 2) * 2, mat(hue + 30 + i * 7, .58, .48), pick(i + 3) * .5);
+}
+if (lower.includes("canyon") || lower.includes("cliff") || lower.includes("mountain")) for (let i = 0; i < 6; i++) box(-7 + i * 2.5, 1 + i * .7, -3, 3, 3 + i, 3, mat(18, .55, .32));
+if (lower.includes("city") || lower.includes("headquarter") || lower.includes("building")) for (let i = 0; i < 7; i++) box(-7 + i * 2.3, 2 + (i % 3), -2, 1.7, 4 + (i % 3) * 2, 1.7, mat(hue + 5, .2, .48));
+if (lower.includes("forest") || lower.includes("wood") || lower.includes("haunted") || lower.includes("canyon")) for (let i = 0; i < 7; i++) tree(-8 + i * 2.5, 4 + (i % 2) * 2, .8 + pick(i) * .35);
+if (lower.includes("pirate") || lower.includes("ship")) { box(0, 2, 0, 9, 1, 3.5, mat(25, .55, .3)); box(0, 4, 0, .7, 6, .7, mat(25, .55, .3)); box(0, 6, 0, 4, 3, .2, mat(0, .1, .9)); }
+if (lower.includes("snow") || lower.includes("winter") || lower.includes("ice")) for (let i = 0; i < 5; i++) box(-6 + i * 3, .6, 3 + (i % 2) * 2, 2, 2 + i % 3, 2, mat(200, .25, .88));
+if (lower.includes("water") || lower.includes("lake") || lower.includes("river") || lower.includes("ocean")) box(2, -.02, 3, 12, .1, 6, mat(205, .7, .52));
+if (lower.includes("crossroad") || lower.includes("battle") || lower.includes("arena")) { box(0, .08, 0, 2, .15, 14, mat(0, .1, .15)); box(0, .1, 0, 14, .18, 2, mat(0, .1, .15)); }
+box(0, .15, 0, 3, .3, 3, mat(hue + 45, .75, .5));
+renderer.render(scene, camera);
+</script>

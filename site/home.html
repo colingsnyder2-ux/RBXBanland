@@ -45,6 +45,11 @@
 
   main.innerHTML = `
     <h2 class="PageTitle">Hi, ${RB.esc(me.username)}! ${RB._bonus ? '<span class="New">+' + RB._bonus.tix + " Tix today!</span>" : ""}</h2>
+    <div class="StandardBox HomeWelcome">
+      <div class="StandardBoxHeader"><span>Welcome to RBXBanland!</span><a href="games.html">Play now</a></div>
+      <div class="BoxBody"><b>${maps.length}</b> classic places &middot; <b>${playingNow.length}</b> places online &middot; <b>${friendsData.friends.length}</b> friends<br>
+        <span class="Label">Pick a place, customize your avatar, and hang out with friends.</span></div>
+    </div>
     <div class="Columns">
       <div class="Left">
         <div class="StandardBox">

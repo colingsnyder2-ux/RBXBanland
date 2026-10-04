@@ -8,6 +8,7 @@ ROOT = pathlib.Path(__file__).resolve().parents[1]
 OUT = ROOT / "site" / "data" / "scenes"
 SKY_OUT = OUT / "sky"
 ASSET_OUT = OUT / "assets"
+MESH_OUT = OUT / "meshes"
 COLORS = {v["id"]: v["hex"] for v in json.loads((ROOT / "server/catalog.json").read_text())["colors"]}
 # rbxasset:// resolves against the client's content folder; Novetus maps point "../../../shareddata"
 # at the Novetus data folder.
@@ -73,6 +74,34 @@ def content_texture(props, texture_name="Texture"):
     url = content.find("url")
     path = asset_file(url.text.strip() if url is not None and url.text else "")
     return {"url": publish_asset(path)} if path is not None else None
+
+
+def clothes(model):
+    result = {}
+    for item in model.findall("./Item"):
+        if item.get("class") not in ("Shirt", "Pants"):
+            continue
+        texture = content_texture(item.find("Properties"), "ShirtTemplate" if item.get("class") == "Shirt" else "PantsTemplate")
+        if texture:
+            result["shirt" if item.get("class") == "Shirt" else "pants"] = texture
+    return result
+
+
+def publish_mesh(path):
+    """Convert old local version 1 Roblox mesh triangles into a Three.js position buffer."""
+    try:
+        groups = re.findall(r"\[([^\]]+)\]", path.read_text(errors="ignore"))
+        vertices = [float(value) for group in groups[0::3] for value in group.split(",")]
+        if not vertices or len(vertices) % 9:
+            return None
+    except (OSError, ValueError):
+        return None
+    MESH_OUT.mkdir(parents=True, exist_ok=True)
+    name = f"{path.parent.name}_{path.stem}.json".replace(" ", "_")
+    target = MESH_OUT / name
+    if not target.exists():
+        target.write_text(json.dumps(vertices, separators=(",", ":")))
+    return f"/data/scenes/meshes/{name}"
 
 
 def camera_view(cam):
@@ -156,11 +185,11 @@ def number(props, name, fallback=0):
     node = child(props, name) or props.find(f"./{name}")
     return float(node.text) if node is not None and node.text else fallback
 
-def vector(props, name):
+def vector(props, name, fallback=(1, 1, 1)):
     node = child(props, name)
     if node is None:
-        return [1, 1, 1]
-    return [number(node, "X", 1), number(node, "Y", 1), number(node, "Z", 1)]
+        return list(fallback)
+    return [number(node, "X", fallback[0]), number(node, "Y", fallback[1]), number(node, "Z", fallback[2])]
 
 def scene(zip_path):
     with zipfile.ZipFile(zip_path) as archive:
@@ -194,10 +223,12 @@ def scene(zip_path):
         part_name = name_node.text if name_node is not None and name_node.text else ""
         owner = item
         character = False
+        clothing = {}
         while owner in parents:
             owner = parents[owner]
             if owner.find("./Item[@class='Humanoid']") is not None:
                 character = True
+                clothing = clothes(owner)
                 break
         brick = child(props, "BrickColor")
         brick_id = int(brick.text) if brick is not None and brick.text else 194
@@ -206,7 +237,12 @@ def scene(zip_path):
         if mesh is not None:
             mp = mesh.find("Properties")
             mesh_type = child(mp, "MeshType") if mp is not None else None
-            mesh_data = {"type": int(mesh_type.text) if mesh_type is not None and mesh_type.text else 0, "scale": vector(mp, "Scale") if mp is not None else [1, 1, 1]}
+            mesh_id = child(mp, "MeshId") if mp is not None else None
+            mesh_url = mesh_id.find("url") if mesh_id is not None else None
+            mesh_path = asset_file(mesh_url.text.strip() if mesh_url is not None and mesh_url.text else "")
+            mesh_data = {"type": int(mesh_type.text) if mesh_type is not None and mesh_type.text else 0,
+                         "scale": vector(mp, "Scale") if mp is not None else [1, 1, 1], "offset": vector(mp, "Offset", (0, 0, 0)) if mp is not None else [0, 0, 0],
+                         "file": publish_mesh(mesh_path) if mesh_path is not None else None}
         textures = []
         for child_item in item.findall("./Item"):
             if child_item.get("class") not in ("Decal", "Texture"):
@@ -219,7 +255,7 @@ def scene(zip_path):
                 if child_item.get("class") == "Texture":
                     texture["tile"] = [number(cp, "StudsPerTileU", 1), number(cp, "StudsPerTileV", 1)]
                 textures.append(texture)
-        parts.append({"p": pos, "r": rot, "s": size, "c": COLORS.get(brick_id, "#a3a2a5"), "name": part_name, "character": character, "stud": child(props, "TopSurface").text == "3" if child(props, "TopSurface") is not None else False, "t": transparency, "wedge": item.get("class") == "WedgePart", "mesh": mesh_data, "textures": textures})
+        parts.append({"p": pos, "r": rot, "s": size, "c": COLORS.get(brick_id, "#a3a2a5"), "name": part_name, "character": character, "clothes": clothing, "stud": child(props, "TopSurface").text == "3" if child(props, "TopSurface") is not None else False, "t": transparency, "wedge": item.get("class") == "WedgePart", "mesh": mesh_data, "textures": textures})
     important = [q for q in parts if q["mesh"] or q["textures"] or q["character"]]
     structural = sorted((q for q in parts if q not in important), key=lambda q: q["s"][0] * q["s"][1] * q["s"][2], reverse=True)
     return {"parts": (important + structural)[:2500], "view": view, "viewSource": view_source,

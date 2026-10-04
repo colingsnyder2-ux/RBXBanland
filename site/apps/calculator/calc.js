@@ -44,6 +44,7 @@
   }
   function show() {
     const d = $("#Display");
+    d.classList.toggle("error", Boolean(error));
     if (error) { d.textContent = error; return; }
     let s = entry;
     if (!/e/.test(s) && !s.includes(".")) s += ".";

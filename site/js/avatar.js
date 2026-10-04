@@ -111,7 +111,7 @@ const RBAvatar = (() => {
     return g;
   }
   function bevelBox(sx, sy, sz, color) {
-    const b = Math.min(0.09, sx * 0.12, sy * 0.12, sz * 0.12);
+    const b = Math.min(0.045, sx * 0.12, sy * 0.12, sz * 0.12);
     const shape = new THREE.Shape();
     shape.moveTo(-sx / 2 + b, -sy / 2);
     shape.lineTo(sx / 2 - b, -sy / 2);
@@ -175,10 +175,10 @@ const RBAvatar = (() => {
     const group = new THREE.Group();
     const mat = (tex) => new THREE.MeshLambertMaterial({ map: tex });
     const part = (size, pos, tiles, color, layers) => {
-      const shell = bevelBox(size[0] + 0.06, size[1] + 0.06, size[2] + 0.06, color);
+      const shell = bevelBox(Math.max(0.1, size[0] - 0.08), Math.max(0.1, size[1] - 0.08), Math.max(0.1, size[2] - 0.08), color);
       shell.position.set(...pos);
       group.add(shell);
-      const m = new THREE.Mesh(templateBox(size[0], size[1], size[2] + 0.1, tiles), mat(partCanvas(color, layers, tiles, res)));
+      const m = new THREE.Mesh(templateBox(size[0], size[1], size[2] + 0.05, tiles), mat(partCanvas(color, layers, tiles, res)));
       m.position.set(...pos);
       group.add(m);
       return m;

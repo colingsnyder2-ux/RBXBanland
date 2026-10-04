@@ -46,8 +46,9 @@ Everything is served from this site. Nothing is hotlinked at runtime.
 - Original code and sprites. It is a tribute to SkiFree (1991, Chris Pirih) but uses none of its assets.
 ## HoverBan
 
-- Original code, gameplay, vector icon, and visuals by RBXBanland app builder.
-- No external runtime assets or libraries.
+- Browser build from the MIT-licensed Hover source port by Dmitri Shuralyov, https://github.com/shurcooL/Hover.
+- Local `main.wasm` and `wasm_exec.js` are the source port's browser build; wrapper/icon by RBXBanland.
+
 
 ## BreakoutBan
 
@@ -76,8 +77,9 @@ Everything is served from this site. Nothing is hotlinked at runtime.
 
 ## PinballBan
 
-- Original code, gameplay, table art, and vector icon by RBXBanland app builder.
-- No external runtime assets or libraries.
+- Browser/WebAssembly port by lrusso, https://github.com/lrusso/3DPinballSpaceCadet.
+- Based on the MIT-licensed SpaceCadetPinball engine by Andrey Muzychenko, https://github.com/alula/SpaceCadetPinball.
+- Local wrapper/icon by RBXBanland; no runtime network dependency.
 
 ## ClippyBan
 

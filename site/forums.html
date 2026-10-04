@@ -25,19 +25,43 @@
   const last = (l) => l ? `${RB.datetime(l.at)}<br>by ${l.by ? RB.userLink(l.by) : "?"}` : "<span class='Label'>No posts yet</span>";
 
   try {
-    if (threadId) await showThread(); else if (boardId) await showBoard(); else await showIndex();
+    if (threadId) await showThread(); else if (boardId) await showBoard(); else if (RB.param("q")) await showSearch(); else await showIndex();
   } catch (e) { RB.fatal(e.message, "Forums"); }
 
   async function showIndex() {
     const d = await RB.api("forums");
     document.title = "Forums - RBXBanland";
     main.innerHTML = `<h2 class="PageTitle">Forums</h2>${crumbs([])}
+      <form class="ForumSearch" id="ForumSearch"><label for="ForumQuery">Search forums</label> <input id="ForumQuery" type="search" maxlength="80" value="" placeholder="keywords"> <button class="Button">Search</button></form>
       <table class="ForumTable"><thead><tr><th>Forum</th><th class="Num">Threads</th><th class="Num Hide">Posts</th><th class="Last">Last Post</th></tr></thead><tbody>
       ${d.categories.map((c) => `<tr class="Category"><td colspan="4">${RB.esc(c.name)}</td></tr>` + c.boards.map((b) => `
         <tr><td><a class="BoardName" href="forums.html?board=${b.id}">${RB.esc(b.name)}</a><div class="Label">${RB.esc(b.description)}</div></td>
           <td class="Num">${RB.num(b.threads)}</td><td class="Num Hide">${RB.num(b.posts)}</td><td class="Last">${last(b.last)}</td></tr>`).join("")).join("")}
       </tbody></table>
-      <p class="Hint">Be nice. No spamming. Moderators can delete anything. <span class="UnderConstruction"><b>Search coming soon</b></span></p>`;
+      <p class="Hint">Be nice. No spamming. Moderators can delete anything.</p>`;
+    document.getElementById("ForumSearch").addEventListener("submit", (e) => {
+      e.preventDefault();
+      const q = document.getElementById("ForumQuery").value.trim();
+      if (q.length >= 2) location.href = "forums.html?q=" + encodeURIComponent(q);
+    });
+  }
+
+  async function showSearch() {
+    const q = RB.param("q");
+    const d = await RB.api("forums/search?q=" + encodeURIComponent(q));
+    document.title = "Search - Forums - RBXBanland";
+    main.innerHTML = `<h2 class="PageTitle">Forum Search</h2>${crumbs([`Search: ${RB.esc(d.query)}`])}
+      <form class="ForumSearch" id="ForumSearch"><label for="ForumQuery">Search forums</label> <input id="ForumQuery" type="search" maxlength="80" value="${RB.esc(d.query)}"> <button class="Button">Search</button></form>
+      <table class="ForumTable"><thead><tr><th>Subject</th><th>Forum</th><th class="Num Hide">Author</th><th class="Num">Replies</th><th class="Last">Last Post</th></tr></thead><tbody>
+      ${d.results.length ? d.results.map((t) => `<tr><td>${t.pinned ? '<span class="Sticky">[Sticky]</span> ' : ""}<a class="BoardName" href="forums.html?thread=${t.id}">${RB.esc(t.title)}</a></td>
+        <td><a href="forums.html?board=${t.boardId}">${RB.esc(t.board)}</a></td><td class="Num Hide">${RB.userLink(t.author)}</td><td class="Num">${RB.num(t.replies)}</td>
+        <td class="Last">${RB.datetime(t.last.at)}<br>by ${t.last.by ? RB.userLink(t.last.by) : "?"}</td></tr>`).join("") : `<tr><td colspan="5" class="Empty">No matching threads found.</td></tr>`}
+      </tbody></table><p class="Hint"><a href="forums.html">Back to all forums</a></p>`;
+    document.getElementById("ForumSearch").addEventListener("submit", (e) => {
+      e.preventDefault();
+      const next = document.getElementById("ForumQuery").value.trim();
+      if (next.length >= 2) location.href = "forums.html?q=" + encodeURIComponent(next);
+    });
   }
 
   async function showBoard() {

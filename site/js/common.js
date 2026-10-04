@@ -93,12 +93,15 @@ const RB = {
   },
   // Records a visit, then opens the game in a "RobloxApp.exe" window (or navigates when not on the desktop).
   async play(m) {
+    const d = RB.desktop();
+    const mobilePopup = !d && matchMedia("(pointer: coarse)").matches ? window.open("about:blank", "_blank") : null;
     let res = null;
     try { res = await RB.api(`places/${encodeURIComponent(m.id)}/visit`, { method: "POST" }); } catch { /* still let them play */ }
     if (res?.reward) RB.refreshMe();
     const url = "play.html?id=" + encodeURIComponent(m.id);
-    const d = RB.desktop();
-    if (d) d.play(m.id, m.name, url); else location.href = url;
+    if (d) d.play(m.id, m.name, url);
+    else if (mobilePopup) mobilePopup.location.replace(url);
+    else location.href = url;
     return res;
   },
 

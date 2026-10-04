@@ -298,6 +298,23 @@ export function createApi({ db, cfg, catalog, places, secure }) {
     return { categories };
   });
 
+  route("GET", "/api/forums/search", ({ url }) => {
+    const query = String(url.searchParams.get("q") || "").trim().slice(0, 80);
+    if (query.length < 2) return { query, results: [] };
+    const like = `%${query.replace(/[\\%_]/g, "\\$&")}%`;
+    const results = q(`SELECT DISTINCT t.id, t.title, t.created_at, t.last_post_at, t.reply_count, t.views, t.pinned,
+        b.id AS board_id, b.name AS board_name, u.username AS author, l.username AS last_by
+        FROM threads t JOIN boards b ON b.id = t.board_id JOIN users u ON u.id = t.user_id
+        LEFT JOIN users l ON l.id = t.last_post_user
+        WHERE t.title LIKE ? ESCAPE '\\' OR EXISTS (
+          SELECT 1 FROM posts p WHERE p.thread_id = t.id AND p.body LIKE ? ESCAPE '\\'
+        ) ORDER BY t.pinned DESC, t.last_post_at DESC LIMIT 50`).all(like, like)
+      .map((t) => ({ id: t.id, title: t.title, boardId: t.board_id, board: t.board_name, author: t.author,
+        created: t.created_at, replies: t.reply_count, views: t.views, pinned: !!t.pinned,
+        last: { at: t.last_post_at, by: t.last_by } }));
+    return { query, results };
+  });
+
   route("GET", "/api/forums/boards/:id", ({ params, url }) => {
     const b = q("SELECT * FROM boards WHERE id = ?").get(Number(params.id));
     if (!b) fail(404, "No such forum.");

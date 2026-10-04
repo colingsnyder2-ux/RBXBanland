@@ -84,8 +84,8 @@ Everything is served from this site. Nothing is hotlinked at runtime.
 
 ## Pinball
 
-- Local JavaScript game source by lrusso, https://github.com/lrusso/Pinball.
-- Local game files and icon; no runtime network dependency.
+- Local MIT-licensed Space Cadet tribute source by nipunbatra, https://github.com/nipunbatra/pinball.
+- Single-file local game; no runtime network dependency. Based on 3D Pinball for Windows - Space Cadet.
 
 ## Clippy
 

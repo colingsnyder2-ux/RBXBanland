@@ -203,7 +203,7 @@ def scene(zip_path):
     lighting = find_lighting(root)
     parts = []
     for item in root.iter("Item"):
-        if item.get("class") not in ("Part", "WedgePart", "SpawnLocation", "TrussPart"):
+        if item.get("class") not in ("Part", "WedgePart", "SpawnLocation", "TrussPart", "Terrain"):
             continue
         props = item.find("Properties")
         if props is None:
@@ -214,7 +214,7 @@ def scene(zip_path):
         pos = [number(cframe, "X"), number(cframe, "Y"), number(cframe, "Z")]
         rot = [[number(cframe, f"R{i}{j}") for j in range(3)] for i in range(3)]
         size = vector(props, "size")
-        if min(size) <= 0 or max(size) > 512:
+        if min(size) <= 0 or max(size) > 2048:
             continue
         transparency = number(props, "Transparency")
         if transparency >= 1:
@@ -255,7 +255,7 @@ def scene(zip_path):
                 if child_item.get("class") == "Texture":
                     texture["tile"] = [number(cp, "StudsPerTileU", 1), number(cp, "StudsPerTileV", 1)]
                 textures.append(texture)
-        parts.append({"p": pos, "r": rot, "s": size, "c": COLORS.get(brick_id, "#a3a2a5"), "name": part_name, "character": character, "clothes": clothing, "stud": child(props, "TopSurface").text == "3" if child(props, "TopSurface") is not None else False, "t": transparency, "wedge": item.get("class") == "WedgePart", "mesh": mesh_data, "textures": textures})
+        parts.append({"p": pos, "r": rot, "s": size, "c": COLORS.get(brick_id, "#a3a2a5"), "name": part_name, "character": character, "clothes": clothing, "stud": child(props, "TopSurface").text == "3" if child(props, "TopSurface") is not None else False, "t": transparency, "wedge": item.get("class") == "WedgePart", "truss": item.get("class") == "TrussPart", "terrain": item.get("class") == "Terrain", "mesh": mesh_data, "textures": textures})
     important = [q for q in parts if q["mesh"] or q["textures"] or q["character"]]
     structural = sorted((q for q in parts if q not in important), key=lambda q: q["s"][0] * q["s"][1] * q["s"][2], reverse=True)
     return {"parts": (important + structural)[:2500], "view": view, "viewSource": view_source,

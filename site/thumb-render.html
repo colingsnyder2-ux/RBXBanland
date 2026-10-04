@@ -22,6 +22,7 @@ let studs = 0, bevels = 0;
 const textures = new Map(), loader = new THREE.TextureLoader();
 const wedge = (s) => { const g = new THREE.BufferGeometry(); g.setAttribute("position", new THREE.Float32BufferAttribute([-.5,-.5,-.5,.5,-.5,-.5,.5,-.5,.5,-.5,-.5,.5,-.5,.5,.5,.5,.5,.5], 3)); g.setIndex([0,2,1,0,3,2,3,4,5,3,5,2,0,4,3,1,2,5,0,1,5,0,5,4]); g.scale(...s); g.computeVertexNormals(); return g; };
 const bevelBox = (s) => { const [w,h,d] = s, r = Math.min(.12,w/4,h/4,d/4), q = new THREE.Shape(); if (r < .02) return new THREE.BoxGeometry(...s); q.moveTo(-w/2+r,-h/2); q.lineTo(w/2-r,-h/2); q.quadraticCurveTo(w/2,-h/2,w/2,-h/2+r); q.lineTo(w/2,h/2-r); q.quadraticCurveTo(w/2,h/2,w/2-r,h/2); q.lineTo(-w/2+r,h/2); q.quadraticCurveTo(-w/2,h/2,-w/2,h/2-r); q.lineTo(-w/2,-h/2+r); q.quadraticCurveTo(-w/2,-h/2,-w/2+r,-h/2); const g = new THREE.ExtrudeGeometry(q,{depth:d-2*r,bevelEnabled:true,bevelThickness:r,bevelSize:r,bevelSegments:1,curveSegments:1}); g.translate(0,0,-d/2+r); return g; };
+const truss = (s, material) => { const g = new THREE.Group(), add = (a,b) => { const d = b.clone().sub(a), m = new THREE.Mesh(new THREE.CylinderGeometry(.07,.07,d.length(),6),material); m.position.copy(a).addScaledVector(d,.5); m.quaternion.setFromUnitVectors(new THREE.Vector3(0,1,0),d.normalize()); g.add(m); }, x=s[0]/2-.08,z=s[2]/2-.08,y=s[1]/2; for(const sx of [-1,1])for(const sz of [-1,1])add(new THREE.Vector3(sx*x,-y,sz*z),new THREE.Vector3(sx*x,y,sz*z)); for(const sz of [-1,1]){add(new THREE.Vector3(-x,-y,sz*z),new THREE.Vector3(x,y,sz*z));add(new THREE.Vector3(x,-y,sz*z),new THREE.Vector3(-x,y,sz*z));} return g; };
 const textureFor = async (data) => {
   const key = data.startsWith("url:") ? data : `data:image/png;base64,${data}`;
   if (!textures.has(data)) textures.set(data, new Promise((resolve) => loader.load(key.replace("url:", ""), resolve, undefined, () => resolve(null))));
@@ -58,7 +59,7 @@ for (const part of parts) {
     if (materials === material) materials = Array.from({ length: 6 }, () => material);
     materials[skin.face] = new THREE.MeshLambertMaterial({ map: texture, transparent: true, flatShading: true });
   }
-  const mesh = new THREE.Mesh(geometry, materials), m = new THREE.Matrix4();
+  const mesh = part.truss ? truss(part.s, materials) : new THREE.Mesh(geometry, materials), m = new THREE.Matrix4();
   m.set(part.r[0][0], part.r[0][1], part.r[0][2], part.p[0], part.r[1][0], part.r[1][1], part.r[1][2], part.p[1], part.r[2][0], part.r[2][1], part.r[2][2], part.p[2], 0, 0, 0, 1);
   mesh.matrixAutoUpdate = false; mesh.matrix.copy(m); mesh.updateMatrixWorld(true); scene.add(mesh); bounds.expandByObject(mesh);
   if (part.stud && studs < 800 && part.s[0] < 16 && part.s[2] < 16 && part.s[1] > .2) {

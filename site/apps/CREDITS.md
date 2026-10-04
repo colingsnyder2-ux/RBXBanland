@@ -44,3 +44,7 @@ Everything is served from this site. Nothing is hotlinked at runtime.
 
 ## SkiBan (not in apps.json)
 - Original code and sprites. It is a tribute to SkiFree (1991, Chris Pirih) but uses none of its assets.
+## HoverBan
+
+- Original code, gameplay, vector icon, and visuals by RBXBanland app builder.
+- No external runtime assets or libraries.

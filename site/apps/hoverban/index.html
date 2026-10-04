@@ -1,0 +1,24 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>HoverBan</title>
+<link rel="icon" href="icon.svg">
+<link rel="stylesheet" href="../_lib/win.css">
+<style>
+  body { display:flex; flex-direction:column; background:#001b2e; overflow:hidden; }
+  #Arena { display:block; flex:1; min-height:0; width:100%; image-rendering:pixelated; touch-action:none; cursor:crosshair; }
+  #Hud { position:absolute; left:8px; top:28px; color:#d9fbff; font:12px "Courier New",monospace; line-height:15px; text-shadow:1px 1px #001; pointer-events:none; white-space:pre; }
+  #Hint { position:absolute; right:8px; bottom:8px; color:#8de9ff; font:11px "Courier New",monospace; text-align:right; pointer-events:none; }
+</style>
+<script src="../_lib/app.js"></script>
+</head>
+<body>
+<div id="Menu"></div>
+<canvas id="Arena" aria-label="HoverBan arena"></canvas>
+<div id="Hud"></div>
+<div id="Hint">ARROWS/WASD steer · SHIFT boost · SPACE pulse</div>
+<script src="hover.js"></script>
+</body>
+</html>

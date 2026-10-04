@@ -110,7 +110,7 @@ const RBAvatar = (() => {
     uv.needsUpdate = true;
     return g;
   }
-  function bevelBox(sx, sy, sz, color) {
+  function templateBevelBox(sx, sy, sz, tiles) {
     const b = Math.min(0.045, sx * 0.12, sy * 0.12, sz * 0.12);
     const shape = new THREE.Shape();
     shape.moveTo(-sx / 2 + b, -sy / 2);
@@ -125,7 +125,24 @@ const RBAvatar = (() => {
     const g = new THREE.ExtrudeGeometry(shape, { depth: sz, bevelEnabled: true, bevelSegments: 1, steps: 1, bevelSize: b, bevelThickness: b });
     g.translate(0, 0, -sz / 2);
     g.computeVertexNormals();
-    return new THREE.Mesh(g, new THREE.MeshLambertMaterial({ color }));
+    const pos = g.attributes.position, nor = g.attributes.normal, uv = g.attributes.uv;
+    const half = [sx / 2, sy / 2, sz / 2];
+    for (let i = 0; i < pos.count; i++) {
+      const n = [nor.getX(i), nor.getY(i), nor.getZ(i)];
+      const p = [pos.getX(i) / half[0] / 2, pos.getY(i) / half[1] / 2, pos.getZ(i) / half[2] / 2];
+      let key, up;
+      if (Math.abs(n[0]) >= Math.abs(n[1]) && Math.abs(n[0]) >= Math.abs(n[2])) { key = n[0] > 0 ? "px" : "nx"; up = [0, 1, 0]; }
+      else if (Math.abs(n[1]) >= Math.abs(n[2])) { key = n[1] > 0 ? "py" : "ny"; up = [0, 0, n[1] > 0 ? 1 : -1]; }
+      else { key = n[2] > 0 ? "pz" : "nz"; up = [0, 1, 0]; }
+      const f = [-n[0], -n[1], -n[2]];
+      const right = [f[1] * up[2] - f[2] * up[1], f[2] * up[0] - f[0] * up[2], f[0] * up[1] - f[1] * up[0]];
+      const s = Math.max(0, Math.min(1, p[0] * right[0] + p[1] * right[1] + p[2] * right[2] + 0.5));
+      const t = Math.max(0, Math.min(1, 0.5 - (p[0] * up[0] + p[1] * up[1] + p[2] * up[2])));
+      const [x, y, w, h] = tiles[key];
+      uv.setXY(i, (x + s * w) / TW, 1 - (y + t * h) / TH);
+    }
+    uv.needsUpdate = true;
+    return g;
   }
   // The classic Roblox "Head" mesh: a cylinder with rounded top and bottom edges.
   function headGeometry(d, h, rounded) {
@@ -175,10 +192,7 @@ const RBAvatar = (() => {
     const group = new THREE.Group();
     const mat = (tex) => new THREE.MeshLambertMaterial({ map: tex });
     const part = (size, pos, tiles, color, layers) => {
-      const shell = bevelBox(Math.max(0.1, size[0] - 0.08), Math.max(0.1, size[1] - 0.08), Math.max(0.1, size[2] - 0.08), color);
-      shell.position.set(...pos);
-      group.add(shell);
-      const m = new THREE.Mesh(templateBox(size[0], size[1], size[2] + 0.05, tiles), mat(partCanvas(color, layers, tiles, res)));
+      const m = new THREE.Mesh(templateBevelBox(size[0], size[1], size[2], tiles), mat(partCanvas(color, layers, tiles, res)));
       m.position.set(...pos);
       group.add(m);
       return m;

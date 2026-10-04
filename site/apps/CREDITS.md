@@ -54,6 +54,11 @@ Everything is served from this site. Nothing is hotlinked at runtime.
 - Original code, UI, conversation text, and vector icon by RBXBanland app builder.
 - No external runtime assets, libraries, accounts, or network messaging.
 
+## PinballBan
+
+- Original code, gameplay, table art, and vector icon by RBXBanland app builder.
+- No external runtime assets or libraries.
+
 ## ClippyBan
 
 - Original code, character art, UI, and vector icon by RBXBanland app builder.

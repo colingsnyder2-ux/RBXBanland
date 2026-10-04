@@ -1,0 +1,15 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>PinballBan</title>
+<link rel="icon" href="icon.svg">
+<link rel="stylesheet" href="../_lib/win.css">
+<style>
+  body{display:flex;flex-direction:column;background:#111;overflow:hidden}#Table{display:block;flex:1;min-height:0;width:100%;image-rendering:pixelated;touch-action:none;cursor:pointer}#Hud{position:absolute;left:8px;top:27px;color:#fff;font:bold 12px "Courier New",monospace;white-space:pre;pointer-events:none;text-shadow:1px 1px #000}#Help{position:absolute;right:8px;bottom:8px;color:#ddd;font:11px "Courier New",monospace;pointer-events:none}
+</style>
+<script src="../_lib/app.js"></script>
+</head>
+<body><div id="Menu"></div><canvas id="Table" aria-label="PinballBan table"></canvas><div id="Hud"></div><div id="Help">←/→ flippers · SPACE launch · P pause · F2 new game</div><script src="pinball.js"></script></body>
+</html>

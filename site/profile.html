@@ -79,7 +79,7 @@
               <div class="GameDetails"><div class="GameName"><a href="game.html?id=${encodeURIComponent(v.placeId)}">${RB.esc(v.name)}</a></div>
               <div class="Label">${v.count} visit${v.count === 1 ? "" : "s"} &middot; ${RB.ago(v.last)}</div></div></div>`;
           }).join("")}</div>`
-            : `<div class="Empty">${self ? 'You haven't played anything yet. <a href="games.html">Browse games</a>' : "Hasn't played anything yet."}</div>`}
+            : `<div class="Empty">${self ? "You haven't played anything yet. <a href=\"games.html\">Browse games</a>" : "Hasn't played anything yet."}</div>`}
         </div>
       </div>
     </div>`;

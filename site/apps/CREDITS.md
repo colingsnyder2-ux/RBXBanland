@@ -26,6 +26,9 @@ Everything is served from this site. Nothing is hotlinked at runtime.
   - `mintodog-space-city.mp3`: MintoDog, "Space City", https://opengameart.org/content/space-city (CC0)
   - `omfgdude-chill-lofi.mp3`: omfgdude, "Chill lofi inspired", https://opengameart.org/content/chill-lofi-inspired (CC0)
   - `holizna-retro-soundtrack.ogg`: HoliznaCC0, "Retro Soundtrack" from "Retro Wave (Collection)", https://opengameart.org/content/retro-wave-collection (CC0)
+  - `famousworm-dance.mp3`: Sudocolon, "Dance", https://opengameart.org/content/dance-0 (CC0)
+  - `sudocolon-plan.mp3`: Sudocolon, "Plan", https://opengameart.org/content/plan (CC0)
+  - `sudocolon-vision.mp3`: Sudocolon, "Vision", https://opengameart.org/content/vision (CC0)
 
 ## Paint
 - `paint/vendor/jspaint/`: tool icons (`tools.png`), option images and cursors from JS Paint by Isaiah Odhner, https://github.com/1j01/jspaint. MIT License, see `paint/vendor/jspaint/LICENSE.txt`. The layout reference was JS Paint's `mspaint-win98-reference.png`.

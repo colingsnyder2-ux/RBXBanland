@@ -5,4 +5,7 @@
   {"file": "holizna-retro-soundtrack.ogg", "artist": "HoliznaCC0", "title": "Retro Soundtrack", "dur": 157.6, "license": "CC0 1.0", "kbps": 278},
   {"file": "junkala-boss-fight.ogg", "artist": "Juhani Junkala", "title": "Chiptune Adventures - Boss Fight", "dur": 71.7, "license": "CC0 1.0", "kbps": 338},
   {"file": "junkala-stage-select.ogg", "artist": "Juhani Junkala", "title": "Chiptune Adventures - Stage Select", "dur": 21.3, "license": "CC0 1.0", "kbps": 353}
+  ,{"file": "famousworm-dance.mp3", "artist": "Sudocolon", "title": "Dance", "dur": 0, "license": "CC0 1.0", "kbps": 128}
+  ,{"file": "sudocolon-plan.mp3", "artist": "Sudocolon", "title": "Plan", "dur": 0, "license": "CC0 1.0", "kbps": 128}
+  ,{"file": "sudocolon-vision.mp3", "artist": "Sudocolon", "title": "Vision", "dur": 0, "license": "CC0 1.0", "kbps": 128}
 ]

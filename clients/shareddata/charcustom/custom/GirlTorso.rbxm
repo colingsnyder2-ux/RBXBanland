@@ -1,0 +1,18 @@
+<roblox xmlns:xmime="http://www.w3.org/2005/05/xmlmime" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://www.roblox.com/roblox.xsd" version="4">
+	<External>null</External>
+	<External>nil</External>
+	<Item class="StringValue" referent="RBX0">
+		<Properties>
+			<bool name="Archivable">true</bool>
+			<string name="Name">Package</string>
+			<string name="Value">ROBLOX Girl Torso</string>
+		</Properties>
+		<Item class="StringValue" referent="RBX1">
+			<Properties>
+				<bool name="Archivable">true</bool>
+				<string name="Name">Torso</string>
+				<string name="Value">rbxasset://../../../shareddata/charcustom/custom/fonts/girltorso.mesh</string>
+			</Properties>
+		</Item>
+	</Item>
+</roblox>

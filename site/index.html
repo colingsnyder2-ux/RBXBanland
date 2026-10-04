@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="en" data-os="win98">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, interactive-widget=resizes-content">
+<title>RBXBanland</title>
+<meta name="description" content="RBXBanland: play 2006-2008 places with your friends, right in your browser.">
+<style>@layer vendor;</style>
+<link id="VendorCSS" rel="stylesheet" href="vendor/themes/win98.css">
+<link rel="stylesheet" href="css/desktop.css">
+<link rel="icon" href="img/favicon.svg" type="image/svg+xml">
+<script>
+  // Apply the saved theme (and its vendor stylesheet: 98.css / XP.css / 7.css) before first paint.
+  try {
+    const t = localStorage.getItem("rbx.theme");
+    if (t && /^(win95|win98|winxp|win7|vaporwave)$/.test(t)) {
+      document.documentElement.dataset.os = t;
+      document.getElementById("VendorCSS").href = "vendor/themes/" + t + ".css";
+    }
+  } catch {}
+</script>
+</head>
+<body>
+<div id="Desktop">
+  <div id="Wallpaper" aria-hidden="true">
+    <div class="wp-logo"><span class="brick"></span><span class="word">RBX<i>Banland</i></span></div>
+    <div class="wp-vapor">
+      <div class="vw-sun"></div>
+      <svg class="vw-palm vw-palm-l" viewBox="0 0 120 220" aria-hidden="true"><path d="M58 220 C62 170 66 120 60 70" stroke="#2a0b3d" stroke-width="7" fill="none"/>
+        <path d="M60 70 C40 50 15 52 2 66 C20 56 40 60 58 74Z M60 70 C78 46 104 44 118 58 C100 50 80 56 62 74Z M60 70 C52 40 30 22 10 22 C30 30 46 48 57 72Z M60 70 C70 38 92 22 112 24 C92 32 76 48 63 72Z M60 70 C58 44 62 20 70 4 C66 26 64 48 62 72Z" fill="#2a0b3d"/></svg>
+      <svg class="vw-palm vw-palm-r" viewBox="0 0 120 220" aria-hidden="true"><path d="M58 220 C62 170 66 120 60 70" stroke="#2a0b3d" stroke-width="7" fill="none"/>
+        <path d="M60 70 C40 50 15 52 2 66 C20 56 40 60 58 74Z M60 70 C78 46 104 44 118 58 C100 50 80 56 62 74Z M60 70 C52 40 30 22 10 22 C30 30 46 48 57 72Z M60 70 C70 38 92 22 112 24 C92 32 76 48 63 72Z M60 70 C58 44 62 20 70 4 C66 26 64 48 62 72Z" fill="#2a0b3d"/></svg>
+      <div class="vw-grid"></div>
+      <div class="vw-title"><b>ＲＢＸ　ＢＡＮＬＡＮＤ</b><span>ブロック　ノスタルジア　１９９８</span></div>
+    </div>
+  </div>
+  <ul id="Icons" role="listbox" aria-label="Desktop"></ul>
+  <div id="Windows"></div>
+</div>
+
+<div id="Taskbar">
+  <button id="StartButton" type="button" aria-haspopup="menu" aria-expanded="false">
+    <img data-icon="start" data-size="16" src="img/icons/win98/start-16.png" alt=""><span>Start</span>
+  </button>
+  <div id="QuickLaunch">
+    <button type="button" data-quick="desktop" title="Show Desktop"><img data-icon="desktop" data-size="16" src="img/icons/win98/desktop-16.png" alt="Show Desktop"></button>
+    <button type="button" data-quick="browser" title="Launch Internet Explorer Browser"><img data-icon="ie" data-size="16" src="img/icons/win98/ie-16.png" alt="Internet Explorer"></button>
+    <button type="button" data-quick="chat" title="RBXChat"><img data-icon="chat" data-size="16" src="img/icons/win98/chat-16.png" alt="RBXChat"></button>
+    <button type="button" data-quick="readme" title="Notepad"><img data-icon="notepad" data-size="16" src="img/icons/win98/notepad-16.png" alt="Notepad"></button>
+  </div>
+  <div id="Tasks" role="tablist" aria-label="Open windows"></div>
+  <div id="Tray">
+    <span id="TrayMoney" title="Your ROBUX and Tix"></span>
+    <span id="Clock" title=""></span>
+  </div>
+  <button id="ShowDesktop" type="button" title="Show desktop" aria-label="Show desktop"></button>
+</div>
+
+<div id="StartMenu" role="menu" hidden>
+  <div class="sm-banner" aria-hidden="true"><span><b>RBX</b>Banland<i class="sm-ver">98</i></span></div>
+  <div class="sm-main">
+    <div class="sm-user"><div class="sm-avatar" id="SmAvatar"></div><b id="SmUser">Guest</b></div>
+    <ul class="sm-programs" id="SmPrograms"></ul>
+    <ul class="sm-system">
+      <li class="sm-userline"><span id="SmUser2">Guest</span></li>
+      <li><button type="button" role="menuitem" data-go="settings.html"><img data-icon="settings" data-size="32" src="img/icons/win98/settings.png" alt=""><span><u>S</u>ettings</span></button></li>
+      <li class="sm-sub">
+        <button type="button" role="menuitem" aria-haspopup="menu" id="ThemeMenuBtn"><img data-icon="theme" data-size="32" src="img/icons/win98/theme.png" alt=""><span><u>T</u>hemes</span><b class="arrow">&#9656;</b></button>
+        <ul class="sm-submenu" id="ThemeMenu" role="menu">
+          <li><button type="button" role="menuitemradio" data-theme="win95"><span class="radio"></span>Windows 95</button></li>
+          <li><button type="button" role="menuitemradio" data-theme="win98"><span class="radio"></span>Windows 98</button></li>
+          <li><button type="button" role="menuitemradio" data-theme="winxp"><span class="radio"></span>Windows XP</button></li>
+          <li><button type="button" role="menuitemradio" data-theme="win7"><span class="radio"></span>Windows 7 (Aero)</button></li>
+          <li><button type="button" role="menuitemradio" data-theme="vaporwave"><span class="radio"></span>Ｖａｐｏｒｗａｖｅ</button></li>
+        </ul>
+      </li>
+      <li><button type="button" role="menuitem" data-go="about.html"><img data-icon="help" data-size="32" src="img/icons/win98/help.png" alt=""><span><u>H</u>elp</span></button></li>
+      <li><button type="button" role="menuitem" data-internal="readme"><img data-icon="notepad" data-size="32" src="img/icons/win98/notepad.png" alt=""><span><u>R</u>ead Me</span></button></li>
+      <li class="sm-sep" role="separator"></li>
+      <li><button type="button" role="menuitem" id="LogOffBtn"><img data-icon="logoff" data-size="32" src="img/icons/win98/logoff.png" alt=""><span>Log Off <span id="SmUser3"></span>...</span></button></li>
+      <li><button type="button" role="menuitem" id="ShutDownBtn"><img data-icon="shutdown" data-size="32" src="img/icons/win98/shutdown.png" alt=""><span>Sh<u>u</u>t Down...</span></button></li>
+    </ul>
+    <div class="sm-footer">
+      <input type="search" id="SmSearch" placeholder="Search programs and files" aria-label="Search programs">
+      <button type="button" class="sm-logoff" title="Log Off"><img data-icon="logoff" data-size="32" src="img/icons/win98/logoff.png" alt=""><span>Log Off</span></button>
+      <button type="button" class="sm-shutdown" title="Shut down"><img data-icon="shutdown" data-size="32" src="img/icons/win98/shutdown.png" alt=""><span class="sd-xp">Turn Off Computer</span><span class="sd-7">Shut down</span></button>
+    </div>
+  </div>
+</div>
+
+<div id="Overlay" hidden></div>
+
+<script src="js/common.js"></script>
+<script src="js/avatar.js"></script>
+<script src="js/desktop.js"></script>
+</body>
+</html>

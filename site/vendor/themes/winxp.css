@@ -1,0 +1,2 @@
+/* Loads XP.css for the winxp theme into a low-priority cascade layer. */
+@import url("../xpcss/XP.css") layer(vendor);

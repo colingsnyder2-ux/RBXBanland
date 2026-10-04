@@ -1,0 +1,387 @@
+/* RBXBanland app pages: styled after the 2008-2010 ROBLOX website (Verdana, #6e99c9 nav, light-blue page,
+   StandardBox panels) with a few GeoCities touches. Also styles play.html (PlayContainer, PlayerFrame, Loading*). */
+:root {
+  --nav: #6e99c9;
+  --nav-dark: #3b5f88;
+  --page: #e5f1fd;
+  --page-edge: #c9d9ea;
+  --link: #0033cc;
+  --visited: #551a8b;
+  --text: #000;
+  --muted: #555;
+  --box: #fff;
+  --row: #eef4fb;
+  --button: #b6cce4;
+  --button-text: #2b4766;
+  --button-hover: #5f84a8;
+  --play: #3fa53a;
+  --play-dark: #2b7a27;
+  --red: #c00;
+  --robux: #0b7d0b;
+  --tix: #b8860b;
+  --bg-top: #9cc3ea;
+  --bg: #f8fcff;
+  color-scheme: light;
+}
+
+* { box-sizing: border-box; }
+html { background: var(--bg); }
+body {
+  margin: 0;
+  font: normal 8pt Verdana, Geneva, sans-serif;
+  color: var(--text);
+  background: var(--bg) linear-gradient(var(--bg-top), var(--bg) 260px) no-repeat;
+}
+a, a:visited { color: var(--link); text-decoration: none; }
+a:hover { text-decoration: underline; }
+h3 { font-size: 13px; margin: 6px 0; }
+img { max-width: 100%; }
+
+#Container {
+  max-width: 930px;
+  margin: 0 auto;
+  padding: 0 10px 10px;
+  background: var(--page);
+  border-left: 5px solid var(--page-edge);
+  border-right: 5px solid var(--page-edge);
+  min-height: 100vh;
+}
+html.rb-embedded #Container { max-width: none; border: 0; }
+html.rb-embedded body { background: var(--page); }
+
+/* ---------- Banner + navigation ---------- */
+#Banner {
+  display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap;
+  min-height: 70px; padding: 6px 10px;
+  background:
+    radial-gradient(ellipse 60px 18px at 78% 30%, rgba(255,255,255,.85), transparent 70%),
+    radial-gradient(ellipse 90px 22px at 60% 70%, rgba(255,255,255,.7), transparent 70%),
+    radial-gradient(ellipse 70px 16px at 92% 75%, rgba(255,255,255,.6), transparent 70%),
+    linear-gradient(#bfe0ff, #8ec1f0 60%, #7db2e6);
+  border-bottom: 1px solid #5b87b8;
+}
+#Logo { display: flex; align-items: center; gap: 8px; text-decoration: none !important; position: relative; }
+#Logo .brick {
+  width: 40px; height: 34px; border-radius: 3px; position: relative; flex: none;
+  background: #d32b2b; box-shadow: inset 0 -5px 0 rgba(0,0,0,.25), 0 2px 0 #5a1010; transform: rotate(-6deg);
+}
+#Logo .brick::before, #Logo .brick::after {
+  content: ""; position: absolute; top: -5px; width: 12px; height: 7px; border-radius: 2px;
+  background: #e95050; box-shadow: inset 0 -2px 0 #8d1b1b;
+}
+#Logo .brick::before { left: 5px; } #Logo .brick::after { right: 5px; }
+#Logo .word {
+  font: 900 32px/1 "Arial Black", Impact, sans-serif; letter-spacing: 0; color: #d32b2b;
+  -webkit-text-stroke: 2px #fff; paint-order: stroke fill;
+  text-shadow: 2px 3px 0 #33415a;
+}
+#Logo .word span { color: #ffd84a; font-style: italic; }
+#Logo .beta {
+  position: absolute; right: -24px; top: -4px; transform: rotate(14deg);
+  font: bold 10px Verdana, sans-serif; color: #fff; background: #e05d71; padding: 1px 4px; border: 1px solid #fff;
+}
+#Authentication {
+  background: var(--nav); color: #fff; padding: 4px 8px; font-size: 11px; border: 1px solid #fff; line-height: 1.6;
+}
+#Authentication a, #Authentication a:visited { color: #fff; font-weight: bold; }
+#Authentication .Currency span { font-weight: bold; margin-right: 6px; }
+.Robux { color: var(--robux); font-weight: bold; }
+.Tix { color: var(--tix); font-weight: bold; }
+#Authentication .Robux { color: #d6ffd6; } #Authentication .Tix { color: #ffe680; }
+
+.Navigation { background: var(--nav); border-top: 1px solid #fff; }
+.Navigation ul { display: flex; flex-wrap: wrap; list-style: none; margin: 0; padding: 0 4px; }
+.Navigation li a, .Navigation li a:visited {
+  display: block; color: #fff; padding: 0 10px; border-left: 1px solid #fff;
+  font: 15px/2em Arial, Helvetica, sans-serif;
+}
+.Navigation li:first-child a { border-left: 0; }
+.Navigation li a.current { font-weight: bold; background: var(--nav-dark); }
+.Ticker { background: #ffffcc; border-bottom: 1px solid #e5d36b; color: #c00; font: bold 11px/20px Verdana, sans-serif; }
+.Ticker marquee { display: block; }
+
+/* ---------- Shared boxes, forms, buttons ---------- */
+.StandardBox { border: 2px solid var(--nav); background: var(--box); margin-bottom: 10px; }
+.StandardBox > .StandardBoxHeader { margin: 0; }
+.StandardBoxHeader {
+  background: var(--nav); color: #fff; font-size: 13px; font-weight: bold; padding: 4px 10px;
+  display: flex; justify-content: space-between; align-items: center; gap: 8px;
+}
+.StandardBoxHeader a, .StandardBoxHeader a:visited { color: #fff; font-size: 11px; }
+.BoxBody { padding: 10px; }
+.Button, a.Button, a.Button:visited, button.Button {
+  display: inline-block; cursor: pointer; background: var(--button); color: var(--button-text);
+  border: 1px solid #8aa7c6; padding: 3px 10px; font: bold 10px Verdana, sans-serif; white-space: nowrap; border-radius: 0;
+}
+.Button:hover:not(:disabled) { background: var(--button-hover); color: #fff; text-decoration: none; }
+.Button:disabled { opacity: .5; cursor: default; }
+.Button.Green { background: linear-gradient(#6fd165, #3fa53a); border-color: #2b7a27; color: #fff; }
+.Button.Big { font-size: 13px; padding: 6px 16px; }
+h2.PageTitle { font: normal 2.2em/1 Verdana, sans-serif; margin: 14px 0 8px; }
+input[type=text], input[type=password], input[type=search], textarea, select {
+  font: 11px Verdana, sans-serif; padding: 3px; border: 1px solid #7f9db9; background: #fff; color: #000; max-width: 100%;
+}
+textarea { width: 100%; resize: vertical; }
+.Form .Row { margin-bottom: 8px; }
+.Form label { display: block; font-weight: bold; margin-bottom: 2px; }
+.Form .Hint, .Hint { color: var(--muted); font-size: .9em; }
+.Error { color: var(--red); font-weight: bold; }
+.Success { color: var(--play-dark); font-weight: bold; }
+.Label { color: var(--muted); font-size: .9em; }
+.Detail { font-size: .9em; }
+.DetailHighlighted { color: var(--red); font-weight: bold; font-size: .9em; }
+.Empty { padding: 24px; text-align: center; color: var(--muted); font-size: 12px; }
+.Loading { color: var(--muted); }
+.Columns { display: flex; gap: 12px; align-items: flex-start; padding-top: 10px; }
+.Columns > .Left { flex: 0 0 300px; min-width: 0; }
+.Columns > .Right { flex: 1; min-width: 0; }
+.Online { color: #2b9a2b; font-weight: bold; }
+.Offline { color: #888; }
+.Dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: #aaa; margin-right: 3px; vertical-align: middle; }
+.Dot.on { background: #31c831; box-shadow: 0 0 3px #31c831; }
+.Pager { display: flex; gap: 10px; justify-content: center; align-items: center; margin: 10px 0; font-weight: bold; }
+.Tabs { display: flex; gap: 2px; border-bottom: 2px solid var(--nav); margin: 8px 0 0; flex-wrap: wrap; }
+.Tabs a, .Tabs a:visited {
+  padding: 4px 10px; background: var(--button); color: var(--button-text); font-weight: bold; border: 1px solid #8aa7c6; border-bottom: 0;
+}
+.Tabs a.active { background: var(--nav); color: #fff; }
+
+/* ---------- Modal ---------- */
+.Modal { position: fixed; inset: 0; background: rgba(0,0,0,.35); display: flex; align-items: center; justify-content: center; z-index: 100; padding: 16px; }
+.ModalBox { background: #fff; border: 2px solid var(--nav); width: 100%; max-width: 380px; box-shadow: 4px 4px 0 rgba(0,0,0,.3); }
+.ModalBody { padding: 14px 12px; font-size: 11px; line-height: 1.5; }
+.ModalButtons { padding: 0 12px 12px; text-align: right; }
+
+/* ---------- Games page ---------- */
+#GamesContainer { display: flex; gap: 14px; padding-top: 10px; align-items: flex-start; }
+.DisplayFilters { width: 170px; flex: 0 0 170px; }
+.DisplayFilters h4 { font: normal 1.3em Verdana, sans-serif; letter-spacing: .1em; margin: 12px 0 6px; }
+.DisplayFilters ul { list-style: none; margin: 0 0 10px; padding: 0; }
+.DisplayFilters li { margin-bottom: .5em; }
+.DisplayFilters li a { font-size: 1.1em; }
+.DisplayFilters li a.active { font-weight: bold; color: var(--text); }
+.DisplayFilters li a.active::before { content: ""; display: inline-block; width: 9px; height: 9px; margin-right: 5px; background: #e05d71; }
+.DisplayFilters input[type=search] { width: 100%; border: 1px dashed #777; }
+#Games { flex: 1; min-width: 0; }
+.HeaderPager { display: flex; justify-content: space-between; align-items: baseline; margin: 6px 0 12px; }
+.HeaderPager .Title { font-size: 14px; font-weight: bold; }
+.GameList { display: grid; grid-template-columns: repeat(auto-fill, minmax(162px, 1fr)); gap: 16px 18px; }
+.Game { width: 162px; }
+.GameThumbnail {
+  display: block; width: 160px; height: 100px; border: 1px solid #000; overflow: hidden; background: #6e99c9; position: relative;
+}
+.GameThumbnail img, .GameThumbnail svg { width: 160px; height: 100px; display: block; }
+.GameThumbnail .New { position: absolute; right: 2px; top: 2px; }
+.GameDetails { padding: 2px 0 6px; }
+.GameName a { font-size: .95em; font-weight: bold; line-height: 1.5em; }
+
+/* ---------- Place page ---------- */
+#ItemContainer { display: flex; gap: 16px; padding-top: 10px; flex-wrap: wrap; }
+#ItemContainer .Main { flex: 1 1 440px; min-width: 0; }
+#ItemContainer .Side { flex: 0 0 300px; min-width: 0; }
+.PlaceThumb { width: 100%; max-width: 420px; aspect-ratio: 420 / 230; border: 1px solid #000; display: block; background: #6e99c9; }
+.PlaceThumb img, .PlaceThumb svg { width: 100%; height: 100%; display: block; object-fit: cover; }
+.PlayButton {
+  display: block; width: 100%; max-width: 420px; margin: 10px 0; cursor: pointer;
+  font: bold 22px Verdana, sans-serif; color: #fff !important; text-align: center; padding: 10px;
+  background: linear-gradient(#5fd157, var(--play) 50%, var(--play-dark));
+  border: 2px solid #1d5a1a; border-radius: 6px; box-shadow: 0 2px 0 #1d5a1a, inset 0 1px 0 rgba(255,255,255,.5);
+  text-shadow: 0 1px 0 #1d5a1a;
+}
+.PlayButton:hover { filter: brightness(1.08); text-decoration: none; }
+.PlayButton small { display: block; font: normal 10px Verdana, sans-serif; }
+.Stats { border-top: 1px dashed #555; border-left: 1px dashed #555; border-right: 1px dashed #555; padding: 4px 8px; line-height: 1.8em; letter-spacing: .05em; color: var(--muted); }
+.Stats:last-child { border-bottom: 1px dashed #555; }
+.Description { font-size: 11px; line-height: 1.5; white-space: pre-wrap; margin: 0; padding: 10px; }
+
+/* ---------- Play page (play.html) ---------- */
+#PlayContainer { padding-top: 10px; }
+.PlayerFrame {
+  position: relative; aspect-ratio: 4 / 3;
+  width: min(100%, calc((100vh - 190px) * 4 / 3)); min-width: min(100%, 320px);
+  margin: 0 auto; background: #000; border: 2px solid var(--nav);
+}
+.PlayerFrame iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
+.LoadingOverlay {
+  position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px;
+  color: #fff; font: 12px Verdana, sans-serif;
+  background: linear-gradient(#7fb1e3, #3c6c9e);
+}
+.LoadingOverlay.hidden { display: none; }
+.LoadingOverlay .LoadingTitle { font: bold 20px Verdana, sans-serif; text-shadow: 0 1px 0 #234; }
+.LoadingBar { width: min(320px, 80%); height: 14px; border: 1px solid #fff; background: rgba(255,255,255,.2); }
+.LoadingBar div { height: 100%; width: 0; background: #fff; transition: width .4s; }
+.LoadingSpin { width: 46px; height: 46px; background: #d32b2b; border-radius: 5px; animation: spin 1.4s linear infinite; box-shadow: 0 3px 0 #5a1010; }
+@keyframes spin { to { transform: rotate(360deg); } }
+.PlayBar { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; justify-content: space-between; margin: 8px 0; }
+.PlayBar .Hint { color: var(--muted); }
+/* Inside the RobloxApp.exe desktop window the game page drops the site chrome and fills the window. */
+html.rb-embedded.rb-play #Header, html.rb-embedded.rb-play #FooterSlot, html.rb-embedded.rb-play #BackLink { display: none; }
+html.rb-embedded.rb-play body { background: #000; }
+html.rb-embedded.rb-play #Container { background: #1b2a3a; color: #dde8f4; padding: 0 6px; min-height: 100vh; }
+html.rb-embedded.rb-play #PlayContainer { padding-top: 0; }
+html.rb-embedded.rb-play .PlayBar { margin: 4px 0; }
+html.rb-embedded.rb-play .PlayBar .Hint, html.rb-embedded.rb-play .Label { color: #a9bdd2; }
+html.rb-embedded.rb-play .PlayerFrame { width: min(100%, calc((100vh - 76px) * 4 / 3)); border-color: #000; }
+
+/* ---------- Profile ---------- */
+.ProfileAvatar { display: flex; justify-content: center; padding: 8px 0; background: linear-gradient(#fff, #eaf2fb); }
+.ProfileName { font-size: 18px; font-weight: bold; margin: 0; }
+.ProfileStatus { font-style: italic; color: #333; margin: 4px 0; }
+.Blurb { font-size: 11px; line-height: 1.5; word-wrap: break-word; }
+.FriendGrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); gap: 8px; padding: 10px; }
+.Friend { text-align: center; font-size: 10px; word-break: break-all; }
+.Friend .Thumb { width: 100px; height: 100px; margin: 0 auto 2px; border: 1px solid #b7c9dd; background: #fff; overflow: hidden; display: block; }
+.Friend .Actions { margin-top: 3px; display: flex; gap: 3px; justify-content: center; flex-wrap: wrap; }
+.Friend .Actions .Button { padding: 2px 5px; font-size: 9px; }
+.Thumb .AvatarStage { margin: 0 auto; }
+.PlaceList { list-style: none; margin: 0; padding: 6px 10px; }
+.PlaceList li { padding: 4px 0; border-bottom: 1px dashed #c9d6e3; display: flex; justify-content: space-between; gap: 8px; }
+.StatTable { width: 100%; border-collapse: collapse; }
+.StatTable td { padding: 3px 10px; border-bottom: 1px dashed #c9d6e3; }
+.StatTable td:first-child { color: var(--muted); width: 45%; }
+
+/* ---------- Home ---------- */
+.GameList.Home { padding: 10px; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 12px; }
+.GameList.Home .Game { width: auto; }
+.GameList.Home .GameThumbnail, .GameList.Home .GameThumbnail img, .GameList.Home .GameThumbnail svg { width: 100%; height: auto; aspect-ratio: 160 / 100; }
+.PeopleList { list-style: none; margin: 0; padding: 6px 10px; }
+.PeopleList li { display: flex; gap: 8px; align-items: center; padding: 4px 0; border-bottom: 1px dashed #c9d6e3; }
+.PeopleList .Head { width: 48px; height: 48px; flex: none; border: 1px solid #b7c9dd; background: #fff; overflow: hidden; display: block; }
+.Columns.Tight { padding-top: 0; gap: 10px; }
+.Columns.Tight > .Half { flex: 1 1 0; min-width: 0; }
+.QuickLinks { display: flex; flex-wrap: wrap; gap: 4px; }
+.GameThumbnail img { object-fit: cover; }
+.AvatarStill img, .AvatarLive canvas { display: block; }
+
+/* ---------- Forums ---------- */
+.ForumTable { width: 100%; border-collapse: collapse; background: #fff; margin-bottom: 10px; }
+.ForumTable th { background: var(--nav); color: #fff; text-align: left; padding: 5px 8px; font-size: 11px; }
+.ForumTable td { padding: 6px 8px; border-bottom: 1px solid #d4e1ef; vertical-align: top; }
+.ForumTable tr:nth-child(even) td { background: var(--row); }
+.ForumTable .Category td { background: #c8daee !important; font-weight: bold; font-size: 11px; color: #1d3c5e; }
+.ForumTable .Num { text-align: center; white-space: nowrap; width: 70px; }
+.ForumTable .Last { width: 180px; font-size: 10px; }
+.ForumTable .BoardName { font-size: 12px; font-weight: bold; }
+.Breadcrumbs { margin: 10px 0 6px; font-size: 11px; font-weight: bold; }
+.Post { display: flex; border: 1px solid #b7c9dd; background: #fff; margin-bottom: 6px; }
+.Post .Author { flex: 0 0 150px; background: var(--row); padding: 8px; border-right: 1px solid #b7c9dd; font-size: 10px; line-height: 1.6; text-align: center; }
+.Post .Author .Name { font-size: 12px; font-weight: bold; display: block; }
+.Post .Author .Thumb { width: 90px; height: 90px; margin: 4px auto; overflow: hidden; }
+.Post .Content { flex: 1; min-width: 0; padding: 8px 10px; display: flex; flex-direction: column; }
+.Post .Meta { color: var(--muted); font-size: 10px; border-bottom: 1px solid #e1e9f2; padding-bottom: 4px; margin-bottom: 6px; display: flex; justify-content: space-between; gap: 6px; }
+.Post .Body { font-size: 11px; line-height: 1.55; word-wrap: break-word; flex: 1; }
+.Post .Signature { border-top: 1px dashed #b7c9dd; margin-top: 10px; padding-top: 4px; color: #4b5d70; font-size: 10px; font-style: italic; }
+.Post .LinkButton { background: none; border: 0; color: var(--link); cursor: pointer; font: inherit; padding: 0; }
+.Sticky { color: #c00; font-weight: bold; }
+
+/* ---------- Catalog ---------- */
+.ItemGrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(124px, 1fr)); gap: 12px; }
+.Item { background: #fff; border: 1px solid #c3d4e6; padding: 6px; text-align: center; font-size: 10px; display: flex; flex-direction: column; gap: 3px; }
+.Item .Pic { width: 110px; height: 110px; margin: 0 auto; display: flex; align-items: center; justify-content: center; border: 1px solid #e3ecf5;
+  background: repeating-conic-gradient(#f4f7fa 0 25%, #fff 0 50%) 0 0 / 16px 16px; cursor: pointer; }
+.Item .Pic img { max-width: 100px; max-height: 100px; image-rendering: auto; }
+.Item .Name { font-weight: bold; font-size: 10px; min-height: 2.4em; word-break: break-word; }
+.Item .Owned { color: var(--play-dark); font-weight: bold; }
+.Item.Equipped { border-color: #3fa53a; box-shadow: 0 0 0 2px #9fe39a inset; }
+.Price.Free { color: #c00; font-weight: bold; }
+.ItemDetail { display: flex; gap: 14px; flex-wrap: wrap; }
+.ItemDetail .Big { width: 200px; height: 200px; border: 1px solid #c3d4e6; display: flex; align-items: center; justify-content: center; background: #fff; }
+
+/* ---------- Avatar editor ---------- */
+.AvatarStage { position: relative; perspective: 900px; user-select: none; touch-action: pan-y; }
+.AvatarStage.Draggable { cursor: grab; }
+.av-rig { position: absolute; left: 0; top: 0; transform-style: preserve-3d; }
+.av-part { position: absolute; left: 0; top: 0; transform-style: preserve-3d; }
+.av-face { position: absolute; backface-visibility: hidden; }
+.av-head .av-face { border-radius: 22%; }
+.av-head .av-top, .av-head .av-bottom { border-radius: 40%; }
+.av-hat { position: absolute; pointer-events: none; object-fit: contain; max-width: none; }
+.BodyPicker { display: grid; grid-template-columns: 26px 52px 26px; grid-template-rows: 30px 52px 52px; gap: 2px; justify-content: center; margin: 8px auto; }
+.BodyPicker button { border: 1px solid #333; cursor: pointer; padding: 0; }
+.BodyPicker button.sel { outline: 3px solid #ffd200; outline-offset: 0; z-index: 1; }
+.BodyPicker .bp-head { grid-column: 2; grid-row: 1; width: 30px; justify-self: center; border-radius: 6px; }
+.BodyPicker .bp-torso { grid-column: 2; grid-row: 2; }
+.BodyPicker .bp-rightArm { grid-column: 1; grid-row: 2; }
+.BodyPicker .bp-leftArm { grid-column: 3; grid-row: 2; }
+.BodyPicker .bp-legs { grid-column: 2; grid-row: 3; display: grid; grid-template-columns: 1fr 1fr; gap: 2px; border: 0 !important; background: none !important; }
+.BodyPicker .bp-legs button { height: 100%; }
+.Palette { display: grid; grid-template-columns: repeat(8, 22px); gap: 3px; justify-content: center; }
+.Palette button { width: 22px; height: 22px; border: 1px solid #333; cursor: pointer; padding: 0; }
+.Palette button.sel { outline: 2px solid #000; outline-offset: 1px; }
+.Wearing { display: flex; flex-wrap: wrap; gap: 6px; padding: 8px; }
+.Wearing .Chip { border: 1px solid #c3d4e6; background: #fff; padding: 3px; width: 64px; text-align: center; font-size: 9px; }
+.Wearing .Chip img { width: 56px; height: 56px; object-fit: contain; display: block; margin: 0 auto; }
+
+/* ---------- GeoCities touches ---------- */
+.HitCounter { display: inline-flex; gap: 1px; background: #000; padding: 2px; border: 2px inset #888; vertical-align: middle; }
+.HitCounter span {
+  display: inline-block; width: 13px; height: 18px; font: bold 14px/18px "Courier New", monospace; text-align: center; color: #7CFC00;
+  background: linear-gradient(#222, #000 50%, #222); text-shadow: 0 0 4px #7CFC00;
+}
+.UnderConstruction {
+  display: inline-flex; align-items: center; gap: 6px; padding: 4px 8px; font: bold 11px Verdana, sans-serif; color: #000;
+  background: repeating-linear-gradient(-45deg, #ffd200 0 10px, #111 10px 20px); border: 2px solid #000;
+}
+.UnderConstruction b { background: #ffd200; padding: 2px 4px; border: 1px solid #000; }
+.UnderConstruction .Digger { width: 20px; height: 20px; animation: dig .6s steps(2) infinite; }
+@keyframes dig { 50% { transform: rotate(-20deg); } }
+.Blink { animation: blink 1s steps(1) infinite; }
+@keyframes blink { 50% { visibility: hidden; } }
+@media (prefers-reduced-motion: reduce) { .Blink, .UnderConstruction .Digger { animation: none; } }
+.New {
+  display: inline-block; background: #ff2a2a; color: #ffff00; font: bold 9px Verdana, sans-serif; padding: 1px 4px;
+  transform: rotate(-8deg); border: 1px solid #900; box-shadow: 1px 1px 0 #000;
+}
+.Rainbow {
+  background: linear-gradient(90deg, #f00, #f80, #fd0, #0c0, #09f, #60f, #c0f); -webkit-background-clip: text; background-clip: text; color: transparent;
+  font-weight: bold;
+}
+hr.Rainbow { height: 4px; border: 0; background: linear-gradient(90deg, #f00, #f80, #fd0, #0c0, #09f, #60f, #c0f); }
+.Badges { display: flex; flex-wrap: wrap; gap: 4px; justify-content: center; margin: 8px 0; }
+.Badge88 {
+  width: 88px; height: 31px; display: inline-flex; flex-direction: column; justify-content: center; align-items: center;
+  font: 8px/1.1 Verdana, sans-serif; border: 1px solid #000; box-shadow: inset 1px 1px #fff8, inset -1px -1px #0006; overflow: hidden;
+}
+.Badge88 b { font: bold 11px/1.1 "Arial Black", Verdana, sans-serif; }
+.b-now { background: linear-gradient(#d32b2b, #8d1b1b); color: #fff; }
+.b-now b { color: #ffd84a; }
+.b-notepad { background: #fff; color: #000; }
+.b-notepad b { color: #00007f; }
+.b-res { background: #000; color: #0f0; font-family: "Courier New", monospace; }
+.b-lua { background: linear-gradient(#00007f, #3333aa); color: #fff; }
+.b-wine { background: linear-gradient(#7a1440, #a3204f); color: #ffd6e6; }
+.Webring { display: inline-block; border: 2px ridge #c0c0c0; background: #fff; padding: 4px 10px; margin: 8px 0 0; font-size: 10px; }
+.Webring .RingName { font-weight: bold; color: #800080; margin: 0 8px; }
+
+/* ---------- Footer ---------- */
+#Footer { text-align: center; margin-top: 18px; font-size: 9px; color: var(--muted); }
+#Footer .FooterNav { font-size: 10px; margin-bottom: 4px; }
+#Footer .FooterNav a { margin: 0 4px; }
+#Footer p { line-height: 1.5; }
+
+@media (max-width: 640px) {
+  #Container { border: 0; padding: 0 8px 10px; }
+  #Banner { padding: 8px; }
+  #Logo .word { font-size: 24px; }
+  .Navigation li a, .Navigation li a:visited { font-size: 13px; padding: 0 7px; }
+  #GamesContainer, .Columns { flex-direction: column; }
+  .Columns > .Left, .Columns > .Right { flex-basis: auto; width: 100%; }
+  .DisplayFilters { width: 100%; flex-basis: auto; }
+  .GameList { grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 12px; }
+  .Game { width: auto; }
+  .GameThumbnail, .GameThumbnail img, .GameThumbnail svg { width: 100%; height: auto; aspect-ratio: 160 / 100; }
+  #ItemContainer .Side { flex-basis: 100%; }
+  .Post { flex-direction: column; }
+  .Post .Author { flex-basis: auto; border-right: 0; border-bottom: 1px solid #b7c9dd; display: flex; gap: 8px; align-items: center; text-align: left; }
+  .Post .Author .Thumb { width: 50px; height: 50px; margin: 0; }
+  .ForumTable .Last, .ForumTable .Num.Hide { display: none; }
+}
+
+/* Place thumbnails: real screenshot over the drawn fallback */
+.ThumbWrap { position: relative; display: block; width: 100%; height: 100%; }
+.ThumbWrap > svg { position: absolute; inset: 0; width: 100% !important; height: 100% !important; }
+.ThumbWrap > img.ThumbShot { position: absolute; inset: 0; width: 100% !important; height: 100% !important; object-fit: cover; display: block; }
+.GameThumbnail .ThumbWrap { width: 160px; height: 100px; }
+.GameList.Home .GameThumbnail .ThumbWrap, .GameList.Home .GameThumbnail { width: 100%; height: auto; aspect-ratio: 160 / 100; }
+@media (max-width: 640px) { .GameThumbnail .ThumbWrap { width: 100%; height: auto; aspect-ratio: 160 / 100; } }

@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Player</title>
+<!-- Embedded by play.html. Keeps the element ids boxedwine-shell.js expects; hides its demo UI. -->
+<link href="boxedwine.css" rel="stylesheet">
+<style>
+  html, body { background: #000; }
+  #loading, #controls, #console { display: none !important; }
+  #dropzone { padding: 0; }
+  div.emscripten_border { border: 0; }
+  canvas.emscripten { outline: none; }
+  .modalDialog { display: none; }
+  /* Fill mode (?pixelExact=1): the canvas fills this frame edge to edge. play.html sizes the
+     emulated screen to the frame × devicePixelRatio, so at the initial size every emulated pixel
+     is one screen pixel; the desktop locks the window's aspect ratio, so resizing never letterboxes. */
+  html.pixel-exact #app, html.pixel-exact #dropzone { width: 100vw; height: 100vh; padding: 0; overflow: hidden; }
+  html.pixel-exact div.emscripten_border {
+    width: 100vw !important; height: 100vh !important; aspect-ratio: auto !important; margin: 0 !important;
+  }
+  html.pixel-exact canvas.emscripten { width: 100% !important; height: 100% !important; image-rendering: pixelated; }
+</style>
+<script>
+  if (new URLSearchParams(location.search).get("pixelExact") === "1") document.documentElement.classList.add("pixel-exact");
+</script>
+</head>
+<body>
+<div id="loading">
+  <figure id="spinner"><div class="spinner"></div></figure>
+  <div id="status" class="emscripten">Downloading...</div>
+  <div class="emscripten"><progress id="progress" max="100" value="0"></progress></div>
+</div>
+<div id="app">
+  <div id="controls" class="emscripten">
+    <button onclick="start()" id="startbtn" style="display:none">Start</button>
+    <button id="uploadbtn" style="display:none">Add File(s)</button>
+    <input id="upload" type="file" multiple style="display:none">
+    <button id="downloadbtn" style="display:none">Get File(s)</button>
+    <button onclick="saveJitModules()" id="savejitbtn" style="display:none">Save JIT Cache</button>
+    <a href="#openModal" id="modalLink" style="display:none">Open</a>
+    <a href="#openModalExe" id="modalLinkExe" style="display:none">Open</a>
+    <span id="sound-checkbox" style="display:none"><input id="soundToggle" type="checkbox" onclick="toggleSound()">Enable Sound</span>
+    <input id="pointerLock" type="checkbox">
+    <input id="showConsole" type="checkbox" onclick="toggleConsole()">
+  </div>
+  <div id="dropzone">
+    <div class="emscripten_border">
+      <canvas class="emscripten" id="canvas" tabindex="0" oncontextmenu="event.preventDefault()"></canvas>
+      <canvas class="emscripten boxedwine-webgl-canvas" id="boxedwine-webgl-canvas-0" oncontextmenu="event.preventDefault()"></canvas>
+    </div>
+  </div>
+  <div id="console"><textarea class="emscripten" id="output" rows="8" style="display:none"></textarea></div>
+  <div id="openModal" class="modalDialog"><div><div><input id="selectedItem" readonly></div><div id="tree"></div><h3 id="loadStatus"></h3></div></div>
+  <div id="openModalExe" class="modalDialog"><div><a href="#close" id="openModalExeClick">X</a><div id="message"></div><div id="items"></div></div></div>
+</div>
+<script src="boxedwine-shell.js"></script>
+<script src="boxedwine.js" async></script>
+</body>
+</html>

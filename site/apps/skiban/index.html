@@ -1,0 +1,24 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SkiBan</title>
+<link rel="icon" href="icon.png">
+<link rel="stylesheet" href="../_lib/win.css">
+<style>
+  body { display: flex; flex-direction: column; }
+  #Slope { flex: 1; display: block; width: 100%; min-height: 0; background: #fff; image-rendering: pixelated; cursor: crosshair; touch-action: none; }
+  #Stats { position: absolute; right: 6px; top: 26px; background: #fff; border: 1px solid #000; padding: 2px 6px; font: 12px "Courier New", monospace; line-height: 15px; white-space: pre; pointer-events: none; }
+  #Pause { position: absolute; left: 50%; top: 40%; transform: translate(-50%, -50%); background: #fff; border: 1px solid #000; padding: 6px 12px; font: bold 13px Arial, sans-serif; pointer-events: none; }
+</style>
+<script src="../_lib/app.js"></script>
+</head>
+<body>
+<div id="Menu"></div>
+<canvas id="Slope"></canvas>
+<div id="Stats"></div>
+<div id="Pause" hidden>Paused - press any key</div>
+<script src="ski.js"></script>
+</body>
+</html>

@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Minesweeper</title>
+<link rel="icon" href="icon.png">
+<link rel="stylesheet" href="../_lib/win.css">
+<style>
+  body { display: flex; flex-direction: column; background: #c0c0c0; }
+  #Board { display: block; image-rendering: pixelated; touch-action: none; cursor: default; }
+  #Wrap { flex: 1; overflow: auto; }
+  html.mono #Board { filter: grayscale(1) contrast(1.6); }
+  .best td { padding: 1px 12px 1px 0; white-space: nowrap; }
+  .dlg input[type="number"] { width: 52px; }
+  .custom { display: grid; grid-template-columns: auto 60px; gap: 8px 10px; align-items: center; }
+</style>
+<script src="../_lib/app.js"></script>
+</head>
+<body>
+<div id="Menu"></div>
+<div id="Wrap"><canvas id="Board" aria-label="Minesweeper board"></canvas></div>
+<script src="mine.js"></script>
+</body>
+</html>

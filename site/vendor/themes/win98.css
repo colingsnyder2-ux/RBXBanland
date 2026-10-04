@@ -1,0 +1,2 @@
+/* Loads the vendor chrome for the win98 theme into a low-priority cascade layer (our desktop.css always wins). */
+@import url("../98css/98.css") layer(vendor);

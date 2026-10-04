@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, user-scalable=no">
+<title>3D Pipes</title>
+<link rel="icon" href="icon.png">
+<link rel="stylesheet" href="../_lib/win.css">
+<style>
+  html, body { background: #000; overflow: hidden; }
+  #canvas-container { position: absolute; inset: 0; }
+  #canvas-container canvas { position: absolute; left: 0; top: 0; }
+  /* Settings bar: slides in when the mouse is near the top, like a screensaver preview's Settings button. */
+  .bar { position: absolute; left: 0; right: 0; top: 0; z-index: 2; display: flex; gap: 6px; align-items: center; padding: 4px 6px;
+    background: var(--face); box-shadow: var(--raised-soft); transform: translateY(-100%); transition: transform .15s; }
+  body:hover .bar.peek, .bar:focus-within { transform: none; }
+  .bar .btn { min-width: 0; }
+  .bar select { height: 21px; padding: 1px; }
+  .bar .hint { margin-left: auto; color: var(--gray-text); }
+  [hidden] { display: none !important; }
+</style>
+<script src="../_lib/app.js"></script>
+<script src="vendor/pipes/lib/three.min.js"></script>
+<script src="vendor/pipes/lib/OrbitControls.js"></script>
+<script src="vendor/pipes/lib/TeapotBufferGeometry.js"></script>
+</head>
+<body>
+<div class="bar" id="Bar">
+  <button class="btn" id="fullscreen-button">Full Screen</button>
+  <label>Joints: <select id="joint-types">
+    <option value="elbow">Elbow</option><option value="ball">Ball</option><option value="mixed" selected>Mixed</option><option value="cycle">Cycle</option>
+  </select></label>
+  <button class="btn" id="toggle-controls"><span class="normal-controls-enabled">Control camera</span><span hidden class="orbit-controls-enabled">Let go of camera</span></button>
+  <span class="hint"><span class="normal-controls-enabled">Click: new view &middot; Right-click: restart</span><span hidden class="orbit-controls-enabled">Drag to orbit &middot; wheel to zoom</span></span>
+</div>
+<div id="canvas-container">
+  <canvas id="canvas-webgl"></canvas>
+  <canvas id="canvas-2d" style="pointer-events: none"></canvas>
+</div>
+<script src="vendor/pipes/screensaver.js"></script>
+<script>
+  // Show the settings bar only when the pointer is near the top edge.
+  (() => {
+    const bar = document.getElementById("Bar");
+    addEventListener("pointermove", (e) => bar.classList.toggle("peek", e.clientY < 40));
+    addEventListener("pointerleave", () => bar.classList.remove("peek"));
+    document.addEventListener("contextmenu", (e) => e.preventDefault());
+  })();
+</script>
+</body>
+</html>

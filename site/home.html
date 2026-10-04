@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>My RBXBanland - RBXBanland</title>
+<link rel="stylesheet" href="css/site.css">
+<link rel="icon" href="img/favicon.svg" type="image/svg+xml">
+</head>
+<body>
+<div id="Container">
+  <header id="Header"></header>
+  <main id="Main"><div class="Empty">Loading&hellip;</div></main>
+  <div id="FooterSlot"></div>
+</div>
+<script src="js/common.js"></script>
+<script src="js/avatar.js"></script>
+<script>
+(async function () {
+  const me = await RB.page("My RBXBanland");
+  if (!me) return;
+  const main = document.getElementById("Main");
+  const [maps, items, friendsData, forums, guestbook, profile] = await Promise.all([
+    RB.places(), RB.items(),
+    RB.api("friends").catch(() => ({ friends: [], incoming: [] })),
+    RB.api("forums").catch(() => ({ categories: [] })),
+    RB.api("guestbook").catch(() => ({ entries: [] })),
+    RB.api("users/" + encodeURIComponent(me.username)).then((d) => d.profile).catch(() => null),
+  ]);
+  const byId = new Map(maps.map((m) => [m.id, m]));
+  const game = (m, extra = "") => `
+    <div class="Game">
+      <a class="GameThumbnail" href="game.html?id=${encodeURIComponent(m.id)}" title="${RB.esc(m.name)}">${RB.thumb(m)}${m.playing.length ? '<span class="New">LIVE!</span>' : ""}</a>
+      <div class="GameDetails"><div class="GameName"><a href="game.html?id=${encodeURIComponent(m.id)}">${RB.esc(m.name)}</a></div>
+        <div><span class="Label">${RB.esc(m.era)}</span>${extra}</div></div>
+    </div>`;
+
+  const featuredIds = ["crossroads", "sword-fight-on-the-heights", "rocket-arena", "happy-home-in-robloxia", "chaos-canyon", "haunted-mansion"];
+  const featured = featuredIds.map((f) => maps.filter((m) => m.id.includes(f)).sort((a, b) => b.year - a.year)[0]).filter(Boolean).slice(0, 6);
+  const recent = (profile?.visited || []).map((v) => byId.get(v.placeId) && { ...byId.get(v.placeId), last: v.last, count: v.count }).filter(Boolean).slice(0, 6);
+  const online = friendsData.friends.filter((f) => f.online);
+  const playingNow = maps.filter((m) => m.playing.length).sort((a, b) => b.playing.length - a.playing.length);
+  const threads = forums.categories.flatMap((c) => c.boards.map((b) => b.last && { ...b.last, board: b.name, boardId: b.id })).filter(Boolean)
+    .sort((a, b) => b.at - a.at).slice(0, 5);
+
+  main.innerHTML = `
+    <h2 class="PageTitle">Hi, ${RB.esc(me.username)}! ${RB._bonus ? '<span class="New">+' + RB._bonus.tix + " Tix today!</span>" : ""}</h2>
+    <div class="Columns">
+      <div class="Left">
+        <div class="StandardBox">
+          <div class="StandardBoxHeader"><span>My Character</span><a href="avatar.html">Change</a></div>
+          <div class="ProfileAvatar"><a href="profile.html" title="View my profile"><div id="MyAv"></div></a></div>
+          <table class="StatTable">
+            <tr><td>ROBUX</td><td class="Robux">R$ ${RB.num(me.robux)}</td></tr>
+            <tr><td>Tickets</td><td class="Tix">${RB.num(me.tix)} Tix</td></tr>
+            <tr><td>Friends</td><td><a href="friends.html">${friendsData.friends.length}</a>${friendsData.incoming.length ? ` <span class="New">${friendsData.incoming.length} new</span>` : ""}</td></tr>
+            <tr><td>Member since</td><td>${RB.date(me.joined)}</td></tr>
+          </table>
+          <div class="BoxBody QuickLinks">
+            <a class="Button" href="profile.html">My Profile</a> <a class="Button" href="catalog.html">Catalog</a> <a class="Button" href="settings.html">Settings</a>
+          </div>
+        </div>
+        <div class="StandardBox">
+          <div class="StandardBoxHeader"><span>Friends Online (${online.length})</span><a href="friends.html">All friends</a></div>
+          ${online.length ? `<ul class="PeopleList">${online.map((f, i) => `
+            <li><a class="Head" href="profile.html?u=${encodeURIComponent(f.username)}" data-head="${i}"></a>
+              <div>${RB.userLink(f.username)}<br>${f.playing ? `<span class="DetailHighlighted">Playing <a href="game.html?id=${encodeURIComponent(f.playing.placeId)}">${RB.esc(f.playing.name)}</a></span>` : '<span class="Online">Online</span>'}</div></li>`).join("")}</ul>`
+            : `<div class="Empty">${friendsData.friends.length ? "None of your friends are online right now." : 'No friends yet. <a href="friends.html">Find some!</a>'}</div>`}
+        </div>
+      </div>
+      <div class="Right">
+        ${playingNow.length ? `<div class="StandardBox"><div class="StandardBoxHeader"><span>Playing Right Now <span class="Blink">&#9679;</span></span></div>
+          <div class="GameList Home">${playingNow.slice(0, 6).map((m) => game(m, ` &middot; <span class="DetailHighlighted">${m.playing.length} playing</span>`)).join("")}</div></div>` : ""}
+        <div class="StandardBox">
+          <div class="StandardBoxHeader"><span>Featured Games</span><a href="games.html?sort=featured">See all</a></div>
+          <div class="GameList Home">${featured.map((m) => game(m, ` &middot; ${RB.num(m.visits)} visits`)).join("")}</div>
+        </div>
+        <div class="StandardBox">
+          <div class="StandardBoxHeader"><span>Recently Played</span><a href="games.html?sort=mine">More</a></div>
+          ${recent.length ? `<div class="GameList Home">${recent.map((m) => game(m, ` &middot; ${RB.ago(m.last)}`)).join("")}</div>`
+            : `<div class="Empty">You haven't played anything yet. <a href="games.html">Pick a game!</a></div>`}
+        </div>
+        <div class="Columns Tight">
+          <div class="StandardBox Half">
+            <div class="StandardBoxHeader"><span>Forum Activity</span><a href="forums.html">Forums</a></div>
+            ${threads.length ? `<ul class="PlaceList">${threads.map((t) => `<li><span><a href="forums.html?thread=${t.threadId}&page=last">${RB.esc(t.title)}</a><br><span class="Label">in ${RB.esc(t.board)}</span></span><span class="Label">${RB.ago(t.at)}<br>by ${RB.esc(t.by || "?")}</span></li>`).join("")}</ul>`
+              : `<div class="Empty">No posts yet. <a href="forums.html">Start a thread!</a></div>`}
+          </div>
+          <div class="StandardBox Half">
+            <div class="StandardBoxHeader"><span>Guestbook</span><a href="guestbook.html">Sign it!</a></div>
+            ${guestbook.entries.length ? `<ul class="PlaceList">${guestbook.entries.slice(0, 4).map((g) => `<li><span>&ldquo;${RB.esc(g.message.slice(0, 70))}${g.message.length > 70 ? "&hellip;" : ""}&rdquo;</span><span class="Label">${RB.esc(g.username)}</span></li>`).join("")}</ul>`
+              : `<div class="Empty">Nobody has signed yet!</div>`}
+          </div>
+        </div>
+        <div class="StandardBox"><div class="StandardBoxHeader">RBXBanland News</div><div class="BoxBody">
+          <p><span class="New">NEW!</span> <b>Real 3D avatars.</b> Hats, heads, faces and clothes now render like the real thing. Dress up in <a href="avatar.html">Avatar</a>.</p>
+          <p><span class="Blink">&#9733;</span> Log in every day for <b class="Tix">Tix</b> and <b class="Robux">ROBUX</b>. Playing places earns more Tix.</p>
+          <p>Chat with friends in <b>RBXChat</b> on the desktop. Don't forget to sign the <a href="guestbook.html">Guestbook</a>!!</p>
+        </div></div>
+      </div>
+    </div>`;
+
+  RBAvatar.render(document.getElementById("MyAv"), me.avatar, items, { scale: 36, angle: -20, still: true });
+  main.querySelectorAll("[data-head]").forEach((el) => RBAvatar.headshot(el, online[el.dataset.head].avatar, items, 48));
+})();
+</script>
+</body>
+</html>

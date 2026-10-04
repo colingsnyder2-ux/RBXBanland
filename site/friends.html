@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Friends - RBXBanland</title>
+<link rel="stylesheet" href="css/site.css">
+<link rel="icon" href="img/favicon.svg" type="image/svg+xml">
+</head>
+<body>
+<div id="Container">
+  <header id="Header"></header>
+  <main id="Main">
+    <h2 class="PageTitle">Friends</h2>
+    <div class="Columns">
+      <div class="Right">
+        <div class="StandardBox" id="IncomingBox" hidden>
+          <div class="StandardBoxHeader"><span>Friend Requests <span class="New Blink">NEW!</span></span></div>
+          <div class="FriendGrid" id="Incoming"></div>
+        </div>
+        <div class="StandardBox">
+          <div class="StandardBoxHeader"><span id="FriendsTitle">My Friends</span></div>
+          <div class="FriendGrid" id="Friends"><div class="Empty">Loading&hellip;</div></div>
+        </div>
+        <div class="StandardBox" id="OutgoingBox" hidden>
+          <div class="StandardBoxHeader">Requests You Sent</div>
+          <div class="FriendGrid" id="Outgoing"></div>
+        </div>
+      </div>
+      <div class="Left">
+        <div class="StandardBox">
+          <div class="StandardBoxHeader">Find People</div>
+          <div class="BoxBody">
+            <form id="SearchForm"><input type="search" id="Q" placeholder="Username" maxlength="20" aria-label="Search users"> <button class="Button">Search</button></form>
+            <ul class="PlaceList" id="People"></ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+  <div id="FooterSlot"></div>
+</div>
+<script src="js/common.js"></script>
+<script src="js/avatar.js"></script>
+<script>
+(async function () {
+  const me = await RB.page("Friends");
+  if (!me) return;
+  const items = await RB.items();
+  const $ = (id) => document.getElementById(id);
+
+  function cards(list, buttons) {
+    return list.map((f) => `
+      <div class="Friend" data-user="${RB.esc(f.username)}">
+        <a class="Thumb" href="profile.html?u=${encodeURIComponent(f.username)}"><div data-av></div></a>
+        <span class="Dot${f.online ? " on" : ""}" title="${f.online ? "Online" : "Offline"}"></span>${RB.userLink(f.username)}
+        ${f.status ? `<div class="Label">&ldquo;${RB.esc(f.status.slice(0, 40))}&rdquo;</div>` : ""}
+        <div class="Actions">${buttons}</div>
+      </div>`).join("");
+  }
+  function avatars(el, list) {
+    el.querySelectorAll("[data-av]").forEach((d, i) => RBAvatar.render(d, list[i].avatar, items, { scale: 15, angle: -18, still: true }));
+  }
+
+  async function load() {
+    const d = await RB.api("friends");
+    $("FriendsTitle").textContent = `My Friends (${d.friends.length})`;
+    $("Friends").innerHTML = d.friends.length ? cards(d.friends, `<button class="Button" data-act="remove" data-confirm="1">Unfriend</button>`)
+      : `<div class="Empty">You don't have any friends yet :( Search for people on the right.</div>`;
+    avatars($("Friends"), d.friends);
+    $("IncomingBox").hidden = !d.incoming.length;
+    $("Incoming").innerHTML = cards(d.incoming, `<button class="Button Green" data-act="accept">Accept</button><button class="Button" data-act="remove">Decline</button>`);
+    avatars($("Incoming"), d.incoming);
+    $("OutgoingBox").hidden = !d.outgoing.length;
+    $("Outgoing").innerHTML = cards(d.outgoing, `<button class="Button" data-act="remove">Cancel</button>`);
+    avatars($("Outgoing"), d.outgoing);
+  }
+
+  async function search() {
+    const q = $("Q").value.trim();
+    const d = await RB.api("users?q=" + encodeURIComponent(q));
+    const others = d.users.filter((u) => u.username !== me.username);
+    $("People").innerHTML = others.length ? others.map((u) => `<li><span><span class="Dot${u.online ? " on" : ""}"></span>${RB.userLink(u.username)}</span>
+      <span class="Label">joined ${RB.date(u.joined)}</span></li>`).join("") : `<li class="Label">Nobody found.</li>`;
+  }
+
+  document.addEventListener("click", async (e) => {
+    const b = e.target.closest("[data-act]");
+    if (!b) return;
+    const user = b.closest("[data-user]").dataset.user;
+    if (b.dataset.confirm && !(await RB.confirm(`Remove ${user} from your friends?`, { ok: "Unfriend" }))) return;
+    b.disabled = true;
+    try { await RB.api(`friends/${encodeURIComponent(user)}/${b.dataset.act}`, { method: "POST" }); await load(); }
+    catch (ex) { RB.alert(ex.message); b.disabled = false; }
+  });
+  $("SearchForm").addEventListener("submit", (e) => { e.preventDefault(); search(); });
+  await Promise.all([load(), search()]);
+})();
+</script>
+</body>
+</html>

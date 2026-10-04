@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The page cannot be displayed</title>
+<link rel="icon" href="img/favicon.svg" type="image/svg+xml">
+<style>
+  body { margin: 0; padding: 20px; font: 8pt Verdana, Tahoma, sans-serif; background: #fff; color: #000; }
+  .wrap { max-width: 560px; }
+  h1 { font: bold 13pt Verdana, sans-serif; margin: 0 0 10px; display: flex; gap: 10px; align-items: center; }
+  .ico { width: 32px; height: 32px; border-radius: 50%; background: #fff; border: 1px solid #000; display: flex; align-items: center; justify-content: center; color: #00f; font: italic bold 20px "Times New Roman", serif; flex: none; }
+  hr { border: 0; border-top: 1px solid #c0c0c0; }
+  li { margin: 6px 0; }
+  a { color: #00f; }
+  code { font: 9pt "Courier New", monospace; word-break: break-all; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1><span class="ico">i</span>The page cannot be displayed</h1>
+  <p>The page you are looking for is currently unavailable. The Web site might be experiencing technical difficulties, or you may need to adjust your browser settings.</p>
+  <p><code id="Url"></code></p>
+  <hr>
+  <p>Please try the following:</p>
+  <ul>
+    <li>RBXBanland's browser only goes to <b>www.rbxbanland.com</b>. The rest of the internet got lost somewhere around 2009.</li>
+    <li>Click the <a href="profile.html">Home</a> button, or go to <a href="games.html">Games</a>.</li>
+    <li>Click the Back button to try another link.</li>
+  </ul>
+  <p style="color:#808080">Cannot find server or DNS Error<br>Internet Explorer</p>
+</div>
+<script>document.getElementById("Url").textContent = new URLSearchParams(location.search).get("url") || "";</script>
+</body>
+</html>

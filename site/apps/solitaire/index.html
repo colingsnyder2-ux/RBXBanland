@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Solitaire</title>
+<link rel="icon" href="icon.png">
+<link rel="stylesheet" href="../_lib/win.css">
+<style>
+  body { display: flex; flex-direction: column; }
+  #Table { flex: 1; position: relative; background: #008000; overflow: hidden; touch-action: none; }
+  html[data-os="vaporwave"] #Table { background: linear-gradient(#2b1055, #7597de); }
+  .card { position: absolute; width: 71px; height: 96px; background: url("vendor/js-solitaire/cards.png") no-repeat; cursor: default; }
+  .card.down { background-size: 71px 96px; }
+  .card.drag { z-index: 1000 !important; }
+  .card.anim { transition: left .18s ease-out, top .18s ease-out; }
+  .slot { position: absolute; width: 71px; height: 96px; border: 1px solid #000; border-radius: 3px; box-shadow: inset 1px 1px rgba(255,255,255,.18); }
+  .slot.stock::after { content: ""; position: absolute; left: 50%; top: 50%; width: 36px; height: 36px; margin: -18px 0 0 -18px; border: 5px solid #00c000; border-radius: 50%; box-sizing: border-box; }
+  .slot.stock.x::after { border: 0; width: 40px; height: 40px; margin: -20px 0 0 -20px; background: linear-gradient(45deg, transparent 44%, #ff0000 44% 56%, transparent 56%), linear-gradient(-45deg, transparent 44%, #ff0000 44% 56%, transparent 56%); }
+  #Fx { position: absolute; inset: 0; pointer-events: none; }
+  #Status { justify-content: flex-end; }
+  #Status > div { min-width: 90px; text-align: left; }
+  html.nostatus #Status { display: none; }
+  .backs { display: grid; grid-template-columns: repeat(4, 71px); gap: 10px; padding: 4px; }
+  .backs img { width: 71px; height: 96px; outline-offset: 2px; display: block; }
+  .backs img.on { outline: 2px solid var(--sel); }
+  .optgrid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .optgrid fieldset div { margin: 3px 0; }
+</style>
+<script src="../_lib/app.js"></script>
+</head>
+<body>
+<div id="Menu"></div>
+<div id="Table"><canvas id="Fx"></canvas></div>
+<div class="statusbar" id="Status"><div id="Score">Score: 0</div><div id="Time"></div></div>
+<script src="backs.js"></script>
+<script src="solitaire.js"></script>
+</body>
+</html>

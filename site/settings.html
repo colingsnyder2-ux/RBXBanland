@@ -1,0 +1,126 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Settings - RBXBanland</title>
+<link rel="stylesheet" href="css/site.css">
+<link rel="icon" href="img/favicon.svg" type="image/svg+xml">
+<style>
+  .ThemePick { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 10px; }
+  .ThemePick label { border: 2px solid #c3d4e6; padding: 6px; cursor: pointer; background: #fff; display: block; }
+  .ThemePick input:checked + .Preview { outline: 3px solid #3fa53a; }
+  .ThemePick input { position: absolute; opacity: 0; }
+  .Preview { height: 70px; position: relative; margin-bottom: 4px; overflow: hidden; }
+  .Preview i { position: absolute; left: 10px; top: 8px; width: 80px; height: 40px; background: #c0c0c0; border: 1px solid #000; }
+  .Preview i::before { content: ""; position: absolute; left: 1px; right: 1px; top: 1px; height: 7px; }
+  .Preview b { position: absolute; left: 0; right: 0; bottom: 0; height: 10px; background: #c0c0c0; border-top: 1px solid #fff; }
+  .p-win95 { background: #008080; } .p-win95 i::before { background: #000080; }
+  .p-win98 { background: #008080; } .p-win98 i::before { background: linear-gradient(90deg, #000080, #1084d0); }
+  .p-winxp { background: radial-gradient(ellipse 120% 60% at 30% 100%, #5fae32 0 45%, transparent 46%), linear-gradient(#2a6fd6, #a9d0f5 70%); }
+  .p-winxp i { background: #ece9d8; border: 2px solid #0831d9; border-radius: 4px 4px 0 0; }
+  .p-winxp i::before { background: linear-gradient(#0997ff, #0053ee 30%, #0066ff); height: 8px; left: 0; right: 0; top: 0; }
+  .p-winxp b { background: linear-gradient(#3f8cf3, #245edb 30%, #1941a5); border-top-color: #3168d5; }
+  .p-vapor { background: linear-gradient(#1a0533, #c2369a 55%, #2b0b47 56%); }
+  .p-vapor i { background: #e3c8f5; } .p-vapor i::before { background: linear-gradient(90deg, #ff3fa4, #01cdfe); }
+  .p-vapor b { background: #f3dcff; }
+  .p-win7 { background: linear-gradient(160deg, #0a3f8a, #1a73c9 45%, #0d5aa8); }
+  .p-win7 i { background: rgba(160,200,240,.7); border-radius: 4px 4px 0 0; border-color: #123; }
+  .p-win7 i::before { display: none; }
+  .p-win7 b { background: rgba(10,20,40,.8); border-top-color: #5a7; }
+</style>
+</head>
+<body>
+<div id="Container">
+  <header id="Header"></header>
+  <main id="Main">
+    <h2 class="PageTitle">Settings</h2>
+    <div class="StandardBox">
+      <div class="StandardBoxHeader">Desktop Theme</div>
+      <div class="BoxBody">
+        <div class="ThemePick" id="ThemePick">
+          <label><input type="radio" name="theme" value="win95"><div class="Preview p-win95"><i></i><b></b></div>Windows 95</label>
+          <label><input type="radio" name="theme" value="win98"><div class="Preview p-win98"><i></i><b></b></div>Windows 98 (default)</label>
+          <label><input type="radio" name="theme" value="winxp"><div class="Preview p-winxp"><i></i><b></b></div>Windows XP (Luna)</label>
+          <label><input type="radio" name="theme" value="vaporwave"><div class="Preview p-vapor"><i></i><b></b></div>Ｖａｐｏｒｗａｖｅ</label>
+          <label><input type="radio" name="theme" value="win7"><div class="Preview p-win7"><i></i><b></b></div>Windows 7 (Aero)</label>
+        </div>
+        <p class="Hint">You can also switch themes from Start &raquo; Themes. Saved in this browser.</p>
+      </div>
+    </div>
+    <div class="StandardBox">
+      <div class="StandardBoxHeader">My Profile</div>
+      <form class="BoxBody Form" id="ProfileForm">
+        <div class="Row"><label for="Status">Status <span class="Hint">(shows on your profile; up to 100 characters)</span></label>
+          <input type="text" id="Status" maxlength="100" style="width:100%"></div>
+        <div class="Row"><label for="Blurb">About me <span class="Hint">(up to 1000 characters)</span></label>
+          <textarea id="Blurb" rows="5" maxlength="1000"></textarea></div>
+        <div class="Row"><label for="Sig">Forum signature <span class="Hint">(up to 200 characters)</span></label>
+          <textarea id="Sig" rows="2" maxlength="200"></textarea></div>
+        <button class="Button Big">Save Profile</button> <span id="ProfileMsg"></span>
+      </form>
+    </div>
+    <div class="StandardBox">
+      <div class="StandardBoxHeader">Change Password</div>
+      <form class="BoxBody Form" id="PwForm">
+        <div class="Row"><label for="OldPw">Current password</label><input type="password" id="OldPw" autocomplete="current-password" required></div>
+        <div class="Row"><label for="NewPw">New password <span class="Hint">(6+ characters)</span></label><input type="password" id="NewPw" autocomplete="new-password" required minlength="6"></div>
+        <div class="Row"><label for="NewPw2">New password again</label><input type="password" id="NewPw2" autocomplete="new-password" required></div>
+        <button class="Button">Change Password</button> <span id="PwMsg"></span>
+      </form>
+    </div>
+    <div class="StandardBox">
+      <div class="StandardBoxHeader">Account</div>
+      <div class="BoxBody" id="AccountInfo"></div>
+    </div>
+  </main>
+  <div id="FooterSlot"></div>
+</div>
+<script src="js/common.js"></script>
+<script>
+(async function () {
+  const $ = (id) => document.getElementById(id);
+  // Theme works even when logged out.
+  let theme = "win98";
+  try { theme = RB.desktop()?.theme() || localStorage.getItem("rbx.theme") || "win98"; } catch { /* ignore */ }
+  const radio = document.querySelector(`[name=theme][value="${theme}"]`);
+  if (radio) radio.checked = true;
+  $("ThemePick").addEventListener("change", (e) => {
+    const t = e.target.value;
+    try { localStorage.setItem("rbx.theme", t); } catch { /* ignore */ }
+    RB.desktop()?.setTheme(t);
+  });
+
+  const me = await RB.page("Settings", { auth: false });
+  if (!me) {
+    for (const f of ["ProfileForm", "PwForm"]) $(f).innerHTML = `<p>You need to <a href="index.html" target="_top">log in</a> first.</p>`;
+    return;
+  }
+  $("Status").value = me.status;
+  $("Blurb").value = me.blurb;
+  $("Sig").value = me.signature;
+  $("AccountInfo").innerHTML = `<p>User name: <b>${RB.esc(me.username)}</b> ${me.admin ? '<span class="New">MOD</span>' : ""}</p>
+    <p>Member since ${RB.date(me.joined)} &middot; <span class="Robux">R$ ${RB.num(me.robux)}</span> &middot; <span class="Tix">Tix ${RB.num(me.tix)}</span></p>
+    <p><button class="Button" id="LogoutBtn">Log Out</button> &nbsp; <a href="about.html">About RBXBanland</a></p>`;
+  $("LogoutBtn").addEventListener("click", () => RB.logout());
+
+  $("ProfileForm").addEventListener("submit", async (e) => {
+    e.preventDefault();
+    try {
+      await RB.api("account", { method: "POST", body: { status: $("Status").value, blurb: $("Blurb").value, signature: $("Sig").value } });
+      $("ProfileMsg").innerHTML = `<span class="Success">Saved!</span>`;
+    } catch (ex) { $("ProfileMsg").innerHTML = `<span class="Error">${RB.esc(ex.message)}</span>`; }
+  });
+  $("PwForm").addEventListener("submit", async (e) => {
+    e.preventDefault();
+    if ($("NewPw").value !== $("NewPw2").value) { $("PwMsg").innerHTML = `<span class="Error">The new passwords don't match.</span>`; return; }
+    try {
+      await RB.api("account/password", { method: "POST", body: { oldPassword: $("OldPw").value, newPassword: $("NewPw").value } });
+      $("PwMsg").innerHTML = `<span class="Success">Password changed. Other sessions were logged out.</span>`;
+      e.target.reset();
+    } catch (ex) { $("PwMsg").innerHTML = `<span class="Error">${RB.esc(ex.message)}</span>`; }
+  });
+})();
+</script>
+</body>
+</html>

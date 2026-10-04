@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Profile - RBXBanland</title>
+<link rel="stylesheet" href="css/site.css">
+<link rel="icon" href="img/favicon.svg" type="image/svg+xml">
+</head>
+<body>
+<div id="Container">
+  <header id="Header"></header>
+  <main id="Main"><div class="Empty">Loading&hellip;</div></main>
+  <div id="FooterSlot"></div>
+</div>
+<script src="js/common.js"></script>
+<script src="js/avatar.js"></script>
+<script>
+(async function () {
+  const me = await RB.page("Profile");
+  if (!me) return;
+  const name = RB.param("u") || me.username;
+  const main = document.getElementById("Main");
+  let p;
+  try { p = (await RB.api("users/" + encodeURIComponent(name))).profile; } catch (e) { RB.fatal(e.message, "Profile"); return; }
+  const self = p.relation === "self";
+  document.title = (self ? "My RBXBanland" : p.username + "'s Profile") + " - RBXBanland";
+  const [items, cat] = await Promise.all([RB.items(), RB.catalog()]);
+  const mapById = new Map(cat.maps.map((m) => [m.id, m]));
+  const placeLink = (id, n) => `<a href="game.html?id=${encodeURIComponent(id)}">${RB.esc(n)}</a>`;
+
+  const actions = {
+    self: `<a class="Button" href="avatar.html">Change Avatar</a> <a class="Button" href="settings.html">Edit Profile</a>`,
+    none: `<button class="Button Green" data-act="request">Send Friend Request</button>`,
+    requested: `<span class="Label">Friend request sent.</span> <button class="Button" data-act="remove">Cancel Request</button>`,
+    incoming: `<button class="Button Green" data-act="accept">Accept Friend Request</button> <button class="Button" data-act="remove">Decline</button>`,
+    friends: `<span class="Success">&#9733; You are friends!</span> <button class="Button" data-act="remove">Remove Friend</button>`,
+  };
+
+  main.innerHTML = `
+    <h2 class="PageTitle">${self ? "My Profile" : RB.esc(p.username) + "'s Profile"}</h2>
+    <div class="Columns">
+      <div class="Left">
+        <div class="StandardBox">
+          <div class="StandardBoxHeader"><span>${RB.esc(p.username)}'s Profile</span><span>${p.online ? '<span class="Dot on"></span>Online' : '<span class="Dot"></span>Offline'}</span></div>
+          <div class="BoxBody">
+            <div class="ProfileStatus">${p.status ? "&ldquo;" + RB.esc(p.status) + "&rdquo;" : "<span class='Label'>No status yet.</span>"}</div>
+            ${p.lastPlace ? `<div class="DetailHighlighted">Playing ${placeLink(p.lastPlace.placeId, p.lastPlace.name)} (${RB.ago(p.lastPlace.at)})</div>` : ""}
+            <div class="ProfileAvatar"><div id="Av"></div></div>
+            <div class="Blurb">${p.blurb ? RB.rich(p.blurb) : "<span class='Label'>This user hasn't written anything about themselves yet.</span>"}</div>
+            <p id="Actions">${actions[p.relation] || ""}</p>
+          </div>
+        </div>
+        <div class="StandardBox">
+          <div class="StandardBoxHeader">Statistics</div>
+          <table class="StatTable">
+            <tr><td>Member since</td><td>${RB.date(p.joined)}</td></tr>
+            <tr><td>Last seen</td><td>${p.online ? "<span class='Online'>Online now</span>" : RB.ago(p.lastSeen)}</td></tr>
+            <tr><td>Forum posts</td><td>${RB.num(p.postCount)}</td></tr>
+            <tr><td>Friends</td><td>${RB.num(p.friendCount)}</td></tr>
+            <tr><td>Places visited</td><td>${RB.num(p.visited.length)}</td></tr>
+            <tr><td>Items owned</td><td>${RB.num(p.inventoryCount)}</td></tr>
+          </table>
+        </div>
+      </div>
+      <div class="Right">
+        <div class="StandardBox">
+          <div class="StandardBoxHeader"><span>${self ? "My" : RB.esc(p.username) + "'s"} Friends (${p.friendCount})</span>${self ? '<a href="friends.html">See all</a>' : ""}</div>
+          ${p.friends.length ? `<div class="FriendGrid">${p.friends.map((f, i) => `
+            <div class="Friend"><a class="Thumb" href="profile.html?u=${encodeURIComponent(f.username)}" data-av="${i}"></a>
+              <span class="Dot${f.online ? " on" : ""}"></span>${RB.userLink(f.username)}</div>`).join("")}</div>`
+            : `<div class="Empty">${self ? 'No friends yet. Go find some in <a href="friends.html">Friends</a>!' : "No friends yet."}</div>`}
+        </div>
+        <div class="StandardBox">
+          <div class="StandardBoxHeader"><span>Places Played (${p.visited.length})</span>${self ? '<a href="games.html">Find more</a>' : ""}</div>
+          ${p.visited.length ? `<div class="GameList Home">${p.visited.map((v) => {
+            const m = mapById.get(v.placeId) || { id: v.placeId, name: v.name, era: "", hue: 200 };
+            return `<div class="Game"><a class="GameThumbnail" href="game.html?id=${encodeURIComponent(v.placeId)}" title="${RB.esc(v.name)}">${RB.thumb(m)}</a>
+              <div class="GameDetails"><div class="GameName"><a href="game.html?id=${encodeURIComponent(v.placeId)}">${RB.esc(v.name)}</a></div>
+              <div class="Label">${v.count} visit${v.count === 1 ? "" : "s"} &middot; ${RB.ago(v.last)}</div></div></div>`;
+          }).join("")}</div>`
+            : `<div class="Empty">${self ? 'You haven't played anything yet. <a href="games.html">Browse games</a>' : "Hasn't played anything yet."}</div>`}
+        </div>
+      </div>
+    </div>`;
+
+  RBAvatar.render(document.getElementById("Av"), p.avatar, items, { scale: 40, angle: -20 });
+  for (const el of main.querySelectorAll("[data-av]")) {
+    const stage = document.createElement("div");
+    el.appendChild(stage);
+    RBAvatar.render(stage, p.friends[el.dataset.av].avatar, items, { scale: 15, angle: -18, still: true });
+  }
+
+  main.addEventListener("click", async (e) => {
+    const b = e.target.closest("[data-act]");
+    if (!b) return;
+    b.disabled = true;
+    try {
+      const r = await RB.api(`friends/${encodeURIComponent(p.username)}/${b.dataset.act}`, { method: "POST" });
+      document.getElementById("Actions").innerHTML = actions[r.relation] || "";
+    } catch (ex) { RB.alert(ex.message); b.disabled = false; }
+  });
+})();
+</script>
+</body>
+</html>

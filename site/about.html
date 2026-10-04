@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>About - RBXBanland</title>
+<link rel="stylesheet" href="css/site.css">
+<link rel="icon" href="img/favicon.svg" type="image/svg+xml">
+</head>
+<body>
+<div id="Container">
+  <header id="Header"></header>
+  <main id="Main">
+    <h2 class="PageTitle">About RBXBanland</h2>
+    <p>You are visitor number <span id="Hits"></span> <span class="New">NEW!</span></p>
+    <div class="StandardBox">
+      <div class="StandardBoxHeader">How this works</div>
+      <p class="Description">Nothing here is a video stream or a remake. When you press Play, your browser downloads:
+
+  &bull; BoxedWine, an x86 + Linux emulator compiled to WebAssembly (with its WebGL graphics work),
+  &bull; a small Linux system with Wine, the Windows compatibility layer,
+  &bull; the mid-2008 ROBLOX client from Novetus, and the place you picked.
+
+The emulator then boots Wine and runs the original, unmodified client on your own computer, inside the tab. Its Direct3D 9 graphics are translated to WebGL, and a small Lua script spawns your character (the same idea as Novetus' solo mode).
+
+It's emulation all the way down, so expect it to be slower than the real thing and to take a minute or two to boot the first time.</p>
+    </div>
+    <div class="StandardBox">
+      <div class="StandardBoxHeader">Credits</div>
+      <p class="Description">BoxedWine by James Bryant and contributors (GPL-2.0).
+Novetus by Bitl and contributors, the source of the clients, the 2006–2008 places and the catalog items.
+Wine by the Wine project.
+
+ROBLOX is a trademark of Roblox Corporation. RBXBanland is a private, non-commercial fan project and is not affiliated with, endorsed by or connected to Roblox Corporation. Windows and Internet Explorer are trademarks of Microsoft; the desktop here is a fond imitation.</p>
+    </div>
+  </main>
+  <div id="FooterSlot"></div>
+</div>
+<script src="js/common.js"></script>
+<script>
+RB.mount("About");
+RB.api("hits").then((h) => { document.getElementById("Hits").innerHTML = RB.counter(h.hits); }).catch(() => {});
+</script>
+</body>
+</html>

@@ -1,0 +1,632 @@
+/* RBXBanland desktop shell.
+   Window chrome, buttons and inputs come from the vendored libraries in the "vendor" cascade layer
+   (98.css for win95/win98/vaporwave, XP.css for winxp, 7.css for win7). See vendor/themes/*.css.
+   This file is unlayered, so it always wins. It adds layout, wallpapers, taskbars, Start menus and the IE chrome.
+   Themes: html[data-os="win95" | "win98" (default) | "winxp" | "win7" | "vaporwave"]. */
+
+@font-face { font-family: "VT323"; src: url("../vendor/fonts/VT323.woff2") format("woff2"); font-display: swap; }
+@font-face { font-family: "Monoton"; src: url("../vendor/fonts/Monoton.woff2") format("woff2"); font-display: swap; }
+
+:root {
+  /* Classic 3D bevel palette (used by our own 9x widgets: taskbar, Start menu, IE toolbars). */
+  --face: #c0c0c0; --hilite: #fff; --light: #dfdfdf; --shadow: #808080; --dark: #0a0a0a;
+  --sel: #000080; --sel-text: #fff; --desk: #008080; --taskbar-h: 28px;
+  --ui: 11px "Pixelated MS Sans Serif", "MS Sans Serif", Tahoma, Arial, sans-serif;
+  --raised: inset -1px -1px var(--dark), inset 1px 1px var(--hilite), inset -2px -2px var(--shadow), inset 2px 2px var(--light);
+  --raised-btn: inset -1px -1px var(--dark), inset 1px 1px var(--light), inset -2px -2px var(--shadow), inset 2px 2px var(--hilite);
+  --pressed: inset -1px -1px var(--hilite), inset 1px 1px var(--dark), inset -2px -2px var(--light), inset 2px 2px var(--shadow);
+  --sunken: inset -1px -1px var(--hilite), inset 1px 1px var(--shadow), inset -2px -2px var(--light), inset 2px 2px var(--dark);
+  --thin-sunken: inset -1px -1px var(--hilite), inset 1px 1px var(--shadow);
+  --thin-raised: inset 1px 1px var(--hilite), inset -1px -1px var(--shadow);
+  color-scheme: light;
+}
+html[data-os="winxp"] { --face: #ece9d8; --shadow: #aca899; --dark: #716f64; --light: #fff; --sel: #316ac5; --taskbar-h: 30px; --ui: 11px Tahoma, "Segoe UI", Verdana, sans-serif; }
+html[data-os="win7"] { --face: #f0f0f0; --sel: #3399ff; --taskbar-h: 40px; --ui: 9pt "Segoe UI", Tahoma, sans-serif; }
+html[data-os="vaporwave"] { --face: #e3c8f5; --light: #f6e6ff; --shadow: #9b6bb8; --dark: #3a1452; --sel: #ff3fa4; --desk: #2b0b47; }
+
+* { box-sizing: border-box; }
+html, body { height: 100%; margin: 0; overflow: hidden; }
+body { font: var(--ui); color: #000; background: var(--desk); user-select: none; -webkit-user-select: none; }
+html:is([data-os="win95"], [data-os="win98"], [data-os="vaporwave"]) body { -webkit-font-smoothing: none; }
+input, textarea { user-select: text; -webkit-user-select: text; }
+img { -webkit-user-drag: none; }
+html:is([data-os="win95"], [data-os="win98"], [data-os="winxp"], [data-os="vaporwave"]) img[data-icon] { image-rendering: pixelated; }
+
+/* Our own widgets don't want the vendor push-button look: reset them (zero specificity, unlayered). */
+:where(#Taskbar, #StartMenu, #Icons, .ie-menubar, .ie-toolbar, .ie-address, .explorer) :where(button) {
+  all: unset; box-sizing: border-box; cursor: default; font: inherit; color: inherit;
+}
+:where(#Taskbar, #StartMenu, .ie-menubar, .ie-toolbar, .ie-address) :where(button)::before,
+:where(#Taskbar, #StartMenu, .ie-menubar, .ie-toolbar, .ie-address) :where(button)::after { content: none; }
+:where(.ie-address, #StartMenu) :where(input) { all: unset; box-sizing: border-box; font: inherit; color: #000; user-select: text; -webkit-user-select: text; }
+
+/* =================== Desktop + wallpapers =================== */
+#Desktop { position: fixed; inset: 0 0 var(--taskbar-h) 0; overflow: hidden; }
+#Wallpaper { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; pointer-events: none; }
+.wp-logo { display: none; align-items: center; gap: 14px; opacity: .14; }
+.wp-logo .brick { width: 70px; height: 58px; background: #000; border-radius: 4px; position: relative; }
+.wp-logo .brick::before, .wp-logo .brick::after { content: ""; position: absolute; top: -10px; width: 20px; height: 12px; background: #000; border-radius: 3px; }
+.wp-logo .brick::before { left: 9px; } .wp-logo .brick::after { right: 9px; }
+.wp-logo .word { font: 900 64px/1 "Arial Black", Impact, sans-serif; color: #000; }
+.wp-vapor { display: none; }
+html[data-os="win98"] .wp-logo { display: flex; }
+
+/* Windows XP: "Bliss"-style hills and sky (gradients only) */
+html[data-os="winxp"] body {
+  background:
+    radial-gradient(ellipse 22% 7% at 22% 22%, rgba(255,255,255,.85), transparent 70%),
+    radial-gradient(ellipse 16% 5% at 31% 19%, rgba(255,255,255,.7), transparent 70%),
+    radial-gradient(ellipse 25% 6% at 72% 14%, rgba(255,255,255,.75), transparent 70%),
+    radial-gradient(ellipse 12% 4% at 86% 26%, rgba(255,255,255,.6), transparent 70%),
+    radial-gradient(ellipse 95% 30% at 78% 104%, #3e8d1d 0%, #5aa82c 55%, #74c040 72%, transparent 73%),
+    radial-gradient(ellipse 120% 52% at 28% 100%, #3c8a1c 0%, #4f9e26 35%, #6db93a 60%, #8fd156 70.5%, transparent 71%),
+    radial-gradient(ellipse 140% 40% at 60% 100%, #2f7514, #3e8a1f 60%, transparent 61%),
+    linear-gradient(#1b5fd0 0%, #3d84ea 25%, #77b0f2 48%, #b9d9f8 62%, #d8ebfb 70%);
+}
+/* Windows 7: "Harmony"-style blue with light streaks */
+html[data-os="win7"] body {
+  background:
+    radial-gradient(ellipse 70% 50% at 62% 58%, rgba(120,220,255,.55), transparent 70%),
+    conic-gradient(from 200deg at 60% 65%, transparent 0 20deg, rgba(255,255,255,.18) 25deg, transparent 32deg, transparent 60deg, rgba(160,255,200,.18) 66deg, transparent 75deg, transparent 300deg, rgba(255,255,255,.12) 310deg, transparent 320deg),
+    linear-gradient(160deg, #0a3f8a, #1a73c9 45%, #0d5aa8 70%, #062e66);
+}
+html[data-os="win7"] .wp-logo { display: flex; opacity: .2; }
+html[data-os="win7"] .wp-logo .brick, html[data-os="win7"] .wp-logo .brick::before, html[data-os="win7"] .wp-logo .brick::after { background: #fff; }
+html[data-os="win7"] .wp-logo .word { color: #fff; }
+
+/* Desktop icons */
+#Icons {
+  position: absolute; left: 0; top: 0; bottom: 0; margin: 0; padding: 4px 2px; list-style: none;
+  display: flex; flex-direction: column; flex-wrap: wrap; align-content: flex-start; gap: 10px 4px; z-index: 1;
+  background: none; border: 0; box-shadow: none; overflow: visible; color: #fff; /* 7.css styles [role=listbox] */
+}
+#Icons li[role=option] { background: transparent; color: inherit; }
+#Icons li { width: 75px; padding: 2px; display: flex; flex-direction: column; align-items: center; gap: 4px; cursor: default; text-align: center; outline: none; }
+#Icons img { width: 32px; height: 32px; }
+#Icons span { color: #fff; padding: 0 2px 1px; line-height: 13px; word-break: break-word; }
+#Icons li.selected img { filter: brightness(.55) sepia(1) hue-rotate(195deg) saturate(5); }
+#Icons li.selected span { background: var(--sel); }
+#Icons li:focus-visible span { outline: 1px dotted #ff0; }
+html[data-os="winxp"] #Icons span { text-shadow: 1px 1px 1px #000, 0 0 1px #000; font-size: 11px; }
+html[data-os="winxp"] #Icons li.selected span { text-shadow: none; }
+html[data-os="win7"] #Icons li { width: 78px; padding: 4px 2px; border: 1px solid transparent; border-radius: 3px; }
+html[data-os="win7"] #Icons span { text-shadow: 0 1px 2px #000, 0 0 3px #000; line-height: 15px; }
+html[data-os="win7"] #Icons li:hover { background: rgba(255,255,255,.12); border-color: rgba(255,255,255,.3); }
+html[data-os="win7"] #Icons li.selected { background: rgba(100,170,255,.35); border-color: rgba(200,230,255,.6); }
+html[data-os="win7"] #Icons li.selected img { filter: none; }
+html[data-os="win7"] #Icons li.selected span { background: none; }
+
+/* =================== Windows (layout; chrome comes from the vendor CSS) =================== */
+#Windows { position: absolute; inset: 0; }
+#Desktop.dragging iframe { pointer-events: none; }
+#Desktop.dragging { cursor: move; }
+#Windows .window { position: absolute; display: flex; flex-direction: column; min-width: 0; }
+/* 7.css hides .window[role=dialog] until it is the URL :target; our windows are always shown. */
+.window[role=dialog] { opacity: 1; visibility: visible; transform: none; transition: none; }
+#Windows .window[hidden], .window[hidden] { display: none; }
+.window.opening { animation: win-open .14s ease-out; }
+@keyframes win-open { from { transform: scale(.94); opacity: .5; } }
+.window.maximized { left: 0 !important; top: 0 !important; width: 100% !important; height: 100% !important; border-radius: 0 !important; }
+.title-bar { flex: none; cursor: default; }
+.title-bar-text { display: flex; align-items: center; gap: 3px; min-width: 0; overflow: hidden; white-space: nowrap; }
+.title-label { overflow: hidden; text-overflow: ellipsis; }
+.title-icon { width: 16px; height: 16px; flex: none; }
+.title-bar-controls { flex: none; display: flex; }
+.window-body { flex: 1; min-height: 0; position: relative; display: flex; flex-direction: column; }
+.window-body iframe { flex: 1; width: 100%; border: 0; display: block; background: #fff; }
+#Windows .window-body { margin: 0; }
+.rs { position: absolute; z-index: 2; }
+.rs-n, .rs-s { left: 6px; right: 6px; height: 5px; cursor: ns-resize; }
+.rs-n { top: -2px; } .rs-s { bottom: -2px; }
+.rs-e, .rs-w { top: 6px; bottom: 6px; width: 5px; cursor: ew-resize; }
+.rs-e { right: -2px; } .rs-w { left: -2px; }
+.rs-ne, .rs-nw, .rs-se, .rs-sw { width: 12px; height: 12px; }
+.rs-ne { right: -2px; top: -2px; cursor: nesw-resize; } .rs-sw { left: -2px; bottom: -2px; cursor: nesw-resize; }
+.rs-nw { left: -2px; top: -2px; cursor: nwse-resize; } .rs-se { right: -2px; bottom: -2px; cursor: nwse-resize; }
+.window.maximized .rs { display: none; }
+
+/* 98.css: content sits right inside the 3px frame */
+html:is([data-os="win95"], [data-os="win98"], [data-os="vaporwave"]) #Windows .window-body { margin-top: 2px; }
+html:is([data-os="win95"], [data-os="win98"], [data-os="vaporwave"]) .window-body > iframe { box-shadow: var(--sunken); padding: 2px; background: #fff; }
+/* Windows 95: flat title bars (no gradient) */
+html[data-os="win95"] .title-bar { background: #000080; }
+html[data-os="win95"] .title-bar.inactive { background: #808080; }
+html[data-os="win95"] .title-bar.inactive .title-bar-text { color: #c0c0c0; }
+html[data-os="win98"] .title-bar.inactive .title-bar-text { color: #d4d0c8; }
+
+/* XP.css: frame 3px on the sides; dim the inactive title bar like Luna does */
+html[data-os="winxp"] .window-body { margin: 0 3px !important; }
+html[data-os="winxp"] .window-body > iframe { border: 1px solid #7f9db9; }
+html[data-os="winxp"] .title-bar { height: 29px; }
+html[data-os="winxp"] .title-bar-text { font: bold 13px "Trebuchet MS", Tahoma, sans-serif; }
+html[data-os="winxp"] .window:not(.active) { box-shadow: inset -1px -1px #7a96df, inset 1px 1px #a2b8f0, inset -2px -2px #7a96df, inset 2px 2px #a2b8f0, inset -3px -3px #7a96df, inset 3px 3px #a2b8f0; }
+html[data-os="winxp"] .window:not(.active) .title-bar { background: linear-gradient(180deg, #7697e7, #7e9ee3 8%, #94afe8 40%, #97b4e9 88%, #82a5e4 95%, #7c9fe2 96%); border-color: #7a96df; }
+html[data-os="winxp"] .window:not(.active) .title-bar-text { color: #d8e4f8; }
+html[data-os="winxp"] .window:not(.active) .title-bar-controls button { opacity: .7; }
+
+/* 7.css: glass frame; keep its 6px border around content */
+html[data-os="win7"] .window { background-color: transparent; }
+html[data-os="win7"] .title-bar { min-height: 30px; }
+html[data-os="win7"] .title-bar-text { font: 9pt "Segoe UI", sans-serif; }
+html[data-os="win7"] .window.maximized { border-width: 0; }
+
+/* Vaporwave: 98.css chrome, recoloured */
+html[data-os="vaporwave"] .window, html[data-os="vaporwave"] .window-body { background: #e3c8f5; }
+html[data-os="vaporwave"] .window { box-shadow: inset -1px -1px #3a1452, inset 1px 1px #f6e6ff, inset -2px -2px #9b6bb8, inset 2px 2px #fff, 6px 6px 0 rgba(255, 63, 164, .45); }
+html[data-os="vaporwave"] .title-bar { background: linear-gradient(90deg, #ff3fa4, #b967ff 55%, #01cdfe); }
+html[data-os="vaporwave"] .title-bar.inactive { background: linear-gradient(90deg, #9b6bb8, #c6a7dd); }
+html[data-os="vaporwave"] .title-bar-text { font: 18px/14px "VT323", monospace; letter-spacing: 1px; text-shadow: 1px 1px #3a1452; }
+html[data-os="vaporwave"] button:not(:where(#Taskbar, #StartMenu, .ie-menubar, .ie-toolbar, .ie-address) button) { background-color: #f3dcff; }
+
+/* RobloxApp.exe while it loads: still in the DOM and rendering, just invisible and click-through. */
+#Windows .window.loading { opacity: 0 !important; pointer-events: none !important; }
+/* The game window holds only the game: client area = iframe, no padding, borders or scrollbars. */
+#Windows .game-window .window-body { padding: 0 !important; border: 0 !important; overflow: hidden; background: #000; box-shadow: none; }
+#Windows .game-window .window-body > iframe { padding: 0 !important; border: 0 !important; box-shadow: none !important; width: 100%; height: 100%; flex: 1; background: #000; }
+.game-window.max-aspect .rs { display: none; }
+
+/* "Roblox" launcher dialog */
+.launcher { padding: 14px 16px 12px; display: flex; flex-direction: column; gap: 12px; min-width: 0; }
+.launcher-top { display: flex; align-items: center; gap: 14px; }
+.launcher-logo { width: 48px; height: 48px; flex: none; }
+.launcher-text { min-width: 0; }
+.launcher-title { font-size: 15px; font-weight: bold; margin-bottom: 4px; }
+.launcher-detail { color: #444; line-height: 1.35; min-height: 15px; word-wrap: break-word; }
+.launcher-bar { display: block; width: 100%; height: 18px; }
+.launcher-bar > * { transition: width .3s; }
+html[data-os="win7"] .launcher-bar { height: 15px; }
+html[data-os="winxp"] .launcher-bar { height: 16px; }
+.launcher.failed .launcher-progress { display: none; }
+.launcher.failed .launcher-title { color: #a00000; }
+.launcher-buttons { display: flex; justify-content: flex-end; }
+#Windows .launcher-window .window-body { background: var(--face); }
+html[data-os="win7"] #Windows .launcher-window .window-body { background: #fff; }
+html[data-os="vaporwave"] .launcher-title { font: 22px/1 "VT323", monospace; color: #6a1b9a; }
+
+/* Message boxes and the logon dialog */
+.msgbox-wrap, #Overlay { position: fixed; inset: 0; display: flex; align-items: center; justify-content: center; padding: 12px; z-index: 70000; }
+#Overlay[hidden] { display: none; }
+#Overlay { background: rgba(0, 0, 0, .25); }
+.msgbox-wrap .window, #Overlay .window { position: relative; width: 100%; max-width: 380px; }
+.msgbox .window-body, .logon .window-body { margin: 0; }
+html[data-os="winxp"] .msgbox .window-body, html[data-os="winxp"] .logon .window-body { margin: 0 3px; background: #ece9d8; }
+.msg-body { display: flex; gap: 14px; padding: 14px 12px 10px; align-items: flex-start; }
+.msg-text { line-height: 1.45; white-space: pre-line; padding-top: 6px; }
+.msg-icon { width: 32px; height: 32px; flex: none; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #fff; font: bold 22px/1 "Times New Roman", serif; border: 1px solid #000; box-shadow: 1px 1px 0 #808080; }
+.msg-info { background: #fff; color: #00f; } .msg-info::before { content: "i"; font-style: italic; }
+.msg-question { background: #fff; color: #00f; } .msg-question::before { content: "?"; }
+.msg-error { background: #f00; } .msg-error::before { content: "\00D7"; font: bold 26px/1 Arial, sans-serif; }
+.msg-warn { background: #ff0; color: #000; border-radius: 0; clip-path: polygon(50% 0, 100% 100%, 0 100%); border: 0; padding-top: 10px; } .msg-warn::before { content: "!"; }
+html[data-os="win7"] .msg-icon, html[data-os="winxp"] .msg-icon { border: 0; box-shadow: none; }
+html[data-os="win7"] .msg-info, html[data-os="winxp"] .msg-info, html[data-os="win7"] .msg-question, html[data-os="winxp"] .msg-question { background: radial-gradient(circle at 35% 30%, #8fc3ff, #1a5fd0 70%); color: #fff; font-family: Georgia, serif; }
+.msg-buttons { display: flex; justify-content: center; gap: 6px; padding: 0 12px 12px; }
+html[data-os="win7"] .msg-buttons { justify-content: flex-end; background: #f0f0f0; border-top: 1px solid #dfdfdf; padding-top: 10px; }
+html[data-os="win7"] .msg-body { background: #fff; }
+
+.logon { max-width: 440px !important; }
+.logon-banner { display: flex; align-items: center; gap: 8px; height: 64px; padding: 0 14px; background: linear-gradient(90deg, #000060, #1060c0 60%, #4aa0e8); color: #fff; }
+html[data-os="win95"] .logon-banner { background: #000080; }
+html[data-os="winxp"] .logon-banner { background: linear-gradient(90deg, #5a7edc, #2154d4 40%, #0a3bbd); border-bottom: 3px solid #f1953a; }
+html[data-os="win7"] .logon-banner { background: linear-gradient(135deg, #0a3f8a, #1a73c9 60%, #2fa0e8); }
+html[data-os="vaporwave"] .logon-banner { background: linear-gradient(90deg, #ff3fa4, #b967ff, #01cdfe); }
+.logon-banner .brick { width: 30px; height: 26px; background: #d32b2b; border-radius: 2px; box-shadow: inset 0 -4px 0 #8d1b1b; }
+.logon-banner .word { font: 900 26px/1 "Arial Black", Impact, sans-serif; }
+.logon-banner .word i { color: #ffd84a; }
+.logon-banner .ver { font: italic bold 22px/1 Arial, sans-serif; color: #ffd84a; align-self: flex-start; margin-top: 12px; }
+.logon-body { display: flex; gap: 12px; padding: 12px; }
+html[data-os="win7"] .logon-body { background: #fff; }
+.logon-body .keyicon { width: 32px; height: 32px; flex: none; }
+.logon-fields { flex: 1; min-width: 0; }
+.logon-fields p { margin: 0 0 8px; line-height: 1.4; }
+.logon-fields label { display: flex; align-items: center; gap: 6px; margin: 6px 0; }
+.logon-fields label > span { width: 72px; flex: none; }
+.logon-fields input { flex: 1; min-width: 0; }
+.logon-fields label[hidden] { display: none; }
+.logon .tabs { display: flex; gap: 4px; margin-bottom: 4px; }
+.logon .tab { min-width: 0; padding: 0 10px; }
+.logon .tab.active { font-weight: bold; }
+.logon-error { color: #a00000; font-weight: bold; min-height: 14px; margin-top: 4px; line-height: 1.35; }
+.logon-buttons { display: flex; flex-direction: column; gap: 6px; }
+
+/* =================== Internet Explorer window =================== */
+.window-body.ie-body, .window-body.internal { background: var(--face); }
+.ie { display: flex; flex-direction: column; height: 100%; position: relative; background: var(--face); }
+.ie-menubar { display: flex; align-items: center; height: 20px; padding: 0 60px 0 2px; flex: none; }
+.ie-menu { position: relative; }
+.ie-menu > button { padding: 2px 6px; }
+.ie-menu > button:hover { box-shadow: var(--thin-raised); }
+.ie-menu.open > button { box-shadow: var(--thin-sunken); }
+.ie-menu ul { display: none; position: absolute; left: 0; top: 100%; z-index: 20; min-width: 170px; margin: 0; padding: 2px; list-style: none; background: var(--face); box-shadow: var(--raised); }
+.ie-menu.open ul { display: block; }
+.ie-menu li button { display: flex; align-items: center; gap: 6px; width: 100%; padding: 3px 20px 3px 6px; white-space: nowrap; }
+.ie-menu li button img { width: 16px; height: 16px; }
+.ie-menu li button:hover { background: var(--sel); color: var(--sel-text); }
+.ie-toolbar { display: flex; align-items: stretch; gap: 1px; padding: 2px 60px 2px 4px; overflow: hidden; flex: none; border-top: 1px solid var(--shadow); box-shadow: inset 0 1px var(--hilite); }
+.ie-toolbar button { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1px; min-width: 48px; padding: 2px 4px; }
+.ie-toolbar button img, .ie-toolbar .ico { width: 20px; height: 20px; display: block; filter: grayscale(1) contrast(.9); opacity: .9; }
+.ie-toolbar button:hover:not(:disabled) img, .ie-toolbar button:hover:not(:disabled) .ico { filter: none; opacity: 1; }
+.ie-toolbar button:hover:not(:disabled) { box-shadow: var(--thin-raised); }
+.ie-toolbar button:active:not(:disabled) { box-shadow: var(--thin-sunken); }
+.ie-toolbar button:disabled { color: var(--shadow); text-shadow: 1px 1px var(--hilite); }
+.ie-toolbar button:disabled .ico { opacity: .35; }
+.ie-tsep { width: 2px; margin: 2px 3px; box-shadow: inset 1px 0 var(--shadow), inset -1px 0 var(--hilite); }
+.ico { background: center / contain no-repeat; }
+.ico-back { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 22 22'%3E%3Cpath d='M2 11 L11 3 L11 7 L20 7 L20 15 L11 15 L11 19 Z' fill='%2335b035' stroke='%23105010'/%3E%3C/svg%3E"); }
+.ico-fwd { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 22 22'%3E%3Cpath d='M20 11 L11 3 L11 7 L2 7 L2 15 L11 15 L11 19 Z' fill='%2335b035' stroke='%23105010'/%3E%3C/svg%3E"); }
+.ico-stop { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 22 22'%3E%3Cpath d='M7 2h8l5 5v8l-5 5H7l-5-5V7z' fill='%23d82020' stroke='%23600'/%3E%3Cpath d='M7.5 7.5l7 7M14.5 7.5l-7 7' stroke='%23fff' stroke-width='2.4'/%3E%3C/svg%3E"); }
+.ico-refresh { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 22 22'%3E%3Crect x='3' y='3' width='16' height='17' fill='%23fff' stroke='%23444'/%3E%3Cpath d='M15 9a4.5 4.5 0 1 0 0 4' fill='none' stroke='%2335b035' stroke-width='2.4'/%3E%3Cpath d='M12 7h5V2z' fill='%2335b035'/%3E%3C/svg%3E"); }
+.ico-home { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 22 22'%3E%3Cpath d='M2 11 L11 3 L20 11 Z' fill='%23c42a2a' stroke='%23500'/%3E%3Crect x='5' y='11' width='12' height='9' fill='%23f5e6b0' stroke='%23553'/%3E%3Crect x='9' y='14' width='4' height='6' fill='%230d69ac'/%3E%3C/svg%3E"); }
+.ie-address { display: flex; align-items: center; gap: 4px; padding: 2px 4px; flex: none; border-top: 1px solid var(--shadow); box-shadow: inset 0 1px var(--hilite); }
+.ie-address label { color: #444; }
+.ie-addr-wrap { flex: 1; min-width: 0; display: flex; align-items: center; gap: 3px; background: #fff; box-shadow: var(--sunken); padding: 2px 3px 2px 4px; height: 22px; }
+.ie-addr-wrap img { width: 16px; height: 16px; }
+.ie-addr-wrap input { flex: 1; min-width: 0; }
+.ie-go { padding: 2px 6px; }
+.ie-go:hover { box-shadow: var(--thin-raised); }
+.ie-view { flex: 1; min-height: 0; display: flex; box-shadow: var(--sunken); padding: 2px; margin: 2px 0; background: #fff; }
+.ie-view iframe { flex: 1; width: 100%; border: 0; display: block; background: #fff; }
+.ie-status { display: flex; gap: 2px; height: 20px; flex: none; }
+.ie-status > span { box-shadow: var(--thin-sunken); padding: 2px 4px; display: flex; align-items: center; gap: 4px; white-space: nowrap; overflow: hidden; }
+.ie-status-text { flex: 1; min-width: 0; text-overflow: ellipsis; display: block !important; }
+.ie-progress { width: 110px; }
+.ie-progress span { display: block; height: 10px; width: 0; background: repeating-linear-gradient(90deg, var(--sel) 0 8px, transparent 8px 10px); padding: 0 !important; box-shadow: none !important; }
+.ie.loading .ie-progress span { animation: progress 3s ease-out forwards; }
+@keyframes progress { to { width: 90%; } }
+.ie-zone { width: 130px; }
+.ie-zone img { width: 16px; height: 16px; }
+.ie-throbber { position: absolute; right: 2px; top: 1px; width: 52px; height: 40px; background: #000; z-index: 5; display: flex; align-items: center; justify-content: center; box-shadow: var(--thin-sunken); }
+.ie-throbber .brick { width: 24px; height: 20px; background: #d32b2b; border-radius: 2px; position: relative; box-shadow: inset 0 -4px 0 #8d1b1b; }
+.ie-throbber .brick::before, .ie-throbber .brick::after { content: ""; position: absolute; top: -5px; width: 7px; height: 5px; background: #e95050; border-radius: 1px; }
+.ie-throbber .brick::before { left: 3px; } .ie-throbber .brick::after { right: 3px; }
+.ie.loading .ie-throbber .brick { animation: throb 1s linear infinite; }
+.ie.loading .ie-throbber { background: radial-gradient(circle, #1a2a60, #000 70%); }
+@keyframes throb { 0% { transform: rotateY(0); } 25% { transform: rotateY(90deg) translateY(-3px); } 50% { transform: rotateY(180deg); } 75% { transform: rotateY(270deg) translateY(-3px); } 100% { transform: rotateY(360deg); } }
+/* IE6 on XP */
+html[data-os="winxp"] .ie-menubar, html[data-os="winxp"] .ie-toolbar, html[data-os="winxp"] .ie-address { box-shadow: none; border-top: 0; border-bottom: 1px solid #d8d2bd; }
+html[data-os="winxp"] .ie-menu > button:hover, html[data-os="winxp"] .ie-menu.open > button { background: #316ac5; color: #fff; box-shadow: none; }
+html[data-os="winxp"] .ie-menu ul { background: #fff; border: 1px solid #aca899; box-shadow: 2px 2px 3px rgba(0,0,0,.3); }
+html[data-os="winxp"] .ie-toolbar button { flex-direction: row; gap: 4px; min-width: 0; padding: 2px 6px; border-radius: 3px; }
+html[data-os="winxp"] .ie-toolbar button:hover:not(:disabled) { box-shadow: inset 0 0 0 1px #aca899; background: #f5f4ea; }
+html[data-os="winxp"] .ie-toolbar .ico, html[data-os="winxp"] .ie-toolbar button img { width: 24px; height: 24px; filter: none; opacity: 1; }
+html[data-os="winxp"] .ie-addr-wrap { box-shadow: none; border: 1px solid #7f9db9; }
+html[data-os="winxp"] .ie-go { color: #fff; background: linear-gradient(#59c35a, #2e9a2f); border-radius: 3px; }
+html[data-os="winxp"] .ie-view { box-shadow: none; border: 1px solid #7f9db9; margin: 0; padding: 0; }
+html[data-os="winxp"] .ie-status > span { box-shadow: none; border-left: 1px solid #d8d2bd; }
+html[data-os="winxp"] .ie-throbber { background: #fff; box-shadow: none; border-left: 1px solid #d8d2bd; width: 40px; height: 21px; top: 0; }
+html[data-os="winxp"] .ie-throbber .brick { transform: scale(.7); }
+html[data-os="winxp"] .ie.loading .ie-throbber { background: #fff; }
+/* IE8 on 7: address bar first, command bar under the menus */
+html[data-os="win7"] .ie { background: transparent; }
+html[data-os="win7"] .ie-address { order: 1; border: 0; box-shadow: none; padding: 4px 4px 6px; background: transparent; }
+html[data-os="win7"] .ie-address label { display: none; }
+html[data-os="win7"] .ie-addr-wrap { height: 24px; box-shadow: none; border: 1px solid #8e9aab; border-radius: 2px; }
+html[data-os="win7"] .ie-menubar { order: 2; background: rgba(245,248,252,.95); padding-right: 4px; }
+html[data-os="win7"] .ie-toolbar { order: 3; background: linear-gradient(#fafcff, #e3ecf6); border-top: 0; border-bottom: 1px solid #b6c6d9; box-shadow: none; padding-right: 4px; }
+html[data-os="win7"] .ie-toolbar button { flex-direction: row; gap: 4px; min-width: 0; padding: 2px 8px; border-radius: 3px; }
+html[data-os="win7"] .ie-toolbar button:hover:not(:disabled) { box-shadow: inset 0 0 0 1px #8ab4dc; background: linear-gradient(#f2f8fe, #d7e9fb); }
+html[data-os="win7"] .ie-toolbar .ico, html[data-os="win7"] .ie-toolbar button img { width: 16px; height: 16px; filter: none; opacity: 1; }
+html[data-os="win7"] .ie-view { order: 4; box-shadow: none; padding: 0; margin: 0; }
+html[data-os="win7"] .ie-status { order: 5; background: #f0f0f0; border-top: 1px solid #d0d0d0; }
+html[data-os="win7"] .ie-status > span { box-shadow: none; border-left: 1px solid #ddd; }
+html[data-os="win7"] .ie-throbber { display: none; }
+html[data-os="win7"] .ie.loading .ie-addr-wrap { background: linear-gradient(90deg, #d6f0d0 0 40%, #fff 60%) 0 0 / 300% 100%; animation: ie8load 1.4s linear infinite; }
+@keyframes ie8load { from { background-position: 100% 0; } to { background-position: 0 0; } }
+html[data-os="win7"] .ie-menu ul { background: #f0f0f0; border: 1px solid #979797; box-shadow: 2px 2px 3px rgba(0,0,0,.3); }
+html[data-os="win7"] .ie-menu li button:hover { background: linear-gradient(#f0f6fd, #dceafc); color: #000; box-shadow: inset 0 0 0 1px #a8c8ec; border-radius: 3px; }
+html[data-os="win7"] .ie-menu > button:hover, html[data-os="win7"] .ie-menu.open > button { box-shadow: inset 0 0 0 1px #a8c8ec; background: #e5f0fb; border-radius: 2px; }
+html[data-os="vaporwave"] .ie-throbber { background: linear-gradient(#ff3fa4, #01cdfe); }
+
+/* =================== Built-in programs =================== */
+.internal-computer, .internal-recycle, .internal-readme { display: flex; flex-direction: column; height: 100%; }
+.explorer-bar, .menubar { padding: 3px 6px; border-bottom: 1px solid var(--shadow); box-shadow: 0 1px var(--hilite); }
+.explorer-bar .addr { display: inline-block; background: #fff; box-shadow: var(--sunken); padding: 2px 6px; min-width: 200px; margin-left: 4px; }
+.explorer { flex: 1; display: flex; flex-wrap: wrap; align-content: flex-start; gap: 8px; list-style: none; margin: 2px 0; padding: 8px; background: #fff; box-shadow: var(--sunken); overflow: auto; }
+.explorer li { width: 76px; padding: 3px 2px; display: flex; flex-direction: column; align-items: center; gap: 4px; text-align: center; outline: none; }
+.explorer img { width: 32px; height: 32px; }
+.explorer li span { padding: 1px 2px; }
+.explorer li.selected span { background: var(--sel); color: #fff; }
+.statusbar { display: flex; justify-content: space-between; align-items: center; padding: 3px 6px; box-shadow: var(--thin-sunken); min-height: 24px; }
+.notepad { flex: 1; width: 100% !important; resize: none; font: 13px/1.35 "Fixedsys", "Lucida Console", "Courier New", monospace !important; padding: 4px; outline: 0; }
+.details { flex: 1; width: 100%; border-collapse: collapse; background: #fff; display: block; overflow: auto; box-shadow: var(--sunken); margin: 2px 0; }
+.details th { text-align: left; padding: 2px 6px; font-weight: normal; min-width: 90px; }
+.details td { padding: 2px 6px; white-space: nowrap; }
+.details td img { vertical-align: middle; width: 16px; height: 16px; }
+html:is([data-os="winxp"], [data-os="win7"]) :is(.explorer, .details, .explorer-bar .addr) { box-shadow: none; border: 1px solid #7f9db9; }
+html:is([data-os="winxp"], [data-os="win7"]) :is(.explorer-bar, .menubar) { box-shadow: none; border-bottom: 1px solid #d8d2bd; }
+
+/* =================== Taskbar =================== */
+#Taskbar {
+  position: fixed; left: 0; right: 0; bottom: 0; height: var(--taskbar-h); z-index: 50000; display: flex; align-items: center; gap: 2px;
+  padding: 2px 2px 2px 2px; background: var(--face); box-shadow: inset 0 1px var(--light), inset 0 2px var(--hilite); font: var(--ui);
+}
+#StartButton { display: flex; align-items: center; gap: 3px; height: 22px; padding: 0 5px 0 3px; background: var(--face); box-shadow: var(--raised-btn); font-weight: bold; flex: none; }
+#StartButton img { width: 16px; height: 16px; }
+#StartButton.pressed { box-shadow: var(--pressed); }
+#StartButton.pressed > * { transform: translate(1px, 1px); }
+#StartButton:focus-visible span { outline: 1px dotted #000; }
+#QuickLaunch { display: flex; align-items: center; gap: 0; padding: 0 3px 0 9px; flex: none; position: relative; height: 22px; }
+#QuickLaunch::before, #Tasks::before {
+  content: ""; position: absolute; left: 2px; top: 1px; bottom: 1px; width: 2px; box-shadow: inset 1px 0 var(--shadow), inset -1px 0 var(--hilite);
+}
+#QuickLaunch::after { content: ""; position: absolute; left: 5px; top: 2px; bottom: 2px; width: 3px; box-shadow: var(--thin-raised); }
+#QuickLaunch button { width: 22px; height: 22px; display: flex; align-items: center; justify-content: center; }
+#QuickLaunch button:hover { box-shadow: var(--thin-raised); }
+#QuickLaunch button:active { box-shadow: var(--thin-sunken); }
+#QuickLaunch img { width: 16px; height: 16px; }
+html[data-os="win95"] #QuickLaunch { display: none; }
+#Tasks { flex: 1; min-width: 0; display: flex; gap: 3px; position: relative; padding-left: 8px; overflow: hidden; }
+html[data-os="win95"] #Tasks { padding-left: 2px; }
+html[data-os="win95"] #Tasks::before { display: none; }
+.task { flex: 0 1 160px; min-width: 36px; height: 22px; display: flex; align-items: center; gap: 4px; padding: 0 4px; background: var(--face); box-shadow: var(--raised-btn); }
+.task img { width: 16px; height: 16px; flex: none; }
+.task span { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.task.active { box-shadow: var(--pressed); font-weight: bold; background: repeating-conic-gradient(var(--hilite) 0 25%, var(--face) 0 50%) 0 0 / 2px 2px; }
+.task.active > * { transform: translateY(1px); }
+.task.flash { animation: taskflash 1s steps(1) infinite; }
+.task.flash-strong { animation-duration: .5s; }
+@keyframes taskflash { 50% { background: var(--sel); color: #fff; } }
+#Tray { display: flex; align-items: center; gap: 8px; height: 22px; padding: 0 8px 0 6px; box-shadow: var(--thin-sunken); flex: none; white-space: nowrap; }
+#TrayMoney { display: flex; gap: 6px; }
+#TrayMoney .robux { color: #006400; font-weight: bold; }
+#TrayMoney .tix { color: #8a6500; font-weight: bold; }
+#Clock { display: flex; flex-direction: column; align-items: center; line-height: 1.15; min-width: 52px; }
+#ShowDesktop { display: none; }
+
+/* XP Luna taskbar */
+html[data-os="winxp"] #Taskbar { padding: 0; gap: 0; color: #fff; box-shadow: none; background: linear-gradient(#3168d5 0%, #4993e6 3%, #2157d7 10%, #2663e0 40%, #245edb 90%, #1941a5 100%); }
+html[data-os="winxp"] #StartButton {
+  height: 30px; padding: 0 22px 0 9px; border-radius: 0 10px 10px 0; gap: 5px; box-shadow: inset -2px 0 3px rgba(0,0,0,.35), inset 0 1px 1px rgba(255,255,255,.4);
+  background: linear-gradient(#3c9a3c 0%, #58bb4f 8%, #3d9b3b 40%, #2f8a2f 85%, #276f26 100%);
+  font: italic bold 19px "Trebuchet MS", Tahoma, sans-serif; color: #fff; text-shadow: 1px 1px 2px #1a4d1a; text-transform: lowercase; letter-spacing: .5px;
+}
+html[data-os="winxp"] #StartButton:hover { filter: brightness(1.1); }
+html[data-os="winxp"] #StartButton.pressed { filter: brightness(.85); box-shadow: inset 1px 1px 4px rgba(0,0,0,.5); }
+html[data-os="winxp"] #StartButton.pressed > * { transform: none; }
+html[data-os="winxp"] #StartButton img { width: 22px; height: 22px; filter: drop-shadow(1px 1px 1px rgba(0,0,0,.5)); }
+html[data-os="winxp"] #QuickLaunch { padding: 0 6px 0 10px; height: 30px; }
+html[data-os="winxp"] #QuickLaunch::before, html[data-os="winxp"] #Tasks::before { box-shadow: inset 1px 0 #1c45ae, inset -1px 0 #4a8ef5; }
+html[data-os="winxp"] #QuickLaunch::after { display: none; }
+html[data-os="winxp"] #QuickLaunch button:hover { box-shadow: none; background: rgba(255,255,255,.2); border-radius: 2px; }
+html[data-os="winxp"] #Tasks { padding: 0 4px 0 8px; gap: 2px; }
+html[data-os="winxp"] .task { height: 24px; border-radius: 3px; color: #fff; box-shadow: inset 0 0 0 1px rgba(0,0,0,.25), inset 1px 1px 0 rgba(255,255,255,.35); background: linear-gradient(#3c81f3, #3474e8 50%, #2a68e0); }
+html[data-os="winxp"] .task:hover { background: linear-gradient(#53a1ff, #4590f8 50%, #3a83f5); }
+html[data-os="winxp"] .task.active { font-weight: normal; box-shadow: inset 1px 1px 3px rgba(0,0,0,.6); background: #1e52b7; }
+html[data-os="winxp"] .task.active > * { transform: none; }
+html[data-os="winxp"] #Tray { height: 30px; padding: 0 12px; color: #fff; box-shadow: inset 1px 0 1px #1a85e6, inset 2px 0 0 #095bc9; background: linear-gradient(#0c59b9 0%, #139ee9 6%, #18b9ff 12%, #11a3f5 30%, #0f9cf2 60%, #0e8ce4 85%, #0b77d3); }
+html[data-os="winxp"] #TrayMoney .robux { color: #c8ffc0; } html[data-os="winxp"] #TrayMoney .tix { color: #ffe58a; }
+
+/* Windows 7 superbar */
+html[data-os="win7"] #Taskbar {
+  padding: 0 0 0 4px; gap: 4px; color: #fff; font: var(--ui);
+  background: linear-gradient(rgba(30,50,80,.55), rgba(10,20,40,.78)); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+  box-shadow: inset 0 1px rgba(255,255,255,.35), 0 -1px rgba(0,0,0,.6);
+}
+html[data-os="win7"] #StartButton { width: 54px; height: 40px; padding: 0; background: none; box-shadow: none; justify-content: center; }
+html[data-os="win7"] #StartButton span { display: none; }
+html[data-os="win7"] #StartButton img { width: 38px; height: 38px; filter: drop-shadow(0 0 4px rgba(120,200,255,.5)); }
+html[data-os="win7"] #StartButton:hover img, html[data-os="win7"] #StartButton.pressed img { filter: drop-shadow(0 0 9px #9df) brightness(1.15); }
+html[data-os="win7"] #StartButton.pressed > * { transform: none; }
+html[data-os="win7"] #QuickLaunch, html[data-os="win7"] #Tasks { padding-left: 0; gap: 2px; }
+html[data-os="win7"] #QuickLaunch::before, html[data-os="win7"] #QuickLaunch::after, html[data-os="win7"] #Tasks::before { display: none; }
+html[data-os="win7"] #QuickLaunch { height: 40px; }
+html[data-os="win7"] #QuickLaunch button { width: 54px; height: 38px; border-radius: 3px; }
+html[data-os="win7"] #QuickLaunch button:hover { box-shadow: inset 0 0 0 1px rgba(255,255,255,.4); background: rgba(255,255,255,.12); }
+html[data-os="win7"] #QuickLaunch img { width: 24px; height: 24px; }
+html[data-os="win7"] #QuickLaunch img[data-size="16"] { content: normal; }
+html[data-os="win7"] .task { height: 38px; flex-basis: 170px; border-radius: 3px; color: #fff; background: rgba(255,255,255,.08); box-shadow: inset 0 0 0 1px rgba(255,255,255,.35), 0 0 0 1px rgba(0,0,0,.5); text-shadow: 0 0 4px #000; }
+html[data-os="win7"] .task img { width: 24px; height: 24px; }
+html[data-os="win7"] .task:hover { background: rgba(255,255,255,.2); }
+html[data-os="win7"] .task.active { background: linear-gradient(rgba(255,255,255,.35), rgba(255,255,255,.15)); font-weight: normal; }
+html[data-os="win7"] .task.active > * { transform: none; }
+html[data-os="win7"] #Tray { box-shadow: none; height: 40px; color: #fff; padding: 0 10px; }
+html[data-os="win7"] #TrayMoney .robux { color: #9f9; } html[data-os="win7"] #TrayMoney .tix { color: #fd6; }
+html[data-os="win7"] #ShowDesktop { display: block; width: 15px; height: 40px; border-left: 1px solid rgba(255,255,255,.3); background: rgba(255,255,255,.08); }
+html[data-os="win7"] #ShowDesktop:hover { background: rgba(255,255,255,.3); }
+
+/* =================== Start menu =================== */
+#StartMenu { position: fixed; left: 2px; bottom: calc(var(--taskbar-h) - 3px); z-index: 60000; display: flex; background: var(--face); box-shadow: var(--raised); padding: 3px; font: var(--ui); }
+#StartMenu[hidden] { display: none; }
+.sm-banner { width: 21px; background: linear-gradient(0deg, #000080, #1084d0); display: flex; align-items: flex-end; justify-content: center; padding: 4px 0; flex: none; }
+.sm-banner span { writing-mode: vertical-rl; transform: rotate(180deg); color: #fff; font: 18px/1 "Arial Black", Arial, sans-serif; letter-spacing: 0; white-space: nowrap; }
+.sm-banner b { color: #c0c0c0; font-weight: 900; }
+.sm-banner .sm-ver { font-style: normal; font-weight: normal; margin-top: 3px; font-family: Arial, sans-serif; }
+html[data-os="win95"] .sm-banner { background: #808080; }
+html[data-os="win95"] .sm-banner b { color: #c0c0c0; } html[data-os="win95"] .sm-banner span { color: #fff; }
+.sm-main { display: flex; flex-direction: column; min-width: 180px; }
+.sm-main ul { list-style: none; margin: 0; padding: 0; }
+.sm-user, .sm-userline, .sm-footer { display: none; }
+.sm-main li > button { display: flex; align-items: center; gap: 8px; width: 100%; height: 32px; padding: 0 22px 0 4px; text-align: left; position: relative; }
+.sm-main li > button img { width: 32px; height: 32px; }
+.sm-main li > button:hover, .sm-main li > button:focus-visible, .sm-sub.open > button { background: var(--sel); color: var(--sel-text); outline: 0; }
+.sm-programs { border-bottom: 1px solid var(--shadow); box-shadow: 0 1px var(--hilite); margin-bottom: 2px !important; padding-bottom: 2px !important; }
+.sm-programs li > button { height: 22px; }
+.sm-programs li > button img { width: 16px; height: 16px; }
+.sm-label { padding: 4px 6px 2px; color: var(--shadow); font-size: 10px; text-transform: uppercase; letter-spacing: .5px; }
+.sm-sep { height: 2px; margin: 3px 2px; box-shadow: inset 0 1px var(--shadow), inset 0 -1px var(--hilite); }
+.sm-sub { position: relative; }
+.sm-sub .arrow { position: absolute; right: 6px; font-size: 9px; }
+.sm-submenu { display: none; position: absolute; left: 100%; top: -3px; background: var(--face); box-shadow: var(--raised); padding: 2px !important; min-width: 170px; }
+.sm-sub:hover > .sm-submenu, .sm-sub.open > .sm-submenu { display: block; }
+.sm-submenu button { height: 22px !important; }
+.sm-submenu .radio { width: 14px; display: inline-block; text-align: center; }
+.sm-submenu [aria-checked="true"] .radio::before { content: "\25CF"; }
+html .sm-programs .sm-submenu { left: 100%; right: auto; }
+
+/* XP Start menu: blue header, white pinned column, light-blue places column, blue footer with Log Off / Turn Off */
+html[data-os="winxp"] #StartMenu { padding: 0; border-radius: 7px 7px 0 0; background: #fff; border: 1px solid #0831d9; box-shadow: 2px 2px 8px rgba(0,0,0,.45); bottom: var(--taskbar-h); left: 0; overflow: visible; }
+html[data-os="winxp"] .sm-banner { display: none; }
+html[data-os="winxp"] .sm-main { display: grid; grid-template-columns: 200px 190px; grid-template-rows: auto 1fr auto; min-width: 0; }
+html[data-os="winxp"] .sm-user { display: flex; grid-column: 1 / 3; align-items: center; gap: 8px; padding: 6px 8px; border-radius: 6px 6px 0 0; background: linear-gradient(#1868ce, #0e60cb 12%, #0a5bc6 60%, #3d84e0); color: #fff; font: bold 14px "Trebuchet MS", Tahoma, sans-serif; text-shadow: 1px 1px 1px #0b2a7a; border-bottom: 2px solid #f1953a; }
+html[data-os="winxp"] .sm-avatar { width: 46px; height: 46px; border: 2px solid #fff; border-radius: 3px; background: linear-gradient(#fff, #cfe0f7); overflow: hidden; box-shadow: 1px 1px 2px rgba(0,0,0,.4); }
+html[data-os="winxp"] .sm-programs { background: #fff; padding: 6px 2px !important; border: 0; box-shadow: none; margin: 0 !important; }
+html[data-os="winxp"] .sm-programs li > button { height: 30px; }
+html[data-os="winxp"] .sm-programs li > button img { width: 24px; height: 24px; }
+html:is([data-os="winxp"], [data-os="win7"]) .sm-programs li > button img[data-size="16"] { width: 16px; height: 16px; margin: 0 4px; }
+html[data-os="winxp"] .sm-programs li:nth-child(-n+2) > button { font-weight: bold; }
+html[data-os="winxp"] .sm-system { background: #d3e5fa; border-left: 1px solid #95bdee; padding: 6px 2px !important; }
+html[data-os="winxp"] .sm-system > li > button { color: #0a246a; font-weight: bold; height: 28px; }
+html[data-os="winxp"] .sm-system > li > button img { width: 24px; height: 24px; }
+html[data-os="winxp"] .sm-main li > button:hover, html[data-os="winxp"] .sm-sub.open > button { background: #316ac5; color: #fff; }
+html[data-os="winxp"] .sm-label { color: #6a7ea6; border-top: 1px solid #e3e3e3; margin-top: 3px; }
+html[data-os="winxp"] .sm-sep, html[data-os="winxp"] #LogOffBtn, html[data-os="winxp"] #ShutDownBtn { display: none; }
+html[data-os="winxp"] .sm-submenu { background: #fff; border: 1px solid #aca899; box-shadow: 2px 2px 4px rgba(0,0,0,.3); }
+html[data-os="winxp"] .sm-footer { display: flex; grid-column: 1 / 3; justify-content: flex-end; gap: 6px; padding: 6px 8px; background: linear-gradient(#4282d6, #3b7ad0 50%, #2b65c5); border-top: 1px solid #1854c2; }
+html[data-os="winxp"] .sm-footer input, html[data-os="winxp"] .sd-7 { display: none; }
+html[data-os="winxp"] .sm-footer button { display: flex; align-items: center; gap: 5px; color: #fff; padding: 2px 6px; border-radius: 3px; }
+html[data-os="winxp"] .sm-footer button:hover { background: rgba(255,255,255,.2); }
+html[data-os="winxp"] .sm-footer img { width: 22px; height: 22px; }
+
+/* Windows 7 Start menu: white programs column + search, glass places column, Shut down button */
+html[data-os="win7"] #StartMenu {
+  padding: 8px; border-radius: 7px 7px 0 0; bottom: var(--taskbar-h); left: 0;
+  background: linear-gradient(rgba(60,100,150,.78), rgba(20,40,70,.88)); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(0,0,0,.6); box-shadow: inset 0 0 0 1px rgba(255,255,255,.4), 0 6px 20px rgba(0,0,0,.5);
+}
+html[data-os="win7"] .sm-banner, html[data-os="win7"] .sm-sep, html[data-os="win7"] #LogOffBtn, html[data-os="win7"] #ShutDownBtn { display: none; }
+html[data-os="win7"] .sm-main { display: grid; grid-template-columns: 250px 160px; grid-template-rows: 1fr auto; gap: 0 8px; min-width: 0; position: relative; }
+html[data-os="win7"] .sm-user { display: flex; position: absolute; right: 48px; top: -46px; }
+html[data-os="win7"] .sm-user b { display: none; }
+html[data-os="win7"] .sm-avatar { width: 52px; height: 52px; border-radius: 4px; overflow: hidden; background: linear-gradient(#fff, #cde); box-shadow: 0 0 0 2px #fff, 0 0 0 3px rgba(0,0,0,.5), 0 2px 6px rgba(0,0,0,.5); }
+html[data-os="win7"] .sm-programs { grid-row: 1; background: #fff; padding: 6px 4px !important; border: 1px solid rgba(0,0,0,.5); border-bottom: 0; border-radius: 3px 3px 0 0; box-shadow: none; margin: 0 !important; color: #000; }
+html[data-os="win7"] .sm-programs li > button { height: 34px; border-radius: 3px; }
+html[data-os="win7"] .sm-programs li > button img { width: 24px; height: 24px; }
+html[data-os="win7"] .sm-programs li > button:hover, html[data-os="win7"] .sm-programs .sm-sub.open > button { background: linear-gradient(#f0f6fd, #dceafc); color: #000; box-shadow: inset 0 0 0 1px #a8c8ec; }
+html[data-os="win7"] .sm-label { color: #1e5bb0; text-transform: none; font-size: 12px; border-top: 1px solid #e0e6ee; margin-top: 4px; }
+html[data-os="win7"] .sm-system { grid-row: 1; color: #fff; padding-top: 50px !important; }
+html[data-os="win7"] .sm-userline { display: block; padding: 4px 8px 8px; font-weight: bold; text-shadow: 0 0 4px #000; }
+html[data-os="win7"] .sm-system > li > button { color: #fff; height: 30px; border-radius: 3px; text-shadow: 0 0 4px #000; padding-left: 8px; }
+html[data-os="win7"] .sm-system > li > button > img { display: none; }
+html[data-os="win7"] .sm-system > li > button:hover, html[data-os="win7"] .sm-system .sm-sub.open > button { background: linear-gradient(rgba(255,255,255,.3), rgba(255,255,255,.12)); box-shadow: inset 0 0 0 1px rgba(255,255,255,.45); }
+html[data-os="win7"] .sm-submenu { left: auto; right: 100%; color: #000; background: #f0f0f0; border: 1px solid #979797; box-shadow: 2px 2px 3px rgba(0,0,0,.3); }
+html[data-os="win7"] .sm-submenu button:hover { background: linear-gradient(#f0f6fd, #dceafc) !important; color: #000 !important; }
+html[data-os="win7"] .sm-footer { display: contents; }
+html[data-os="win7"] .sm-footer input { display: block; grid-column: 1; grid-row: 2; height: 30px; margin: 0; padding: 0 8px; background: #fff; border: 1px solid rgba(0,0,0,.5); border-top: 1px solid #dde4ec; border-radius: 0 0 3px 3px; font-style: italic; }
+html[data-os="win7"] .sm-footer .sm-logoff, html[data-os="win7"] .sd-xp { display: none; }
+html[data-os="win7"] .sm-footer .sm-shutdown { grid-column: 2; grid-row: 2; justify-self: start; align-self: center; display: flex; align-items: center; height: 26px; padding: 0 14px; color: #fff; border-radius: 3px; border: 1px solid rgba(0,0,0,.6); background: linear-gradient(rgba(255,255,255,.35), rgba(255,255,255,.1) 50%, rgba(0,0,0,.15) 51%, rgba(255,255,255,.15)); box-shadow: inset 0 0 0 1px rgba(255,255,255,.35); text-shadow: 0 0 3px #000; }
+html[data-os="win7"] .sm-footer .sm-shutdown img { display: none; }
+html[data-os="win7"] .sm-footer .sm-shutdown:hover { background: linear-gradient(rgba(140,210,255,.6), rgba(80,160,230,.4) 50%, rgba(20,90,180,.5) 51%, rgba(110,200,255,.5)); }
+
+/* =================== Vaporwave =================== */
+html[data-os="vaporwave"] body { background: linear-gradient(#1a0533 0%, #4b136e 30%, #c2369a 52%, #ff8bd0 58%, #2b0b47 58.2%, #120324 100%); }
+html[data-os="vaporwave"] .wp-vapor { display: block; position: absolute; inset: 0; overflow: hidden; }
+.vw-sun {
+  position: absolute; left: 50%; bottom: 42%; width: 340px; height: 340px; margin-left: -170px; border-radius: 50%;
+  background: linear-gradient(#fff36b 0%, #ffb347 35%, #ff5fa2 70%, #c81d8c 100%);
+  -webkit-mask: linear-gradient(#000 0 52%, transparent 52% 55%, #000 55% 62%, transparent 62% 66%, #000 66% 72%, transparent 72% 77%, #000 77% 82%, transparent 82% 88%, #000 88%);
+          mask: linear-gradient(#000 0 52%, transparent 52% 55%, #000 55% 62%, transparent 62% 66%, #000 66% 72%, transparent 72% 77%, #000 77% 82%, transparent 82% 88%, #000 88%);
+  filter: drop-shadow(0 0 40px rgba(255, 95, 162, .7)); transform: translateY(50%) translateY(-120px);
+}
+.vw-grid {
+  position: absolute; left: -50%; right: -50%; bottom: 0; height: 42%; transform: perspective(300px) rotateX(62deg); transform-origin: 50% 0;
+  background:
+    repeating-linear-gradient(90deg, rgba(1, 205, 254, .85) 0 2px, transparent 2px 60px),
+    repeating-linear-gradient(0deg, rgba(255, 63, 164, .85) 0 2px, transparent 2px 40px),
+    linear-gradient(#2b0b47, #120324);
+  box-shadow: 0 -2px 30px #ff3fa4;
+}
+.vw-palm { position: absolute; bottom: 30%; width: 170px; height: 300px; filter: drop-shadow(0 0 6px rgba(255, 63, 164, .6)); }
+.vw-palm-l { left: 8%; }
+.vw-palm-r { right: 6%; transform: scaleX(-1); height: 360px; width: 200px; }
+.vw-title { position: absolute; top: 9%; left: 0; right: 0; text-align: center; color: #fff; }
+.vw-title b { display: block; font: 64px/1 "Monoton", "Arial Black", sans-serif; letter-spacing: 6px; color: #fff; text-shadow: 0 0 10px #ff3fa4, 3px 3px 0 #01cdfe, -3px -2px 0 #ff3fa4; animation: vw-glitch 4s infinite steps(1); }
+.vw-title span { display: block; margin-top: 10px; font: 22px/1.2 "MS Gothic", "Yu Gothic", "Meiryo", sans-serif; letter-spacing: 8px; color: #01cdfe; text-shadow: 0 0 8px #01cdfe; }
+@keyframes vw-glitch { 0%, 92%, 100% { transform: none; } 93% { transform: translate(-4px, 1px) skewX(8deg); } 95% { transform: translate(3px, -1px); clip-path: inset(30% 0 40% 0); } 97% { transform: none; clip-path: none; } }
+@media (prefers-reduced-motion: reduce) { .vw-title b { animation: none; } }
+html[data-os="vaporwave"] #Icons span { font: 15px/13px "VT323", monospace; text-shadow: 1px 1px 0 #ff3fa4, 0 0 4px #000; word-break: normal; overflow-wrap: anywhere; }
+html[data-os="vaporwave"] #Taskbar { background: linear-gradient(#f3dcff, #e3c8f5); }
+html[data-os="vaporwave"] #StartButton { background: linear-gradient(#ffb3df, #ff7ac3); font: 18px/1 "VT323", monospace; }
+html[data-os="vaporwave"] .task { background: #f3dcff; }
+html[data-os="vaporwave"] .task.active { background: repeating-conic-gradient(#fff 0 25%, #f3dcff 0 50%) 0 0 / 2px 2px; }
+html[data-os="vaporwave"] #Clock { font: 16px/1 "VT323", monospace; color: #6a1b9a; }
+html[data-os="vaporwave"] .sm-banner { background: linear-gradient(0deg, #ff3fa4, #b967ff, #01cdfe); }
+html[data-os="vaporwave"] .sm-banner span { font-family: "Monoton", "Arial Black", sans-serif; font-size: 15px; }
+html[data-os="vaporwave"] .ie, html[data-os="vaporwave"] .window-body.ie-body { background: #e3c8f5; }
+
+/* =================== Boot splash + shut down =================== */
+.boot { position: fixed; inset: 0; z-index: 90000; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 40px;
+  background: radial-gradient(ellipse at 30% 30%, #fff 0 8%, transparent 30%), radial-gradient(ellipse at 70% 60%, #fff 0 6%, transparent 28%), linear-gradient(#5fa5ef, #2d74c8); transition: opacity .3s; }
+.boot.gone { opacity: 0; }
+.boot-logo { display: flex; align-items: center; gap: 14px; }
+.boot-logo .brick { width: 70px; height: 58px; border-radius: 4px; background: #d32b2b; box-shadow: inset 0 -8px 0 #8d1b1b; }
+.boot-logo .word { font: 900 52px/1 "Arial Black", Impact, sans-serif; color: #fff; text-shadow: 3px 3px 0 #123; }
+.boot-logo .word i { color: #ffd84a; }
+.boot-logo sup { font: italic bold 30px Arial, sans-serif; color: #ffd84a; }
+.boot-bar { width: 240px; height: 14px; background: #000; overflow: hidden; border: 1px solid #fff; }
+.boot-bar span { display: block; width: 60px; height: 100%; background: linear-gradient(90deg, transparent, #4af, #fff, #4af, transparent); animation: bootbar 1s linear infinite; }
+@keyframes bootbar { from { transform: translateX(-60px); } to { transform: translateX(240px); } }
+html[data-os="winxp"] .boot { background: #000; }
+html[data-os="win7"] .boot { background: #000; }
+html[data-os="vaporwave"] .boot { background: linear-gradient(#1a0533, #c2369a); }
+.safe-off { position: fixed; inset: 0; z-index: 95000; background: #000; color: #ff8c00; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 30px; text-align: center; cursor: pointer; }
+.safe-off p { font: bold 34px/1.4 Arial, sans-serif; margin: 0; }
+.safe-off small { color: #444; }
+
+/* Avatar thumbnail in the XP/7 Start menu header */
+.sm-avatar .AvatarStage { position: relative; perspective: 600px; }
+.sm-avatar .av-rig, .sm-avatar .av-part { position: absolute; left: 0; top: 0; transform-style: preserve-3d; }
+.sm-avatar .av-face { position: absolute; backface-visibility: hidden; }
+.sm-avatar .av-hat { position: absolute; max-width: none; }
+
+/* =================== Touch: game controls + bigger tap targets =================== */
+.touchpad { position: absolute; inset: 0; pointer-events: none; z-index: 3; user-select: none; -webkit-user-select: none; }
+.touchpad button { all: unset; box-sizing: border-box; pointer-events: auto; touch-action: none; display: flex; align-items: center; justify-content: center;
+  font: bold 14px/1 Arial, sans-serif; color: #fff; text-shadow: 0 1px 2px #000; -webkit-tap-highlight-color: transparent; }
+.tp-stick { position: absolute; left: 4%; bottom: 6%; width: 128px; height: 128px; border-radius: 50%; pointer-events: auto; touch-action: none;
+  background: radial-gradient(circle, rgba(255,255,255,.18), rgba(255,255,255,.08) 60%, rgba(255,255,255,.22)); border: 2px solid rgba(255,255,255,.45); }
+.tp-knob { position: absolute; left: 50%; top: 50%; width: 56px; height: 56px; margin: -28px 0 0 -28px; border-radius: 50%; background: rgba(255,255,255,.55); box-shadow: 0 2px 6px rgba(0,0,0,.4); }
+.tp-right { position: absolute; right: 4%; bottom: 6%; display: grid; grid-template-columns: 44px 44px; grid-template-rows: 44px 84px; gap: 10px; }
+.touchpad .tp-jump { grid-column: 1 / 3; border-radius: 50%; width: 98px; height: 84px; background: rgba(63, 165, 58, .55); border: 2px solid rgba(255,255,255,.6) !important; }
+.touchpad .tp-zoom { border-radius: 50%; background: rgba(255,255,255,.25); border: 2px solid rgba(255,255,255,.5) !important; font-size: 22px !important; }
+.touchpad .down { filter: brightness(1.5); transform: scale(.95); }
+.touchpad .tp-hide { position: absolute; right: 6px; top: 6px; width: 34px; height: 34px; border-radius: 8px; background: rgba(0,0,0,.35); font-size: 18px !important; }
+.touchpad.collapsed .tp-stick, .touchpad.collapsed .tp-right { display: none; }
+@media (max-height: 420px) { .tp-stick { width: 104px; height: 104px; } .tp-right { grid-template-rows: 40px 70px; } .tp-jump { height: 70px; width: 90px; } }
+
+body { touch-action: manipulation; }
+.title-bar, .rs { touch-action: none; }
+@media (pointer: coarse) {
+  :root { --taskbar-h: 40px; }
+  html[data-os="win7"] { --taskbar-h: 44px; }
+  #StartButton { height: 34px; padding: 0 10px 0 6px; font-size: 13px; }
+  #StartButton img { width: 20px; height: 20px; }
+  .task { height: 34px; }
+  #Tray { height: 34px; }
+  #QuickLaunch button { width: 36px; height: 34px; }
+  .sm-main li > button { min-height: 40px; }
+  .sm-programs li > button { min-height: 38px; }
+  .title-bar { min-height: 30px; }
+  .title-bar-controls button { min-width: 30px !important; min-height: 26px !important; background-position: center !important; }
+  .rs-n, .rs-s { height: 14px; } .rs-e, .rs-w { width: 14px; } .rs-ne, .rs-nw, .rs-se, .rs-sw { width: 24px; height: 24px; }
+  .rs-n { top: -7px; } .rs-s { bottom: -7px; } .rs-e { right: -7px; } .rs-w { left: -7px; }
+  .ie-toolbar button { min-width: 44px; min-height: 40px; }
+  .ie-menu > button { padding: 6px 10px; }
+  .ie-menu li button { padding: 10px 20px 10px 8px; }
+  .ie-addr-wrap { height: 32px; }
+  .ie-addr-wrap input { font-size: 16px; } /* stops iOS zooming into the address bar */
+  #Icons { gap: 16px 6px; }
+  .msg-buttons button, .logon-buttons button, .launcher-buttons button { min-height: 34px; min-width: 88px; }
+  .logon-fields input { min-height: 32px; font-size: 16px; }
+}
+
+/* =================== Mobile: windows always full screen =================== */
+@media (max-width: 700px) {
+  #QuickLaunch, #TrayMoney { display: none !important; }
+  .task { flex-basis: 110px; }
+  .title-bar-controls .tb-max { display: none; }
+  #Icons { flex-direction: row; flex-wrap: wrap; right: 0; bottom: auto; justify-content: flex-start; }
+  .ie-toolbar button span { display: none; }
+  .ie-toolbar button { min-width: 30px; }
+  .ie-menubar, .ie-toolbar { padding-right: 4px; }
+  .ie-throbber, .ie-zone, .ie-progress { display: none !important; }
+  #StartMenu { max-height: calc(100% - var(--taskbar-h)); overflow: auto; }
+  html:is([data-os="win7"], [data-os="winxp"]) .sm-main { grid-template-columns: 1fr; }
+  html[data-os="winxp"] .sm-user, html[data-os="winxp"] .sm-footer { grid-column: 1; }
+  html[data-os="win7"] .sm-user { display: none; }
+  html[data-os="win7"] .sm-system { grid-row: auto; padding-top: 0 !important; }
+  html[data-os="win7"] .sm-footer input { grid-row: auto; }
+  html[data-os="win7"] .sm-footer .sm-shutdown { grid-column: 1; grid-row: auto; }
+  .sm-submenu { position: static; box-shadow: none; }
+  .wp-logo { transform: scale(.5); }
+  .vw-title b { font-size: 30px; } .vw-title span { font-size: 13px; letter-spacing: 3px; }
+  .vw-sun { width: 220px; height: 220px; margin-left: -110px; }
+}

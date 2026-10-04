@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Place - RBXBanland</title>
+<link rel="stylesheet" href="css/site.css">
+<link rel="icon" href="img/favicon.svg" type="image/svg+xml">
+</head>
+<body>
+<div id="Container">
+  <header id="Header"></header>
+
+  <div id="ItemContainer">
+    <div class="Main">
+      <div class="Breadcrumbs"><a href="games.html">Games</a> &raquo; <span id="Crumb"></span></div>
+      <h2 class="PageTitle" id="PlaceName">Loading&hellip;</h2>
+      <div class="Label" id="PlaceEra"></div>
+      <p></p>
+      <div class="PlaceThumb" id="PlaceThumb"></div>
+      <a class="PlayButton" id="PlayButton" href="#">Play<small>Opens RobloxApp.exe and runs the real 2008 client in your browser</small></a>
+      <div class="StandardBox">
+        <div class="StandardBoxHeader">Description</div>
+        <p class="Description" id="PlaceDescription"></p>
+      </div>
+    </div>
+
+    <aside class="Side">
+      <div class="StandardBox">
+        <div class="StandardBoxHeader">Statistics</div>
+        <div class="BoxBody">
+          <div class="Stats"><span class="Label">Era:</span> <span id="StatEra"></span></div>
+          <div class="Stats"><span class="Label">Client:</span> <span id="StatClient"></span></div>
+          <div class="Stats"><span class="Label">Visited:</span> <span id="StatVisits"></span></div>
+          <div class="Stats"><span class="Label">RBXBanland visits:</span> <span id="StatRbx"></span></div>
+          <div class="Stats"><span class="Label">Your visits:</span> <span id="StatMine"></span></div>
+          <div class="Stats"><span class="Label">Place size:</span> <span id="StatSize"></span></div>
+          <div class="Stats"><span class="Label">Download:</span> <span id="StatDownload"></span></div>
+        </div>
+      </div>
+      <div class="StandardBox" id="PlayingBox" hidden>
+        <div class="StandardBoxHeader">Playing now</div>
+        <div class="BoxBody" id="PlayingList"></div>
+      </div>
+      <div class="StandardBox">
+        <div class="StandardBoxHeader">Before you play</div>
+        <p class="Description">The first launch downloads about 180 MB (Wine and the ROBLOX client) and takes a minute or two to boot. After that your browser caches it.
+
+Controls: WASD or arrow keys to walk, Space to jump, right-drag to turn the camera, mouse wheel or I/O to zoom.
+
+You earn Tix for playing (a few times a day)!</p>
+      </div>
+    </aside>
+  </div>
+
+  <div id="FooterSlot"></div>
+</div>
+
+<script src="js/common.js"></script>
+<script>
+(async function () {
+  RB.mount("Games");
+  const cat = await RB.catalog();
+  const maps = await RB.places();
+  const m = maps.find((x) => x.id === RB.param("id"));
+  if (!m) {
+    document.getElementById("PlaceName").textContent = "Place not found";
+    document.getElementById("PlayButton").style.display = "none";
+    return;
+  }
+  const $ = (id) => document.getElementById(id);
+  document.title = m.name + " - RBXBanland";
+  $("Crumb").textContent = m.name;
+  $("PlaceName").textContent = m.name;
+  $("PlaceEra").textContent = "A place from " + m.era;
+  $("PlaceThumb").innerHTML = RB.thumb(m, 420, 230);
+  $("PlaceDescription").textContent = m.description || "No description.";
+  $("StatEra").textContent = m.era;
+  $("StatClient").textContent = cat.client;
+  const showVisits = () => {
+    $("StatVisits").textContent = RB.num(m.visits);
+    $("StatRbx").textContent = RB.num(m.rbxVisits);
+    $("StatMine").textContent = RB.num(m.mine);
+  };
+  showVisits();
+  $("StatSize").textContent = RB.num(m.sizeKB) + " KB";
+  $("StatDownload").textContent = RB.num(m.zipKB) + " KB";
+  if (m.playing.length) {
+    $("PlayingBox").hidden = false;
+    $("PlayingList").innerHTML = m.playing.map((n) => RB.userLink(n)).join(", ");
+  }
+  const play = $("PlayButton");
+  play.href = "play.html?id=" + encodeURIComponent(m.id);
+  play.addEventListener("click", async (e) => {
+    e.preventDefault();
+    const res = await RB.play(m);
+    if (res && res.visits !== m.rbxVisits) {
+      m.visits += res.visits - m.rbxVisits;
+      m.rbxVisits = res.visits;
+      m.mine += 1;
+      showVisits();
+    }
+    if (res?.reward) RB.alert(`You earned ${res.reward} Tix for playing! Spend them in the Catalog.`, { title: "Tix!" });
+  });
+})();
+</script>
+</body>
+</html>

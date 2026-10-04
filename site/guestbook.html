@@ -1,0 +1,116 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Guestbook - RBXBanland</title>
+<link rel="stylesheet" href="css/site.css">
+<link rel="icon" href="img/favicon.svg" type="image/svg+xml">
+<style>
+  /* The guestbook goes full GeoCities. */
+  #GeoPage {
+    margin-top: 10px; padding: 16px; color: #fff; font-family: "Comic Sans MS", "Comic Neue", cursive, sans-serif; font-size: 12px;
+    background:
+      radial-gradient(1px 1px at 20px 30px, #fff, transparent), radial-gradient(1px 1px at 80px 120px, #ff0, transparent),
+      radial-gradient(1.5px 1.5px at 150px 60px, #fff, transparent), radial-gradient(1px 1px at 200px 160px, #0ff, transparent),
+      radial-gradient(1px 1px at 120px 190px, #fff, transparent), #000033;
+    background-size: 220px 220px; border: 4px ridge #c0c0c0;
+  }
+  #GeoPage a { color: #0ff; } #GeoPage a:visited { color: #f0f; }
+  #GeoPage h1 { text-align: center; font-size: 30px; margin: 4px 0; }
+  .GeoCenter { text-align: center; }
+  .GbForm { background: #000080; border: 3px outset #8080ff; padding: 10px; margin: 12px auto; max-width: 560px; }
+  .GbForm label { display: block; margin: 6px 0 2px; color: #ff0; font-weight: bold; }
+  .GbForm textarea, .GbForm input, .GbForm select { font-family: inherit; }
+  .GbEntry { border: 2px dashed #ff0; background: rgba(0,0,64,.85); margin: 10px 0; display: flex; gap: 10px; padding: 8px; }
+  .GbEntry .Who { flex: 0 0 110px; text-align: center; font-size: 11px; word-break: break-all; }
+  .GbEntry .Thumb { width: 90px; height: 90px; margin: 0 auto 4px; background: rgba(255,255,255,.08); }
+  .GbEntry .Msg { flex: 1; min-width: 0; word-wrap: break-word; line-height: 1.5; }
+  .GbEntry .When { color: #9cf; font-size: 10px; margin-top: 6px; }
+  .GbEntry .LinkButton { background: none; border: 0; color: #f88; cursor: pointer; font: inherit; font-size: 10px; padding: 0; }
+  .Mood { color: #ff0; }
+  #GeoPage .Pager a { color: #0ff; }
+  .Flame { font-size: 22px; }
+  @media (max-width: 640px) { .GbEntry { flex-direction: column; } .GbEntry .Who { flex-basis: auto; } }
+</style>
+</head>
+<body>
+<div id="Container">
+  <header id="Header"></header>
+  <main id="Main">
+    <div id="GeoPage">
+      <h1 class="Rainbow">~*~ Sign My Guestbook!! ~*~</h1>
+      <p class="GeoCenter"><span class="Flame">&#128293;</span> <span class="Blink" style="color:#ff0;font-weight:bold">Thanx for visiting RBXBanland!</span> <span class="Flame">&#128293;</span></p>
+      <p class="GeoCenter">You are visitor number <span id="Hits">...</span></p>
+      <hr class="Rainbow">
+      <form class="GbForm" id="GbForm">
+        <div class="GeoCenter" style="color:#0f0">&#9998; Leave a message for everyone! &#9998;</div>
+        <label for="GbMsg">Your message:</label>
+        <textarea id="GbMsg" rows="4" maxlength="500" required></textarea>
+        <label for="GbHome">Your homepage (optional):</label>
+        <input type="text" id="GbHome" maxlength="100" placeholder="http://" style="width:100%">
+        <label for="GbMood">Current mood:</label>
+        <select id="GbMood"><option value="">(none)</option><option>happy</option><option>cool</option><option>bored</option><option>silly</option>
+          <option>sad</option><option>angry</option><option>nostalgic</option><option>noob</option></select>
+        <div class="Error" id="GbErr" style="color:#f88"></div>
+        <p class="GeoCenter"><button class="Button Big">Sign It!</button></p>
+      </form>
+      <hr class="Rainbow">
+      <div id="Entries"><p class="GeoCenter">Loading entries...</p></div>
+      <div id="GbPager"></div>
+      <p class="GeoCenter"><span class="UnderConstruction"><b>UNDER CONSTRUCTION</b></span></p>
+      <p class="GeoCenter" style="font-size:10px;color:#9cf">This guestbook is best viewed with your eyes. &copy; RBXBanland Webmaster</p>
+    </div>
+  </main>
+  <div id="FooterSlot"></div>
+</div>
+<script src="js/common.js"></script>
+<script src="js/avatar.js"></script>
+<script>
+(async function () {
+  const me = await RB.page("Guestbook");
+  if (!me) return;
+  const $ = (id) => document.getElementById(id);
+  const MOODS = { happy: ":-)", cool: "B-)", bored: ":-|", silly: ":-P", sad: ":-(", angry: ">:-(", nostalgic: "*sigh*", noob: "n00b" };
+  const page = Number(RB.param("page")) || 1;
+  RB.api("hits").then((h) => { $("Hits").innerHTML = RB.counter(h.hits); }).catch(() => {});
+
+  async function load() {
+    const d = await RB.api("guestbook?page=" + page);
+    const items = await RB.items();
+    $("Entries").innerHTML = d.entries.length ? d.entries.map((g, i) => `
+      <div class="GbEntry">
+        <div class="Who"><div class="Thumb" data-av="${i}"></div>${RB.userLink(g.username)}
+          ${g.mood ? `<div class="Mood">mood: ${RB.esc(g.mood)} ${RB.esc(MOODS[g.mood] || "")}</div>` : ""}</div>
+        <div class="Msg">${RB.rich(g.message)}
+          ${g.homepage ? `<div style="margin-top:6px">&#127968; <a href="${RB.esc(g.homepage)}" target="_blank" rel="noopener noreferrer nofollow">${RB.esc(g.homepage)}</a></div>` : ""}
+          <div class="When">Signed ${RB.datetime(g.created)}
+            ${g.username === me.username || me.admin ? ` &middot; <button class="LinkButton" data-del="${g.id}">delete</button>` : ""}</div></div>
+      </div>`).join("") : `<p class="GeoCenter">Nobody has signed yet. Be the FIRST!!!</p>`;
+    $("Entries").querySelectorAll("[data-av]").forEach((el) =>
+      RBAvatar.headshot(el, d.entries[el.dataset.av].avatar, items, 90));
+    $("GbPager").innerHTML = RB.pager(d.page, d.pages, (p) => "guestbook.html?page=" + p);
+  }
+
+  $("GbForm").addEventListener("submit", async (e) => {
+    e.preventDefault();
+    $("GbErr").textContent = "";
+    const btn = e.target.querySelector("button");
+    btn.disabled = true;
+    try {
+      await RB.api("guestbook", { method: "POST", body: { message: $("GbMsg").value, homepage: $("GbHome").value.trim() === "http://" ? "" : $("GbHome").value, mood: $("GbMood").value } });
+      $("GbMsg").value = "";
+      if (page !== 1) location.href = "guestbook.html"; else await load();
+    } catch (ex) { $("GbErr").textContent = ex.message; }
+    btn.disabled = false;
+  });
+  $("Entries").addEventListener("click", async (e) => {
+    const b = e.target.closest("[data-del]");
+    if (!b || !(await RB.confirm("Delete this guestbook entry?", { ok: "Delete" }))) return;
+    try { await RB.api(`guestbook/${b.dataset.del}/delete`, { method: "POST" }); await load(); } catch (ex) { RB.alert(ex.message); }
+  });
+  await load();
+})();
+</script>
+</body>
+</html>

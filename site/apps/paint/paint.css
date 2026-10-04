@@ -1,0 +1,60 @@
+/* MS Paint 98 style layout. Tool icons and cursors are from JS Paint (MIT), see vendor/jspaint/LICENSE.txt. */
+body { display: flex; flex-direction: column; }
+#Main { flex: 1; display: flex; min-height: 0; }
+#ToolBox { width: 56px; flex: none; display: flex; flex-direction: column; align-items: center; padding: 1px 0 0 2px; }
+.tools { display: grid; grid-template-columns: 25px 25px; }
+.tool { width: 25px; height: 25px; background: var(--face); box-shadow: var(--raised-soft); display: flex; align-items: center; justify-content: center; }
+.tool span { width: 16px; height: 16px; background: url("vendor/jspaint/tools.png") no-repeat; }
+.tool.on { box-shadow: var(--pressed); background: repeating-conic-gradient(var(--face) 0 25%, var(--hilite) 0 50%) 0 0 / 2px 2px; }
+.tool.on span { transform: translate(1px, 1px); }
+.opts { width: 41px; height: 66px; margin-top: 3px; box-shadow: var(--thin-sunken); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1px; position: relative; }
+.opt { display: flex; align-items: center; justify-content: center; cursor: default; }
+.opt.on { background: var(--sel); }
+.opt.on canvas { filter: invert(1); }
+.opt-grid { display: grid; grid-template-columns: repeat(3, 11px); grid-auto-rows: 11px; gap: 2px 1px; }
+.opt-trans { width: 37px; height: 23px; background: url("vendor/jspaint/options-transparency.png") no-repeat; }
+.opt-trans.t2 { background-position: 0 -22px; }
+.opt-air { width: 24px; height: 24px; background: url("vendor/jspaint/options-airbrush-size.png") no-repeat; }
+.opt-mag { width: 23px; height: 9px; background: url("vendor/jspaint/options-magnification.png") no-repeat; }
+.opt.on .opt-trans, .opt.on .opt-air, .opt.on .opt-mag { filter: invert(1); }
+.opt-line { width: 36px; height: 9px; }
+.opt-line i { display: block; width: 26px; margin: 0 auto; background: #000; }
+.opt.on .opt-line i { background: #fff; }
+.opt-fill { width: 37px; height: 20px; }
+
+#Area { flex: 1; overflow: auto; background: #808080; box-shadow: var(--sunken); position: relative; }
+html[data-os="win7"] #Area, html[data-os="winxp"] #Area { background: #8b8b8b; }
+#Stage { position: relative; margin: 3px; display: inline-block; vertical-align: top; }
+#Stage canvas { display: block; image-rendering: pixelated; }
+#Img { background: #fff; }
+#Over { position: absolute; left: 0; top: 0; pointer-events: none; }
+#SelCanvas { position: absolute; pointer-events: none; }
+#SelBox { position: absolute; outline: 1px dashed #000; outline-offset: 0; pointer-events: none; }
+#SelBox.lift { outline-color: #000080; }
+#TextBox { position: absolute; resize: none; border: 1px dashed #000; padding: 0; margin: 0; background: transparent; outline: none; overflow: hidden; line-height: 1.15; white-space: pre-wrap; }
+#TextBox.opaque { background: var(--paper, #fff); }
+.grip { position: absolute; width: 3px; height: 3px; background: #000080; }
+.grip[data-dir="e"] { cursor: ew-resize; } .grip[data-dir="s"] { cursor: ns-resize; } .grip[data-dir="se"] { cursor: nwse-resize; }
+#ResizeGhost { position: absolute; left: 0; top: 0; outline: 1px dotted #000; pointer-events: none; }
+
+#ColorBox { flex: none; height: 49px; display: flex; align-items: flex-start; padding: 6px 0 0 2px; gap: 3px; }
+#Current { width: 30px; height: 31px; box-shadow: var(--thin-sunken); position: relative; background: repeating-conic-gradient(var(--face) 0 25%, var(--hilite) 0 50%) 0 0 / 2px 2px; }
+#Current div { position: absolute; width: 15px; height: 14px; box-shadow: inset 1px 1px var(--shadow), inset -1px -1px var(--hilite), inset 2px 2px #000, inset -2px -2px var(--light); }
+#Current .fgc { left: 4px; top: 4px; z-index: 1; }
+#Current .bgc { left: 11px; top: 12px; }
+#Palette { display: grid; grid-template-columns: repeat(14, 16px); grid-template-rows: 16px 16px; }
+.sw { box-shadow: inset 1px 1px var(--shadow), inset -1px -1px var(--hilite), inset 2px 2px #000, inset -2px -2px var(--light); }
+.statusbar #Help { flex: 1; }
+.statusbar #Coords { width: 72px; } .statusbar #SizeInfo { width: 72px; }
+.statusbar > div:last-child { margin-right: 14px; }
+
+#FontBar { position: fixed; right: 30px; top: 40px; z-index: 30; background: var(--face); box-shadow: var(--raised-soft); padding: 2px 3px 4px; }
+.fb-title { background: linear-gradient(90deg, var(--title-a), var(--title-b)); color: #fff; font-weight: bold; padding: 1px 3px; margin-bottom: 3px; cursor: move; }
+.fb-row { display: flex; gap: 3px; align-items: center; }
+#FontFace { width: 140px; height: 21px; padding: 1px; }
+#FontSize { width: 46px; height: 21px; padding: 1px; }
+.fb-btn { width: 23px; height: 22px; background: var(--face); box-shadow: var(--raised-soft); border: 0; }
+.fb-btn.on { box-shadow: var(--pressed); background: repeating-conic-gradient(var(--face) 0 25%, var(--hilite) 0 50%) 0 0 / 2px 2px; }
+html.hide-tools #ToolBox, html.hide-colors #ColorBox, html.hide-status #Status { display: none; }
+#ViewBitmap { position: fixed; inset: 0; z-index: 2000; background: #000; display: flex; align-items: center; justify-content: center; }
+#ViewBitmap canvas { image-rendering: pixelated; max-width: 100%; max-height: 100%; }

@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>BanAmp</title>
+<link rel="icon" href="icon.png">
+<link rel="stylesheet" href="../_lib/win.css">
+<link rel="stylesheet" href="banamp.css">
+<script src="../_lib/app.js"></script>
+<script src="pixfont.js"></script>
+</head>
+<body>
+<div id="App">
+  <!-- ===== Main window (275x116) ===== -->
+  <section id="Main" class="bw">
+    <div class="tbar" data-drag>
+      <button class="tb-btn tb-menu" data-act="menu" title="Main menu"></button>
+      <span class="tb-grip l"></span><span class="tb-title" data-text="BANAMP"></span><span class="tb-grip r"></span>
+      <button class="tb-btn tb-min" data-act="minimize" title="Minimize"></button>
+      <button class="tb-btn tb-shade" data-act="shade" title="Windowshade mode"></button>
+      <button class="tb-btn tb-close" data-act="close" title="Close"></button>
+    </div>
+    <div class="clutter" title="Options">
+      <button data-act="opts" title="Options menu">O</button><button data-act="ontop" title="Always on top">A</button><button data-act="info" title="File info">I</button><button data-act="double" title="Double size">D</button><button data-act="vismenu" title="Visualization menu">V</button>
+    </div>
+    <div class="lcd">
+      <canvas id="Status" width="9" height="9"></canvas>
+      <canvas id="Time" width="63" height="13" title="Click to toggle elapsed / remaining"></canvas>
+      <canvas id="Vis" width="76" height="16" title="Click to change visualization"></canvas>
+    </div>
+    <div class="marquee-box"><canvas id="Marquee" width="154" height="6"></canvas></div>
+    <div class="info-row">
+      <canvas id="Kbps" width="17" height="6"></canvas><span class="unit u-kbps" data-text="KBPS"></span>
+      <canvas id="Khz" width="11" height="6"></canvas><span class="unit u-khz" data-text="KHZ"></span>
+      <span id="Mono" class="ms" data-text="MONO"></span><span id="Stereo" class="ms" data-text="STEREO"></span>
+    </div>
+    <div id="Volume" class="slider vol" title="Volume"><div class="thumb"></div></div>
+    <div id="Balance" class="slider bal" title="Panning"><div class="thumb"></div></div>
+    <button id="BtnEQ" class="tog eq" data-act="toggleEQ" title="Toggle graphical equalizer"><i></i><span data-text="EQ"></span></button>
+    <button id="BtnPL" class="tog pl" data-act="togglePL" title="Toggle playlist editor"><i></i><span data-text="PL"></span></button>
+    <div id="Pos" class="posbar" title="Seeking bar"><div class="thumb"></div></div>
+    <div class="transport">
+      <button class="tp prev" data-act="prev" title="Previous track"></button><button class="tp play" data-act="play" title="Play"></button><button class="tp pause" data-act="pause" title="Pause"></button><button class="tp stop" data-act="stop" title="Stop"></button><button class="tp next" data-act="next" title="Next track"></button>
+    </div>
+    <button class="tp eject" data-act="open" title="Open file(s)"></button>
+    <button id="BtnShuffle" class="tog shuffle" data-act="shuffle" title="Toggle shuffle"><i></i><span data-text="SHUFFLE"></span></button>
+    <button id="BtnRepeat" class="tog repeat" data-act="repeat" title="Toggle repeat"><i></i><span data-text="REP"></span></button>
+    <button class="logo" data-act="about" title="About BanAmp"></button>
+  </section>
+
+  <!-- ===== Equalizer (275x116) ===== -->
+  <section id="EQ" class="bw">
+    <div class="tbar">
+      <span class="tb-grip l"></span><span class="tb-title" data-text="BANAMP EQUALIZER"></span><span class="tb-grip r"></span>
+      <button class="tb-btn tb-close" data-act="toggleEQ" title="Close equalizer"></button>
+    </div>
+    <button id="EqOn" class="tog eqon" data-act="eqOn"><i></i><span data-text="ON"></span></button>
+    <button id="EqAuto" class="tog eqauto" data-act="eqAuto"><i></i><span data-text="AUTO"></span></button>
+    <div class="eqgraph"><canvas id="EqGraph" width="113" height="19"></canvas></div>
+    <button class="presets" data-act="presets"><span data-text="PRESETS"></span></button>
+    <div class="eqbands" id="Bands"></div>
+    <div class="eqlabels" id="EqLabels"></div>
+  </section>
+
+  <!-- ===== Playlist ===== -->
+  <section id="PL" class="bw">
+    <div class="tbar">
+      <span class="tb-grip l"></span><span class="tb-title" data-text="BANAMP PLAYLIST"></span><span class="tb-grip r"></span>
+      <button class="tb-btn tb-close" data-act="togglePL" title="Close playlist"></button>
+    </div>
+    <div class="pl-body">
+      <div id="List" class="pl-list" tabindex="0" role="listbox" aria-label="Playlist"></div>
+      <div class="pl-scroll" id="PlScroll"><div class="pl-thumb"></div></div>
+    </div>
+    <div class="pl-bottom">
+      <button class="plb" data-act="plAdd"><span data-text="ADD"></span></button>
+      <button class="plb" data-act="plRem"><span data-text="REM"></span></button>
+      <button class="plb" data-act="plSel"><span data-text="SEL"></span></button>
+      <button class="plb" data-act="plMisc"><span data-text="MISC"></span></button>
+      <div class="pl-info">
+        <canvas id="PlTotal" width="80" height="6"></canvas>
+        <div class="pl-mini">
+          <button data-act="prev" title="Previous"></button><button data-act="play" title="Play"></button><button data-act="pause" title="Pause"></button><button data-act="stop" title="Stop"></button><button data-act="next" title="Next"></button><button data-act="open" title="Open"></button>
+          <canvas id="PlTime" width="30" height="6"></canvas>
+        </div>
+      </div>
+      <button class="plb wide" data-act="plList"><span data-text="LIST&#10;OPTS"></span></button>
+    </div>
+  </section>
+</div>
+<input type="file" id="FileIn" accept="audio/*,.mp3,.ogg,.wav,.flac,.m4a,.aac,.opus,.webm" multiple hidden>
+<div id="Drop" hidden><span>Drop music files to add them to the playlist</span></div>
+<script src="banamp.js"></script>
+</body>
+</html>

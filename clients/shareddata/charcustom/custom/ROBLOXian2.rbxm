@@ -1,0 +1,54 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<roblox xmlns:xmime="http://www.w3.org/2005/05/xmlmime" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://www.roblox.com/roblox.xsd" version="4">
+  <External>null</External>
+  <External>nil</External>
+  <Item class="StringValue" referent="RBX0">
+    <Properties>
+      <bool name="Archivable">true</bool>
+      <string name="Name">Package</string>
+      <string name="Value">Robloxian2</string>
+    </Properties>
+    <Item class="StringValue" referent="RBX1">
+      <Properties>
+        <bool name="Archivable">true</bool>
+        <string name="Name">Head</string>
+        <string name="Value"></string>
+      </Properties>
+    </Item>
+    <Item class="StringValue" referent="RBX2">
+      <Properties>
+        <bool name="Archivable">true</bool>
+        <string name="Name">Torso</string>
+        <string name="Value">rbxasset://../../../shareddata/charcustom/custom/fonts/R2Torso.mesh</string>
+      </Properties>
+    </Item>
+    <Item class="StringValue" referent="RBX3">
+      <Properties>
+        <bool name="Archivable">true</bool>
+        <string name="Name">Left Leg</string>
+        <string name="Value">rbxasset://../../../shareddata/charcustom/custom/fonts/R2LLeg.mesh</string>
+      </Properties>
+    </Item>
+    <Item class="StringValue" referent="RBX4">
+      <Properties>
+        <bool name="Archivable">true</bool>
+        <string name="Name">Right Arm</string>
+        <string name="Value">rbxasset://../../../shareddata/charcustom/custom/fonts/R2RArm.mesh</string>
+      </Properties>
+    </Item>
+    <Item class="StringValue" referent="RBX5">
+      <Properties>
+        <bool name="Archivable">true</bool>
+        <string name="Name">Left Arm</string>
+        <string name="Value">rbxasset://../../../shareddata/charcustom/custom/fonts/R2LArm.mesh</string>
+      </Properties>
+    </Item>
+    <Item class="StringValue" referent="RBX6">
+      <Properties>
+        <bool name="Archivable">true</bool>
+        <string name="Name">Right Leg</string>
+        <string name="Value">rbxasset://../../../shareddata/charcustom/custom/fonts/R2RLeg.mesh</string>
+      </Properties>
+    </Item>
+  </Item>
+</roblox>

@@ -1,0 +1,141 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Forums - RBXBanland</title>
+<link rel="stylesheet" href="css/site.css">
+<link rel="icon" href="img/favicon.svg" type="image/svg+xml">
+</head>
+<body>
+<div id="Container">
+  <header id="Header"></header>
+  <main id="Main"><div class="Empty">Loading&hellip;</div></main>
+  <div id="FooterSlot"></div>
+</div>
+<script src="js/common.js"></script>
+<script src="js/avatar.js"></script>
+<script>
+(async function () {
+  const me = await RB.page("Forums");
+  if (!me) return;
+  const main = document.getElementById("Main");
+  const boardId = RB.param("board"), threadId = RB.param("thread"), page = RB.param("page") || "1";
+  const crumbs = (parts) => `<div class="Breadcrumbs"><a href="forums.html">RBXBanland Forum</a>${parts.map((p) => " &raquo; " + p).join("")}</div>`;
+  const last = (l) => l ? `${RB.datetime(l.at)}<br>by ${l.by ? RB.userLink(l.by) : "?"}` : "<span class='Label'>No posts yet</span>";
+
+  try {
+    if (threadId) await showThread(); else if (boardId) await showBoard(); else await showIndex();
+  } catch (e) { RB.fatal(e.message, "Forums"); }
+
+  async function showIndex() {
+    const d = await RB.api("forums");
+    document.title = "Forums - RBXBanland";
+    main.innerHTML = `<h2 class="PageTitle">Forums</h2>${crumbs([])}
+      <table class="ForumTable"><thead><tr><th>Forum</th><th class="Num">Threads</th><th class="Num Hide">Posts</th><th class="Last">Last Post</th></tr></thead><tbody>
+      ${d.categories.map((c) => `<tr class="Category"><td colspan="4">${RB.esc(c.name)}</td></tr>` + c.boards.map((b) => `
+        <tr><td><a class="BoardName" href="forums.html?board=${b.id}">${RB.esc(b.name)}</a><div class="Label">${RB.esc(b.description)}</div></td>
+          <td class="Num">${RB.num(b.threads)}</td><td class="Num Hide">${RB.num(b.posts)}</td><td class="Last">${last(b.last)}</td></tr>`).join("")).join("")}
+      </tbody></table>
+      <p class="Hint">Be nice. No spamming. Moderators can delete anything. <span class="UnderConstruction"><b>Search coming soon</b></span></p>`;
+  }
+
+  async function showBoard() {
+    const d = await RB.api(`forums/boards/${encodeURIComponent(boardId)}?page=${encodeURIComponent(page)}`);
+    document.title = d.board.name + " - Forums - RBXBanland";
+    const href = (p) => `forums.html?board=${d.board.id}&page=${p}`;
+    main.innerHTML = `<h2 class="PageTitle">${RB.esc(d.board.name)}</h2>
+      ${crumbs([RB.esc(d.board.category), `<a href="forums.html?board=${d.board.id}">${RB.esc(d.board.name)}</a>`])}
+      <p><a class="Button" href="#NewThread">New Thread</a></p>
+      <table class="ForumTable"><thead><tr><th>Subject</th><th class="Num Hide">Author</th><th class="Num">Replies</th><th class="Num Hide">Views</th><th class="Last">Last Post</th></tr></thead><tbody>
+      ${d.threads.length ? d.threads.map((t) => `<tr>
+        <td>${t.pinned ? '<span class="Sticky">[Sticky]</span> ' : ""}${t.locked ? "&#128274; " : ""}<a class="BoardName" href="forums.html?thread=${t.id}">${RB.esc(t.title)}</a>
+          ${Date.now() - t.created < 86400000 ? ' <span class="New">NEW!</span>' : ""}</td>
+        <td class="Num Hide">${RB.userLink(t.author)}</td><td class="Num">${RB.num(t.replies)}</td><td class="Num Hide">${RB.num(t.views)}</td>
+        <td class="Last">${last(t.last)}</td></tr>`).join("") : `<tr><td colspan="5" class="Empty">No threads yet. Start one!</td></tr>`}
+      </tbody></table>
+      ${RB.pager(d.page, d.pages, href)}
+      <div class="StandardBox" id="NewThread"><div class="StandardBoxHeader">Post a New Thread</div>
+        <form class="BoxBody Form" id="ThreadForm">
+          <div class="Row"><label for="Subject">Subject</label><input type="text" id="Subject" maxlength="80" required style="width:100%"></div>
+          <div class="Row"><label for="Body">Message</label><textarea id="Body" rows="8" maxlength="5000" required></textarea></div>
+          <div class="Error" id="ThreadErr"></div>
+          <button class="Button Big">Post</button>
+        </form></div>`;
+    document.getElementById("ThreadForm").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const btn = e.target.querySelector("button");
+      btn.disabled = true;
+      try {
+        const r = await RB.api(`forums/boards/${d.board.id}/threads`, { method: "POST",
+          body: { title: document.getElementById("Subject").value, body: document.getElementById("Body").value } });
+        location.href = "forums.html?thread=" + r.threadId;
+      } catch (ex) { document.getElementById("ThreadErr").textContent = ex.message; btn.disabled = false; }
+    });
+  }
+
+  async function showThread() {
+    const d = await RB.api(`forums/threads/${encodeURIComponent(threadId)}?page=${encodeURIComponent(page)}`);
+    document.title = d.thread.title + " - Forums - RBXBanland";
+    const href = (p) => `forums.html?thread=${d.thread.id}&page=${p}`;
+    main.innerHTML = `${crumbs([RB.esc(d.board.category), `<a href="forums.html?board=${d.board.id}">${RB.esc(d.board.name)}</a>`, RB.esc(d.thread.title)])}
+      <h2 class="PageTitle" style="font-size:1.6em">${RB.esc(d.thread.title)}</h2>
+      ${me.admin ? `<p class="Hint">Mod tools: <button class="Button" data-mod="pin">${d.thread.pinned ? "Unpin" : "Pin"}</button> <button class="Button" data-mod="lock">${d.thread.locked ? "Unlock" : "Lock"}</button></p>` : ""}
+      ${RB.pager(d.page, d.pages, href)}
+      <div id="Posts">${d.posts.map((p, i) => `
+        <div class="Post" id="p${p.id}">
+          <div class="Author">
+            <div><span class="Dot${p.author.online ? " on" : ""}"></span>${RB.userLink(p.author.username, "Name")}</div>
+            <div class="Thumb" data-av="${i}"></div>
+            <div><span class="Label">Joined:</span> ${RB.date(p.author.joined)}</div>
+            <div><span class="Label">Total Posts:</span> ${RB.num(p.author.postCount)}</div>
+          </div>
+          <div class="Content">
+            <div class="Meta"><span>Posted: ${RB.datetime(p.created)}</span>
+              <span>${p.author.username === me.username || me.admin ? `<button class="LinkButton" data-del="${p.id}">Delete</button> | ` : ""}<a href="#p${p.id}">#${(d.page - 1) * 15 + i + 1}</a></span></div>
+            <div class="Body">${RB.rich(p.body)}</div>
+            ${p.author.signature ? `<div class="Signature">${RB.rich(p.author.signature)}</div>` : ""}
+          </div>
+        </div>`).join("")}</div>
+      ${RB.pager(d.page, d.pages, href)}
+      ${d.thread.locked && !me.admin ? `<div class="StandardBox"><div class="BoxBody">&#128274; This thread is locked.</div></div>` : `
+      <div class="StandardBox" id="Reply"><div class="StandardBoxHeader">Reply</div>
+        <form class="BoxBody Form" id="ReplyForm">
+          <textarea id="ReplyBody" rows="6" maxlength="5000" required></textarea>
+          <div class="Error" id="ReplyErr"></div>
+          <button class="Button Big">Post Reply</button>
+        </form></div>`}`;
+    const items = await RB.items();
+    main.querySelectorAll("[data-av]").forEach((el) =>
+      RBAvatar.render(el, d.posts[el.dataset.av].author.avatar, items, { scale: 14, angle: -18, still: true }));
+    document.getElementById("ReplyForm")?.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const btn = e.target.querySelector("button");
+      btn.disabled = true;
+      try {
+        const r = await RB.api(`forums/threads/${d.thread.id}/posts`, { method: "POST", body: { body: document.getElementById("ReplyBody").value } });
+        location.href = `forums.html?thread=${d.thread.id}&page=last#p${r.postId}`;
+      } catch (ex) { document.getElementById("ReplyErr").textContent = ex.message; btn.disabled = false; }
+    });
+    main.addEventListener("click", async (e) => {
+      const del = e.target.closest("[data-del]");
+      if (del) {
+        if (!(await RB.confirm("Delete this post? (Deleting the first post deletes the whole thread.)", { ok: "Delete" }))) return;
+        try {
+          const r = await RB.api(`forums/posts/${del.dataset.del}/delete`, { method: "POST" });
+          location.href = r.threadDeleted ? `forums.html?board=${d.board.id}` : location.href;
+          if (!r.threadDeleted) location.reload();
+        } catch (ex) { RB.alert(ex.message); }
+      }
+      const mod = e.target.closest("[data-mod]");
+      if (mod) {
+        const body = { pinned: d.thread.pinned, locked: d.thread.locked };
+        if (mod.dataset.mod === "pin") body.pinned = !body.pinned; else body.locked = !body.locked;
+        try { await RB.api(`forums/threads/${d.thread.id}/moderate`, { method: "POST", body }); location.reload(); } catch (ex) { RB.alert(ex.message); }
+      }
+    });
+  }
+})();
+</script>
+</body>
+</html>

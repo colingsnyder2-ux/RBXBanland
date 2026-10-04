@@ -1,0 +1,2 @@
+/* Loads 7.css for the win7 theme into a low-priority cascade layer. */
+@import url("../7css/7.css") layer(vendor);

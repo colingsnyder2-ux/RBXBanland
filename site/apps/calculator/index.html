@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Calculator</title>
+<link rel="icon" href="icon.png">
+<link rel="stylesheet" href="../_lib/win.css">
+<style>
+  body { width: 256px; }
+  #Calc { position: relative; width: 256px; height: 209px; }
+  #Display { position: absolute; left: 10px; top: 1px; width: 237px; height: 25px; background: #fff; box-shadow: var(--sunken); text-align: right; padding: 5px 7px 0 4px; font: 13px "Microsoft Sans Serif", Tahoma, sans-serif; white-space: nowrap; overflow: hidden; user-select: text; -webkit-user-select: text; }
+  #Mem { position: absolute; left: 13px; top: 37px; width: 26px; height: 25px; box-shadow: var(--sunken); text-align: center; line-height: 24px; }
+  .k { position: absolute; width: 36px; height: 29px; padding: 0; min-width: 0; color: #0000ff; }
+  .k.r { color: #ff0000; }
+  .k.wide { width: 63px; }
+  #Calc .btn:focus-visible { outline: 1px dotted #000; outline-offset: -5px; }
+</style>
+<script src="../_lib/app.js"></script>
+</head>
+<body>
+<div id="Menu"></div>
+<div id="Calc">
+  <div id="Display" aria-live="polite">0.</div>
+  <div id="Mem" title="Memory"></div>
+</div>
+<script src="calc.js"></script>
+</body>
+</html>

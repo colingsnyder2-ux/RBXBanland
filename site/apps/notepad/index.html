@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Untitled - Notepad</title>
+<link rel="icon" href="icon.png">
+<link rel="stylesheet" href="../_lib/win.css">
+<style>
+  body { display: flex; flex-direction: column; }
+  #Edit { flex: 1; min-height: 0; border: 0; outline: none; resize: none; margin: 0; padding: 0 2px; background: #fff; color: #000;
+    font: 13px "Fixedsys", "Lucida Console", "Courier New", monospace; box-shadow: var(--sunken); border: 2px solid transparent; white-space: pre; overflow: scroll; tab-size: 8; }
+  #Edit.wrap { white-space: pre-wrap; overflow-x: hidden; overflow-y: scroll; }
+  html[data-os="win7"] #Edit, html[data-os="winxp"] #Edit { box-shadow: none; border: 1px solid #828790; }
+  #Status { display: none; }
+  html.status #Status { display: flex; }
+  #Status #Pos { width: 140px; }
+  #Status #Doc { flex: 1; }
+  .docs { width: 340px; height: 170px; background: #fff; box-shadow: var(--sunken); overflow: auto; padding: 2px; }
+  .docs div { padding: 1px 4px; white-space: nowrap; display: flex; gap: 8px; cursor: default; }
+  .docs div span:first-child { flex: 1; overflow: hidden; text-overflow: ellipsis; }
+  .docs div span:last-child { color: #555; }
+  .docs div.sel { background: var(--sel); color: #fff; }
+  .docs div.sel span:last-child { color: #ddd; }
+  .find { display: grid; grid-template-columns: auto 190px; gap: 8px; align-items: center; }
+  .fontdlg { display: grid; grid-template-columns: 160px 100px 60px; gap: 4px 10px; }
+  .fontdlg select[size] { height: 120px; width: 100%; background: #fff; box-shadow: var(--sunken); border: 0; }
+  .sample { grid-column: 1 / -1; height: 48px; box-shadow: var(--thin-sunken); display: flex; align-items: center; justify-content: center; overflow: hidden; margin-top: 6px; }
+</style>
+<script src="../_lib/app.js"></script>
+</head>
+<body>
+<div id="Menu"></div>
+<textarea id="Edit" class="w98-scroll" spellcheck="false" autocomplete="off" aria-label="Text"></textarea>
+<div class="statusbar" id="Status"><div id="Doc"></div><div id="Pos">Ln 1, Col 1</div></div>
+<input type="file" id="OpenIn" accept=".txt,.log,.md,.ini,.bat,.js,.css,.html,.json,.csv,text/*" hidden>
+<script src="notepad.js"></script>
+</body>
+</html>

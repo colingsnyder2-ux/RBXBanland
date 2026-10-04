@@ -1,0 +1,331 @@
+<!doctype html>
+<html lang="en" data-skin="site">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>RBXChat - RBXBanland</title>
+<link rel="stylesheet" href="css/site.css">
+<link rel="stylesheet" href="css/chat.css">
+<link rel="icon" href="img/icons/chat.svg" type="image/svg+xml">
+<script>
+  // RBXChat is a desktop app only: this page is the content of its window, skinned like the current desktop theme.
+  // Opened inside the IE window by hand, it hands off to the real RBXChat window instead.
+  (function () {
+    let t = "win98";
+    try { t = localStorage.getItem("rbx.theme") || t; } catch {}
+    // Vaporwave reuses the 9x skin with pink accents.
+    document.documentElement.dataset.skin = t === "vaporwave" ? "win98" : t;
+    document.documentElement.classList.toggle("skin-vapor", t === "vaporwave");
+    document.documentElement.classList.add("chat-app");
+    let d = null;
+    try { d = window.parent !== window && window.parent.RBDesktop; } catch {}
+    if (!new URLSearchParams(location.search).get("app") && d) { d.open("chat"); location.replace("profile.html"); }
+  })();
+</script>
+</head>
+<body>
+<div id="Container">
+  <header id="Header"></header>
+  <main id="Main" class="Chat">
+    <div class="chat-top">
+      <select id="ChanSelect" aria-label="Channel"></select>
+      <div class="topic"><b id="TopicName">#general</b> <span id="Topic"></span></div>
+      <span id="Conn" class="conn">connecting&hellip;</span>
+    </div>
+    <div class="chat-cols">
+      <nav class="chans" aria-label="Channels"><div class="pane-title">Channels</div><ul id="Chans"></ul>
+        <div class="pane-title">Place rooms</div>
+        <select id="PlaceRooms" class="join-select" aria-label="Join a place room"><option value="">Join a place&hellip;</option></select></nav>
+      <section class="log-wrap">
+        <div id="Log" class="log" role="log" aria-live="polite"></div>
+        <div id="Typing" class="typing"></div>
+        <form id="SendForm" class="send">
+          <input id="Input" autocomplete="off" maxlength="400" placeholder="Type a message. /me waves, /help for commands" aria-label="Message">
+          <button type="submit" class="Button">Send</button>
+        </form>
+      </section>
+      <aside class="users" aria-label="Online users"><div class="pane-title" id="UsersTitle">Online</div><ul id="Users"></ul></aside>
+    </div>
+  </main>
+  <div id="FooterSlot"></div>
+</div>
+<script src="js/common.js"></script>
+<script>
+(async function () {
+  const APP = true;
+  const $ = (id) => document.getElementById(id);
+  const me = await RB.me().catch(() => null);
+  if (!me) {
+    if (APP) $("Main").innerHTML = `<div class="BoxBody">You need to <a href="index.html" target="_top">log in</a> to use RBXChat.</div>`;
+    return;
+  }
+  if (APP) window.addEventListener("storage", (e) => {
+    if (e.key !== "rbx.theme" || !e.newValue) return;
+    document.documentElement.dataset.skin = e.newValue === "vaporwave" ? "win98" : e.newValue;
+    document.documentElement.classList.toggle("skin-vapor", e.newValue === "vaporwave");
+  });
+
+  const NICK_COLORS = ["#00007f", "#009300", "#ff0000", "#7f0000", "#9c009c", "#fc7f00", "#7f7f00", "#009393", "#0000fc", "#ff00ff", "#5f5f5f", "#b8860b"];
+  const nickColor = (n) => { let h = 0; for (const c of n.toLowerCase()) h = (h * 31 + c.charCodeAt(0)) >>> 0; return NICK_COLORS[h % NICK_COLORS.length]; };
+  const mentionRe = new RegExp(`(^|[^A-Za-z0-9_])@?${me.username}(?![A-Za-z0-9_])`, "i");
+  const time = (ms) => new Date(ms).toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit", hour12: false });
+  const store = (k, v) => { try { if (v === undefined) return JSON.parse(localStorage.getItem(k) || "null"); localStorage.setItem(k, JSON.stringify(v)); } catch { return null; } };
+
+  const read = store("rbx.chat.read") || {};
+  const joined = new Set(store("rbx.chat.joined") || []);
+  const chans = new Map(); // name -> { name, topic, place, lastId, unread, mentions, msgs: Map, loaded }
+  let active = null, mod = false, maxLength = 400, es = null, kicked = false;
+
+  function addChan(c) {
+    if (!chans.has(c.name)) chans.set(c.name, { unread: 0, mentions: 0, msgs: new Map(), loaded: false, lastId: 0, ...c });
+    return chans.get(c.name);
+  }
+  function saveJoined() { store("rbx.chat.joined", [...joined]); }
+  function markRead(ch) {
+    const ids = [...ch.msgs.keys()];
+    const last = Math.max(ch.lastId || 0, ...ids, 0);
+    read[ch.name] = Math.max(read[ch.name] || 0, last);
+    ch.unread = 0; ch.mentions = 0;
+    store("rbx.chat.read", read);
+  }
+
+  // ---------- Rendering ----------
+  function renderChans() {
+    const list = [...chans.values()];
+    $("Chans").innerHTML = list.map((c) => `<li><button type="button" data-chan="${RB.esc(c.name)}" class="${c.name === active ? "on" : ""}${c.mentions ? " ment" : c.unread ? " unread" : ""}" title="${RB.esc(c.topic || "")}">
+      #${RB.esc(c.name)}${c.unread ? `<span class="badge">${c.unread > 99 ? "99+" : c.unread}</span>` : ""}</button></li>`).join("");
+    $("ChanSelect").innerHTML = list.map((c) => `<option value="${RB.esc(c.name)}"${c.name === active ? " selected" : ""}>#${RB.esc(c.name)}${c.unread ? ` (${c.unread})` : ""}</option>`).join("");
+    const total = list.reduce((n, c) => n + c.unread, 0);
+    document.title = `${total ? `(${total}) ` : ""}RBXChat - #${active}${APP ? "" : " - RBXBanland"}`;
+  }
+  function lineHtml(m) {
+    if (m.system) return `<div class="line system"><span class="ts">[${time(m.at)}]</span> <span class="body">*** ${RB.esc(m.body)}</span></div>`;
+    const mine = m.user === me.username;
+    const ment = !mine && mentionRe.test(m.body);
+    const nick = `<a class="nick" href="profile.html?u=${encodeURIComponent(m.user)}" data-nick="${RB.esc(m.user)}" style="color:${nickColor(m.user)}">${RB.esc(m.user)}</a>`;
+    const del = mine || mod ? `<button type="button" class="del" data-del="${m.id}" title="Delete message">&times;</button>` : "";
+    return `<div class="line${m.action ? " action" : ""}${ment ? " mention" : ""}" data-id="${m.id}"><span class="ts">[${time(m.at)}]</span> ` +
+      (m.action ? `<span class="body">* ${nick} ${RB.rich(m.body)}</span>` : `<span class="lt">&lt;</span>${nick}<span class="lt">&gt;</span> <span class="body">${RB.rich(m.body)}</span>`) + del + `</div>`;
+  }
+  function renderLog(keepScroll) {
+    const ch = chans.get(active);
+    const log = $("Log");
+    const atBottom = log.scrollHeight - log.scrollTop - log.clientHeight < 40;
+    const msgs = [...ch.msgs.values()].sort((a, b) => (a.at - b.at) || ((a.id || 0) - (b.id || 0)));
+    log.innerHTML = (ch.loaded ? `<div class="line system"><span class="body">*** Now talking in #${RB.esc(ch.name)}${ch.topic ? ` &mdash; ${RB.esc(ch.topic)}` : ""}</span></div>` : `<div class="line system">Loading&hellip;</div>`) +
+      msgs.map(lineHtml).join("");
+    if (!keepScroll || atBottom) log.scrollTop = log.scrollHeight;
+  }
+  function appendLine(m) {
+    const log = $("Log");
+    const atBottom = log.scrollHeight - log.scrollTop - log.clientHeight < 40;
+    log.insertAdjacentHTML("beforeend", lineHtml(m));
+    if (atBottom || m.user === me.username) log.scrollTop = log.scrollHeight;
+  }
+  function localSystem(body) {
+    const m = { system: true, body, at: Date.now(), id: "s" + Math.random() };
+    chans.get(active).msgs.set(m.id, m);
+    appendLine(m);
+  }
+  function renderUsers(users) {
+    $("UsersTitle").textContent = `Online (${users.length})`;
+    $("Users").innerHTML = users.map((u) => `<li><button type="button" data-nick="${RB.esc(u.username)}" title="${RB.esc(u.status || "")}${u.status ? " · " : ""}double-click for profile">
+      <span class="Dot on"></span>${u.mod ? '<b class="op">@</b>' : ""}<span style="color:${nickColor(u.username)}">${RB.esc(u.username)}</span></button></li>`).join("");
+  }
+
+  // ---------- Channels ----------
+  async function switchTo(name) {
+    const ch = chans.get(name);
+    if (!ch) return;
+    active = name;
+    $("TopicName").textContent = "#" + name;
+    $("Topic").textContent = ch.topic || "";
+    if (!ch.loaded) {
+      renderLog();
+      const d = await RB.api("chat/history?channel=" + encodeURIComponent(name)).catch((e) => ({ messages: [], error: e.message }));
+      for (const m of d.messages) ch.msgs.set(m.id, m);
+      ch.loaded = true;
+    }
+    markRead(ch);
+    renderChans();
+    renderLog();
+    $("Typing").textContent = "";
+    $("Input").focus({ preventScroll: true });
+  }
+  async function join(raw) {
+    const name = String(raw || "").trim().replace(/^#/, "").toLowerCase();
+    if (!name) return;
+    if (chans.has(name)) return switchTo(name);
+    try {
+      const d = await RB.api("chat/channels/" + encodeURIComponent(name));
+      addChan(d.channel);
+      if (d.channel.place) { joined.add(name); saveJoined(); }
+      await switchTo(name);
+    } catch (e) { localSystem(e.message); }
+  }
+
+  // ---------- Live stream ----------
+  function connect() {
+    if (es) es.close();
+    es = new EventSource("api/chat/stream");
+    $("Conn").textContent = "connecting…";
+    es.onopen = () => { $("Conn").textContent = "connected"; $("Conn").className = "conn ok"; };
+    es.onerror = () => {
+      if (kicked) return;
+      $("Conn").className = "conn bad";
+      $("Conn").textContent = es.readyState === EventSource.CLOSED ? "disconnected" : "reconnecting…";
+      if (es.readyState === EventSource.CLOSED) setTimeout(() => { if (!kicked) connect(); }, 5000);
+    };
+    es.onmessage = (e) => {
+      let d;
+      try { d = JSON.parse(e.data); } catch { return; }
+      if (d.type === "hello") { mod = d.mod; renderUsers(d.users); }
+      else if (d.type === "presence") renderUsers(d.users);
+      else if (d.type === "message") onMessage(d.message);
+      else if (d.type === "delete") {
+        const ch = chans.get(d.channel);
+        if (ch?.msgs.delete(d.id) && d.channel === active) $("Log").querySelector(`[data-id="${d.id}"]`)?.remove();
+      }
+      else if (d.type === "system") {
+        const ch = chans.get(d.channel);
+        if (!ch) return;
+        const m = { system: true, body: d.body, at: d.at, id: "s" + Math.random() };
+        ch.msgs.set(m.id, m);
+        if (d.channel === active) appendLine(m);
+      }
+      else if (d.type === "typing" && d.channel === active && d.user !== me.username) showTyping(d.user);
+      else if (d.type === "kicked") {
+        kicked = true;
+        es.close();
+        $("Conn").className = "conn bad";
+        $("Conn").textContent = "kicked";
+        localSystem(`You were kicked by ${d.by}${d.reason ? ` (${d.reason})` : ""}. You can reconnect in a minute.`);
+        setTimeout(() => { kicked = false; connect(); }, 61000);
+      }
+    };
+  }
+  function onMessage(m) {
+    let ch = chans.get(m.channel);
+    if (!ch) { ch = addChan({ name: m.channel, topic: "", place: m.channel }); }
+    if (ch.msgs.has(m.id)) return;
+    ch.msgs.set(m.id, m);
+    ch.lastId = Math.max(ch.lastId, m.id);
+    typers.delete(m.user);
+    const visible = m.channel === active && !document.hidden;
+    const mention = m.user !== me.username && mentionRe.test(m.body);
+    if (m.channel === active && ch.loaded) { appendLine(m); renderTyping(); }
+    if (visible || m.user === me.username) markRead(ch);
+    else { ch.unread++; if (mention) ch.mentions++; }
+    if (m.user !== me.username && (!visible || mention)) RB.desktop()?.notify?.("chat", mention);
+    renderChans();
+  }
+  document.addEventListener("visibilitychange", () => { if (!document.hidden && active) { markRead(chans.get(active)); renderChans(); } });
+
+  // ---------- Typing indicator ----------
+  const typers = new Map();
+  function showTyping(user) { typers.set(user, Date.now()); renderTyping(); setTimeout(renderTyping, 4100); }
+  function renderTyping() {
+    const now = Date.now();
+    const names = [...typers].filter(([, t]) => now - t < 4000).map(([n]) => n);
+    $("Typing").textContent = !names.length ? "" : names.length === 1 ? `${names[0]} is typing…` : `${names.slice(0, 3).join(", ")} are typing…`;
+  }
+  let lastTyping = 0;
+  $("Input").addEventListener("input", () => {
+    const v = $("Input").value;
+    if (v && !v.startsWith("/") && Date.now() - lastTyping > 2500) {
+      lastTyping = Date.now();
+      RB.api("chat/typing", { method: "POST", body: { channel: active } }).catch(() => {});
+    }
+  });
+
+  // ---------- Sending + commands ----------
+  async function command(line) {
+    const [cmd, ...rest] = line.slice(1).split(/\s+/);
+    const arg = rest.join(" ");
+    switch (cmd.toLowerCase()) {
+      case "me": return send(line);
+      case "help":
+        ["Commands:", "/me <action>  - e.g. /me waves", "/join #place-id  - join a place's room (e.g. /join #2008m-crossroads)",
+          "/part  - leave the current place room", "/clear  - clear this window", mod ? "/kick <nick> [reason]  - kick someone for a minute (moderators)" : "",
+          "Say someone's name to ping them. Double-click a name to see their profile."].filter(Boolean).forEach(localSystem);
+        return;
+      case "join": return join(arg);
+      case "part": {
+        const ch = chans.get(active);
+        if (!ch.place) return localSystem("You can only leave place rooms.");
+        joined.delete(active); saveJoined(); chans.delete(active);
+        return switchTo("general");
+      }
+      case "clear": chans.get(active).msgs.clear(); return renderLog();
+      case "kick":
+        if (!rest[0]) return localSystem("Usage: /kick <nick> [reason]");
+        try { await RB.api("chat/kick", { method: "POST", body: { username: rest[0], reason: rest.slice(1).join(" "), channel: active } }); }
+        catch (e) { localSystem(e.message); }
+        return;
+      default: localSystem(`Unknown command /${cmd}. Type /help.`);
+    }
+  }
+  async function send(textValue) {
+    try { await RB.api("chat/send", { method: "POST", body: { channel: active, text: textValue } }); }
+    catch (e) { localSystem(e.message); }
+  }
+  $("SendForm").addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const v = $("Input").value.trim();
+    if (!v) return;
+    $("Input").value = "";
+    if (v.startsWith("/") && !v.startsWith("//")) await command(v);
+    else await send(v.replace(/^\/\//, "/"));
+  });
+
+  // ---------- Clicks ----------
+  document.addEventListener("click", async (e) => {
+    const c = e.target.closest("[data-chan]");
+    if (c) return switchTo(c.dataset.chan);
+    const del = e.target.closest("[data-del]");
+    if (del) {
+      if (!(await RB.confirm("Delete this message?", { ok: "Delete" }))) return;
+      try { await RB.api(`chat/messages/${del.dataset.del}/delete`, { method: "POST" }); } catch (ex) { RB.alert(ex.message); }
+      return;
+    }
+    const nick = e.target.closest("[data-nick]");
+    if (nick) {
+      e.preventDefault();
+      if (e.detail >= 2) { openProfile(nick.dataset.nick); return; }
+      const inp = $("Input");
+      if (!inp.value.includes(nick.dataset.nick)) inp.value = inp.value ? `${inp.value} ${nick.dataset.nick} ` : `${nick.dataset.nick}: `;
+      inp.focus();
+    }
+  });
+  function openProfile(name) {
+    const url = "profile.html?u=" + encodeURIComponent(name);
+    if (APP) RB.open("profile", url); else location.href = url;
+  }
+  $("ChanSelect").addEventListener("change", (e) => switchTo(e.target.value));
+  RB.catalog().then((cat) => {
+    $("PlaceRooms").innerHTML += cat.maps.slice().sort((a, b) => a.name.localeCompare(b.name))
+      .map((m) => `<option value="${RB.esc(m.id)}">${RB.esc(m.name)} (${RB.esc(m.era)})</option>`).join("");
+  }).catch(() => {});
+  $("PlaceRooms").addEventListener("change", (e) => { if (e.target.value) join(e.target.value); e.target.value = ""; });
+
+  // ---------- Start ----------
+  const d = await RB.api("chat/channels");
+  maxLength = d.maxLength;
+  $("Input").maxLength = maxLength;
+  for (const c of d.channels) addChan(c);
+  try {
+    const u = await RB.api("chat/unread", { method: "POST", body: { read: Object.fromEntries([...chans.keys()].map((n) => [n, read[n] || 0])) } });
+    for (const [n, v] of Object.entries(u.unread)) {
+      const ch = chans.get(n);
+      // Never-visited channels start "read" so newcomers aren't greeted by 200 unread messages.
+      if (ch && n in read) { ch.unread = v.count; ch.mentions = v.mentions; }
+    }
+  } catch { /* ignore */ }
+  for (const n of joined) if (!chans.has(n)) await join(n);
+  const want = RB.param("channel").replace(/^#/, "").toLowerCase();
+  connect();
+  if (want && want !== "general") await join(want); else await switchTo("general");
+})();
+</script>
+</body>
+</html>

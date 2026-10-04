@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Games - RBXBanland</title>
+<link rel="stylesheet" href="css/site.css">
+<link rel="icon" href="img/favicon.svg" type="image/svg+xml">
+</head>
+<body>
+<div id="Container">
+  <header id="Header"></header>
+
+  <div id="GamesContainer">
+    <aside class="DisplayFilters">
+      <h4>Browse</h4>
+      <ul id="SortList">
+        <li><a href="#" data-sort="popular">Most Popular</a></li>
+        <li><a href="#" data-sort="featured">Featured Games</a></li>
+        <li><a href="#" data-sort="playing">Friends Playing</a></li>
+        <li><a href="#" data-sort="mine">My Recent</a></li>
+        <li><a href="#" data-sort="name">A to Z</a></li>
+        <li><a href="#" data-sort="smallest">Quickest to Load</a></li>
+      </ul>
+      <h4>Era</h4>
+      <ul id="EraList"></ul>
+      <h4>Search</h4>
+      <input type="search" id="Search" placeholder="Search games" aria-label="Search games">
+      <p style="margin-top:14px"><span class="UnderConstruction"><b>NEW PLACES</b> coming soon</span></p>
+    </aside>
+
+    <main id="Games">
+      <h2 class="PageTitle">Games</h2>
+      <div class="HeaderPager">
+        <span class="Title" id="ListTitle">Most Popular</span>
+        <span class="Label" id="ListCount"></span>
+      </div>
+      <div class="GameList" id="GameList"><div class="Empty">Loading games&hellip;</div></div>
+    </main>
+  </div>
+
+  <div id="FooterSlot"></div>
+</div>
+
+<script src="js/common.js"></script>
+<script>
+(async function () {
+  RB.mount("Games");
+  const maps = await RB.places();
+  const state = { sort: RB.param("sort") || "popular", era: RB.param("era") || "all", q: RB.param("q") || "" };
+  const featured = ["crossroads", "sword-fight-on-the-heights", "rocket-arena", "happy-home-in-robloxia", "chaos-canyon", "haunted-mansion"];
+  const isFeatured = (m) => featured.some((f) => m.id.includes(f));
+
+  const eras = [...new Set(maps.map((m) => m.era))].sort();
+  document.getElementById("EraList").innerHTML =
+    `<li><a href="#" data-era="all">All</a></li>` + eras.map((e) => `<li><a href="#" data-era="${e}">${e}</a></li>`).join("");
+  document.getElementById("Search").value = state.q;
+
+  function render() {
+    const q = state.q.toLowerCase();
+    let list = maps.filter((m) =>
+      (state.era === "all" || m.era === state.era) &&
+      (!q || (m.name + " " + m.description).toLowerCase().includes(q)) &&
+      (state.sort !== "featured" || isFeatured(m)) &&
+      (state.sort !== "playing" || m.playing.length) &&
+      (state.sort !== "mine" || m.mine));
+    const sorters = {
+      popular: (a, b) => b.visits - a.visits,
+      featured: (a, b) => b.visits - a.visits,
+      playing: (a, b) => b.playing.length - a.playing.length,
+      mine: (a, b) => b.mine - a.mine,
+      name: (a, b) => a.name.localeCompare(b.name),
+      smallest: (a, b) => a.zipKB - b.zipKB,
+    };
+    list.sort(sorters[state.sort] || sorters.popular);
+
+    const titles = { popular: "Most Popular", featured: "Featured Games", playing: "Friends Playing Now", mine: "My Recently Played", name: "A to Z", smallest: "Quickest to Load" };
+    document.getElementById("ListTitle").textContent =
+      (titles[state.sort] || titles.popular) + (state.era !== "all" ? ` (${state.era})` : "") + (state.q ? ` matching "${state.q}"` : "");
+    document.getElementById("ListCount").textContent = `${list.length} game${list.length === 1 ? "" : "s"}`;
+
+    document.getElementById("GameList").innerHTML = list.length ? list.map((m) => {
+      const href = "game.html?id=" + encodeURIComponent(m.id);
+      return `
+      <div class="Game">
+        <a class="GameThumbnail" href="${href}" title="${RB.esc(m.name)}">${RB.thumb(m)}${m.playing.length ? '<span class="New">LIVE!</span>' : ""}</a>
+        <div class="GameDetails">
+          <div class="GameName"><a href="${href}">${RB.esc(m.name)}</a></div>
+          <div><span class="Label">Era:</span> <span class="Detail">${RB.esc(m.era)}</span></div>
+          <div><span class="Label">Played:</span> <span class="Detail">${RB.num(m.visits)} times</span></div>
+          ${m.playing.length ? `<div><span class="DetailHighlighted">${m.playing.length} playing now</span></div>`
+            : m.mine ? `<div><span class="Label">You played ${m.mine}x</span></div>` : ""}
+        </div>
+      </div>`;
+    }).join("") : `<div class="Empty">${state.sort === "playing" ? "Nobody is playing right now. Be the first!" : "No games found."}</div>`;
+
+    for (const a of document.querySelectorAll("[data-sort]")) a.classList.toggle("active", a.dataset.sort === state.sort);
+    for (const a of document.querySelectorAll("[data-era]")) a.classList.toggle("active", a.dataset.era === state.era);
+    const qs = new URLSearchParams();
+    if (state.sort !== "popular") qs.set("sort", state.sort);
+    if (state.era !== "all") qs.set("era", state.era);
+    if (state.q) qs.set("q", state.q);
+    history.replaceState(null, "", qs.toString() ? "?" + qs : location.pathname);
+  }
+
+  document.querySelector(".DisplayFilters").addEventListener("click", (e) => {
+    const a = e.target.closest("a[data-sort],a[data-era]");
+    if (!a) return;
+    e.preventDefault();
+    if (a.dataset.sort) state.sort = a.dataset.sort;
+    if (a.dataset.era) state.era = a.dataset.era;
+    render();
+  });
+  document.getElementById("Search").addEventListener("input", (e) => { state.q = e.target.value.trim(); render(); });
+  render();
+})();
+</script>
+</body>
+</html>

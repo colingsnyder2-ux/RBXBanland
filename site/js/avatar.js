@@ -110,6 +110,23 @@ const RBAvatar = (() => {
     uv.needsUpdate = true;
     return g;
   }
+  function bevelBox(sx, sy, sz, color) {
+    const b = Math.min(0.09, sx * 0.12, sy * 0.12, sz * 0.12);
+    const shape = new THREE.Shape();
+    shape.moveTo(-sx / 2 + b, -sy / 2);
+    shape.lineTo(sx / 2 - b, -sy / 2);
+    shape.quadraticCurveTo(sx / 2, -sy / 2, sx / 2, -sy / 2 + b);
+    shape.lineTo(sx / 2, sy / 2 - b);
+    shape.quadraticCurveTo(sx / 2, sy / 2, sx / 2 - b, sy / 2);
+    shape.lineTo(-sx / 2 + b, sy / 2);
+    shape.quadraticCurveTo(-sx / 2, sy / 2, -sx / 2, sy / 2 - b);
+    shape.lineTo(-sx / 2, -sy / 2 + b);
+    shape.quadraticCurveTo(-sx / 2, -sy / 2, -sx / 2 + b, -sy / 2);
+    const g = new THREE.ExtrudeGeometry(shape, { depth: sz, bevelEnabled: true, bevelSegments: 1, steps: 1, bevelSize: b, bevelThickness: b });
+    g.translate(0, 0, -sz / 2);
+    g.computeVertexNormals();
+    return new THREE.Mesh(g, new THREE.MeshLambertMaterial({ color }));
+  }
   // The classic Roblox "Head" mesh: a cylinder with rounded top and bottom edges.
   function headGeometry(d, h, rounded) {
     if (!rounded) return new THREE.CylinderGeometry(d / 2, d / 2, h, 32);
@@ -158,7 +175,10 @@ const RBAvatar = (() => {
     const group = new THREE.Group();
     const mat = (tex) => new THREE.MeshLambertMaterial({ map: tex });
     const part = (size, pos, tiles, color, layers) => {
-      const m = new THREE.Mesh(templateBox(size[0], size[1], size[2], tiles), mat(partCanvas(color, layers, tiles, res)));
+      const shell = bevelBox(size[0] + 0.06, size[1] + 0.06, size[2] + 0.06, color);
+      shell.position.set(...pos);
+      group.add(shell);
+      const m = new THREE.Mesh(templateBox(size[0], size[1], size[2] + 0.1, tiles), mat(partCanvas(color, layers, tiles, res)));
       m.position.set(...pos);
       group.add(m);
       return m;
@@ -238,6 +258,7 @@ const RBAvatar = (() => {
       const ms = model.mesh || {};
       let mesh = null;
       const tex = ms.tex ? await loadTexture(ms.tex) : null;
+      if (tex) { tex.flipY = false; tex.needsUpdate = true; }
       const color = ms.vcolor ? new THREE.Color(ms.vcolor[0], ms.vcolor[1], ms.vcolor[2]) : new THREE.Color(tex ? "#ffffff" : hexOf(items, model.color, "#a3a2a5"));
       const m = new THREE.MeshLambertMaterial({ map: tex || null, color, alphaTest: tex ? 0.1 : 0, side: THREE.DoubleSide });
       const sc = ms.scale || [1, 1, 1], sz = model.size || [1, 1, 1];

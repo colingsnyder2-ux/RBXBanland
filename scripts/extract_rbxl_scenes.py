@@ -7,6 +7,7 @@ import xml.etree.ElementTree as ET
 ROOT = pathlib.Path(__file__).resolve().parents[1]
 OUT = ROOT / "site" / "data" / "scenes"
 SKY_OUT = OUT / "sky"
+ASSET_OUT = OUT / "assets"
 COLORS = {v["id"]: v["hex"] for v in json.loads((ROOT / "server/catalog.json").read_text())["colors"]}
 # rbxasset:// resolves against the client's content folder; Novetus maps point "../../../shareddata"
 # at the Novetus data folder.
@@ -48,6 +49,30 @@ def publish_sky(files):
             target.write_bytes(path.read_bytes())
         urls[face] = f"/data/scenes/sky/{name}"
     return urls
+
+
+def publish_asset(path):
+    """Expose a map-local image from the scene directory. Never fetch remote assets."""
+    ASSET_OUT.mkdir(parents=True, exist_ok=True)
+    data = path.read_bytes()
+    ext = ".png" if data[:4] == b"\x89PNG" else ".jpg" if data[:2] == b"\xff\xd8" else ".gif" if data[:6] in (b"GIF87a", b"GIF89a") else ".bin"
+    name = f"{path.parent.name}_{path.stem}{ext}".replace(" ", "_")
+    target = ASSET_OUT / name
+    if not target.exists():
+        target.write_bytes(data)
+    return f"/data/scenes/assets/{name}"
+
+
+def content_texture(props, texture_name="Texture"):
+    content = child(props, texture_name) if props is not None else None
+    if content is None:
+        return None
+    binary = content.find("binary")
+    if binary is not None and binary.text:
+        return {"data": binary.text}
+    url = content.find("url")
+    path = asset_file(url.text.strip() if url is not None and url.text else "")
+    return {"url": publish_asset(path)} if path is not None else None
 
 
 def camera_view(cam):
@@ -108,6 +133,22 @@ def find_sky(root):
             return publish_sky(files), "map"
     return publish_sky(DEFAULT_SKY), "default"
 
+
+def color(props, name, fallback="#ffffff"):
+    node = child(props, name) if props is not None else None
+    if node is None or not node.text:
+        return fallback
+    return f"#{int(node.text) & 0xffffff:06x}"
+
+
+def find_lighting(root):
+    item = next((it for it in root.iter("Item") if it.get("class") == "Lighting"), None)
+    props = item.find("Properties") if item is not None else None
+    time = child(props, "TimeOfDay") if props is not None else None
+    return {"ambient": color(props, "Ambient"), "fog": color(props, "FogColor", "#9bc7e8"),
+            "fogStart": number(props, "FogStart", 0), "fogEnd": number(props, "FogEnd", 100000),
+            "brightness": number(props, "Brightness", 1), "time": time.text if time is not None and time.text else "12:00:00"}
+
 def child(props, name):
     return props.find(f"./*[@name='{name}']")
 
@@ -130,6 +171,7 @@ def scene(zip_path):
     parents = {child_item: parent for parent in root.iter() for child_item in parent}
     view, view_source = find_view(root)
     sky, sky_source = find_sky(root)
+    lighting = find_lighting(root)
     parts = []
     for item in root.iter("Item"):
         if item.get("class") not in ("Part", "WedgePart", "SpawnLocation", "TrussPart"):
@@ -165,22 +207,23 @@ def scene(zip_path):
             mp = mesh.find("Properties")
             mesh_type = child(mp, "MeshType") if mp is not None else None
             mesh_data = {"type": int(mesh_type.text) if mesh_type is not None and mesh_type.text else 0, "scale": vector(mp, "Scale") if mp is not None else [1, 1, 1]}
-        texture = None
+        textures = []
         for child_item in item.findall("./Item"):
             if child_item.get("class") not in ("Decal", "Texture"):
                 continue
             cp = child_item.find("Properties")
-            content = child(cp, "Texture") if cp is not None else None
-            binary = content.find("binary") if content is not None else None
-            if binary is not None and binary.text:
+            texture = content_texture(cp)
+            if texture:
                 face = child(cp, "Face") if cp is not None else None
-                texture = {"face": int(face.text) if face is not None and face.text else 5, "data": binary.text}
-                break
-        parts.append({"p": pos, "r": rot, "s": size, "c": COLORS.get(brick_id, "#a3a2a5"), "name": part_name, "character": character, "stud": child(props, "TopSurface").text == "3" if child(props, "TopSurface") is not None else False, "t": transparency, "wedge": item.get("class") == "WedgePart", "mesh": mesh_data, "texture": texture})
-    important = [q for q in parts if q["mesh"] or q["texture"] or q["character"]]
+                texture["face"] = int(face.text) if face is not None and face.text else 5
+                if child_item.get("class") == "Texture":
+                    texture["tile"] = [number(cp, "StudsPerTileU", 1), number(cp, "StudsPerTileV", 1)]
+                textures.append(texture)
+        parts.append({"p": pos, "r": rot, "s": size, "c": COLORS.get(brick_id, "#a3a2a5"), "name": part_name, "character": character, "stud": child(props, "TopSurface").text == "3" if child(props, "TopSurface") is not None else False, "t": transparency, "wedge": item.get("class") == "WedgePart", "mesh": mesh_data, "textures": textures})
+    important = [q for q in parts if q["mesh"] or q["textures"] or q["character"]]
     structural = sorted((q for q in parts if q not in important), key=lambda q: q["s"][0] * q["s"][1] * q["s"][2], reverse=True)
     return {"parts": (important + structural)[:2500], "view": view, "viewSource": view_source,
-            "sky": sky, "skySource": sky_source}
+            "sky": sky, "skySource": sky_source, "lighting": lighting}
 
 OUT.mkdir(exist_ok=True)
 maps = {}

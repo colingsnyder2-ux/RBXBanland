@@ -6,17 +6,18 @@
 <script type="module">
 import * as THREE from "/vendor/three/three.module.min.js";
 const id = new URLSearchParams(location.search).get("id"), host = document.getElementById("Map"), source = await fetch(`/data/scenes/${encodeURIComponent(id)}.json`).then((r) => r.json());
-const scene = new THREE.Scene(), renderer = new THREE.WebGLRenderer({ antialias:true }); scene.background = new THREE.Color(0x9bc7e8);
+const scene = new THREE.Scene(), renderer = new THREE.WebGLRenderer({ antialias:true }), world=source.lighting||{}; scene.background = new THREE.Color(world.fog||0x9bc7e8); scene.fog=new THREE.Fog(world.fog||0x9bc7e8,world.fogStart||0,Math.min(world.fogEnd||100000,5000));
 renderer.setPixelRatio(Math.min(devicePixelRatio, 2)); host.append(renderer.domElement);
-scene.add(new THREE.HemisphereLight(0xffffff, 0x456078, 1.8)); const sun = new THREE.DirectionalLight(0xffffff, 2); sun.position.set(-100,200,100); scene.add(sun);
+scene.add(new THREE.HemisphereLight(world.ambient||0xffffff, 0x456078,1.2+(world.brightness||1)*.6)); const sun = new THREE.DirectionalLight(0xffffff,1.2+(world.brightness||1)); sun.position.set(-100,200,100); scene.add(sun);
 const camera = new THREE.PerspectiveCamera(70, 1, .1, 5000), target = new THREE.Vector3(), box = new THREE.Box3(), textures = new Map(), loader = new THREE.TextureLoader();
+const wedge=s=>{const g=new THREE.BufferGeometry();g.setAttribute("position",new THREE.Float32BufferAttribute([-.5,-.5,-.5,.5,-.5,-.5,.5,-.5,.5,-.5,-.5,.5,-.5,.5,.5,.5,.5,.5],3));g.setIndex([0,2,1,0,3,2,3,4,5,3,5,2,0,4,3,1,2,5,0,1,5,0,5,4]);g.scale(...s);g.computeVertexNormals();return g};
 const tex = (d) => { const k=d.startsWith("url:")?d:`data:image/png;base64,${d}`; if(!textures.has(k)) textures.set(k,loader.load(k.replace("url:",""))); return textures.get(k); };
 let studs=0;
 for(const part of source.parts){
-  let geometry=new THREE.BoxGeometry(...part.s);
-  if(part.mesh){if(part.mesh.type===0||part.mesh.type===3)geometry=new THREE.SphereGeometry(.5,12,8);else if(part.mesh.type===4)geometry=new THREE.CylinderGeometry(.5,.5,1,12);if(part.mesh.type!==5)geometry.scale(part.s[0]*part.mesh.scale[0],part.s[1]*part.mesh.scale[1],part.s[2]*part.mesh.scale[2]);}
-  const base=new THREE.MeshLambertMaterial({color:part.c,transparent:part.t>0,opacity:1-part.t,flatShading:true}), face=part.texture?.data||(/head/i.test(part.name||"")?"url:/img/catalog/faces/2006Face.png":null);
-  const material=face?Array.from({length:6},(_,i)=>i===(part.texture?.face??5)?new THREE.MeshLambertMaterial({map:tex(face),transparent:true,flatShading:true}):base):base;
+  let geometry=part.wedge?wedge(part.s):new THREE.BoxGeometry(...part.s);
+  if(part.mesh){if(part.mesh.type===3)geometry=new THREE.SphereGeometry(.5,12,8);else if(part.mesh.type===4)geometry=new THREE.CylinderGeometry(.5,.5,1,12);else if(part.mesh.type===2)geometry=wedge([1,1,1]);if(part.mesh.type!==5)geometry.scale(part.s[0]*part.mesh.scale[0],part.s[1]*part.mesh.scale[1],part.s[2]*part.mesh.scale[2]);}
+  const base=new THREE.MeshLambertMaterial({color:part.c,transparent:part.t>0,opacity:1-part.t,flatShading:true}), skins=part.textures?.length?part.textures:(/head/i.test(part.name||"")?[{face:5,url:"/img/catalog/faces/2006Face.png"}]:[]);let material=base;
+  for(const skin of skins){const t=tex(skin.data||`url:${skin.url}`);if(skin.tile){t.wrapS=t.wrapT=THREE.RepeatWrapping;t.repeat.set(part.s[0]/skin.tile[0],part.s[1]/skin.tile[1]);}if(material===base)material=Array.from({length:6},()=>base);material[skin.face]=new THREE.MeshLambertMaterial({map:t,transparent:true,flatShading:true});}
   const m=new THREE.Matrix4().set(part.r[0][0],part.r[0][1],part.r[0][2],part.p[0],part.r[1][0],part.r[1][1],part.r[1][2],part.p[1],part.r[2][0],part.r[2][1],part.r[2][2],part.p[2],0,0,0,1), mesh=new THREE.Mesh(geometry,material);
   mesh.matrixAutoUpdate=false;mesh.matrix.copy(m);mesh.updateMatrixWorld(true);scene.add(mesh);box.expandByObject(mesh);
   if(part.stud&&studs<2000&&part.s[0]<16&&part.s[2]<16){for(let x=-part.s[0]/2+.5;x<part.s[0]/2&&studs<2000;x++)for(let z=-part.s[2]/2+.5;z<part.s[2]/2&&studs<2000;z++){const s=new THREE.Mesh(new THREE.CylinderGeometry(.11,.11,.08,8),new THREE.MeshLambertMaterial({color:part.c}));s.position.set(x,part.s[1]/2+.04,z);s.applyMatrix4(m);scene.add(s);studs++;}}

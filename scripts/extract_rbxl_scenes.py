@@ -65,7 +65,8 @@ def publish_asset(path):
 
 
 def content_texture(props, texture_name="Texture"):
-    content = child(props, texture_name) if props is not None else None
+    names = (texture_name,) if isinstance(texture_name, str) else texture_name
+    content = next((child(props, name) for name in names if child(props, name) is not None), None) if props is not None else None
     if content is None:
         return None
     binary = content.find("binary")
@@ -76,6 +77,16 @@ def content_texture(props, texture_name="Texture"):
     return {"url": publish_asset(path)} if path is not None else None
 
 
+def content_path(props, names):
+    for name in names:
+        content = child(props, name) if props is not None else None
+        url = content.find("url") if content is not None else None
+        path = asset_file(url.text.strip() if url is not None and url.text else "")
+        if path is not None:
+            return path
+    return None
+
+
 def clothes(model):
     result = {}
     for item in model.findall("./Item"):
@@ -84,6 +95,19 @@ def clothes(model):
         texture = content_texture(item.find("Properties"), "ShirtTemplate" if item.get("class") == "Shirt" else "PantsTemplate")
         if texture:
             result["shirt" if item.get("class") == "Shirt" else "pants"] = texture
+    body_parts = {"0": "head", "1": "torso", "2": "leftarm", "3": "rightarm", "4": "leftleg", "5": "rightleg",
+                  "Head": "head", "Torso": "torso", "LeftArm": "leftarm", "RightArm": "rightarm", "LeftLeg": "leftleg", "RightLeg": "rightleg"}
+    for item in model.findall("./Item[@class='CharacterMesh']"):
+        props = item.find("Properties")
+        body = child(props, "BodyPart") if props is not None else None
+        key = body_parts.get(body.text if body is not None and body.text else "")
+        if not key:
+            continue
+        mesh_path = content_path(props, ("MeshContent", "MeshId"))
+        result.setdefault("characterMeshes", {})[key] = {
+            "mesh": {"type": 5, "scale": [1, 1, 1], "offset": [0, 0, 0], "file": publish_mesh(mesh_path)} if mesh_path else None,
+            "texture": content_texture(props, ("OverlayTextureContent", "OverlayTextureId", "BaseTextureContent", "BaseTextureId")),
+        }
     return result
 
 

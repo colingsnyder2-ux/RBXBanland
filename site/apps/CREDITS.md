@@ -47,6 +47,11 @@ Everything is served from this site. Nothing is hotlinked at runtime.
 - Local vendored single-file Tetris source from https://github.com/tetrisjs/tetrisjs.github.io. MIT License, see `tetrisban/LICENSE.txt`.
 - RBXBanland supplies the app registration, icon, and English-first default language.
 
+## HeartsBan
+- Local vendored HTML5 Hearts source by Yujian Yao, https://github.com/yyjhao/html5-hearts. BSD-style license, see `heartsban/LICENSE.txt`.
+- jQuery and RequireJS remain local copies from the source distribution; GitHub ribbon and analytics removed.
+- RBXBanland supplies the app registration and icon.
+
 ## 3D Pipes
 - `pipes/vendor/pipes/`: "3D Pipes Screensaver" by Isaiah Odhner, https://github.com/1j01/pipes. MIT License, see `pipes/vendor/pipes/LICENSE`. It bundles three.js r98 (MIT, (c) three.js authors) plus OrbitControls and TeapotBufferGeometry from the three.js examples (MIT). The textures in `pipes/images/textures/` come from the same repo.
 - `pipes/index.html` is a rewritten host page that uses only local scripts and drops the GitHub ribbon and the CDN.

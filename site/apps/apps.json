@@ -7,6 +7,7 @@
   {"id": "solitaire", "title": "Solitaire", "icon": "solitaire/icon.png", "url": "solitaire/index.html", "width": 620, "height": 470, "resizable": true, "startMenuFolder": "Games", "desktopIcon": true},
   {"id": "freecellban", "title": "FreeCellBan", "icon": "freecellban/icon.png", "url": "freecellban/index.html", "width": 980, "height": 700, "resizable": true, "startMenuFolder": "Games", "desktopIcon": true},
   {"id": "tetrisban", "title": "TetrisBan", "icon": "tetrisban/icon.svg", "url": "tetrisban/index.html", "width": 760, "height": 680, "resizable": true, "startMenuFolder": "Games", "desktopIcon": true},
+  {"id": "heartsban", "title": "HeartsBan", "icon": "heartsban/icon.svg", "url": "heartsban/index.html", "width": 980, "height": 720, "resizable": true, "startMenuFolder": "Games", "desktopIcon": true},
   {"id": "pipes", "title": "3D Pipes", "icon": "pipes/icon.png", "url": "pipes/index.html", "width": 640, "height": 480, "resizable": true, "startMenuFolder": "Accessories/Screen Savers", "desktopIcon": false},
   {"id": "skiban", "title": "SkiBan", "icon": "skiban/icon.png", "url": "skiban/index.html", "width": 640, "height": 480, "resizable": true, "startMenuFolder": "Games", "desktopIcon": true},
   {"id": "hoverban", "title": "HoverBan", "icon": "hoverban/icon.svg", "url": "hoverban/index.html", "width": 640, "height": 480, "resizable": true, "startMenuFolder": "Games", "desktopIcon": true},

@@ -13,6 +13,7 @@
   .card { position: absolute; width: 71px; height: 96px; background: url("vendor/js-solitaire/cards.png") no-repeat; cursor: default; }
   .card.down { background-size: 71px 96px; }
   .card.drag { z-index: 1000 !important; }
+  .card.hint, .slot.hint { outline: 3px solid #ffff00; outline-offset: 2px; filter: drop-shadow(0 0 3px #ffff00); }
   .card.anim { transition: left .18s ease-out, top .18s ease-out; }
   .slot { position: absolute; width: 71px; height: 96px; border: 1px solid #000; border-radius: 3px; box-shadow: inset 1px 1px rgba(255,255,255,.18); }
   .slot.stock::after { content: ""; position: absolute; left: 50%; top: 50%; width: 36px; height: 36px; margin: -18px 0 0 -18px; border: 5px solid #00c000; border-radius: 50%; box-sizing: border-box; }

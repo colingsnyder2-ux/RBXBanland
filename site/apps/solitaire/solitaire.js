@@ -177,6 +177,17 @@
       for (const p of [waste, ...tab]) { const c = top(p); if (c && c.up && toFoundation(c)) { moved = true; break; } }
     }
   }
+  function clearHint() { for (const c of cards) c.el.classList.remove("hint"); slots.stock.classList.remove("hint"); }
+  function hint() {
+    clearHint();
+    if (won) return;
+    const mark = (c) => { if (!c) return false; c.el.classList.add("hint"); setTimeout(clearHint, 1600); return true; };
+    const canMove = (c, w) => found.some((p, f) => p !== w.pile && canFound(c, f)) || tab.some((p, t) => p !== w.pile && canTab(c, t));
+    const tops = [waste, ...tab].map((p) => top(p)).filter(Boolean);
+    for (const c of tops) { const w = where(c); if (c.up && canMove(c, w)) return mark(c); }
+    for (const p of tab) { const c = top(p); if (c && !c.up) return mark(c); }
+    if (stock.length || waste.length) { slots.stock.classList.add("hint"); setTimeout(clearHint, 1600); }
+  }
   function flip(c) {
     snapshot(); startTimer();
     c.up = true; face(c);
@@ -328,6 +339,7 @@
     { label: "&Game", items: () => [
       { label: "&Deal", key: "F2", action: deal },
       "-",
+      { label: "&Hint", key: "H", action: hint },
       { label: "&Undo", key: "Ctrl+Z", disabled: () => !undoSnap, action: undo },
       { label: "De&ck...", action: deckDialog },
       { label: "&Options...", action: optionsDialog },
@@ -335,7 +347,7 @@
       { label: "E&xit", action: () => AppKit.host.close() },
     ] },
     { label: "&Help", items: [
-      { label: "&Contents", key: "F1", action: () => AppKit.alert("Solitaire Help", "Build the four suit stacks at the top from Ace to King.\n\nIn the row below, stack cards in descending order, alternating red and black. Only a King can go in an empty column.\n\nClick the deck to deal. Double-click a card to send it to a suit stack; right-click anywhere to send every card that can go.\n\nGame > Deck picks a card back. Game > Options sets draw three and Vegas scoring.", "info") },
+      { label: "&Contents", key: "F1", action: () => AppKit.alert("Solitaire Help", "Build the four suit stacks at the top from Ace to King.\n\nIn the row below, stack cards in descending order, alternating red and black. Only a King can go in an empty column.\n\nClick the deck to deal. Double-click a card to send it to a suit stack; right-click anywhere to send every card that can go.\n\nGame > Hint highlights a legal move for a moment.\nGame > Deck picks a card back. Game > Options sets draw three and Vegas scoring.", "info") },
       "-",
       { label: "&About Solitaire", action: () => AppKit.alert("About Solitaire", "Solitaire\nRBXBanland Edition, Version 4.10.1998\n\nCard faces from js-solitaire by Radovan Janjic (MIT).", "info") },
     ] },
@@ -343,6 +355,7 @@
   addEventListener("keydown", (e) => {
     if (document.querySelector(".dlg-shade")) return;
     if (e.key === "F2") { e.preventDefault(); deal(); }
+    else if (e.key.toLowerCase() === "h") { e.preventDefault(); hint(); }
     else if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "z") { e.preventDefault(); undo(); }
     else if (won && (e.key === "Escape" || e.key === "Enter" || e.key === " ")) { stopWin(); askAgain(); }
   });

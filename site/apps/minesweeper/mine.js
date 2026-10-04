@@ -103,6 +103,16 @@
   }
   function computeAdj() { for (let i = 0; i < mine.length; i++) adj[i] = neighbors(i).reduce((s, j) => s + mine[j], 0); }
 
+  function protectStart(i) {
+    const safe = new Set([i, ...neighbors(i)]), move = [];
+    for (let j = 0; j < mine.length; j++) if (safe.has(j) && mine[j]) { mine[j] = 0; move.push(j); }
+    if (!move.length) return;
+    const free = [];
+    for (let j = 0; j < mine.length; j++) if (!safe.has(j) && !mine[j]) free.push(j);
+    for (let k = 0; k < move.length; k++) mine[free[k]] = 1;
+    computeAdj();
+  }
+
   function fit() { AppKit.host.resizeClient(W, H + document.getElementById("Menu").offsetHeight); }
 
   function startTimer() {
@@ -115,11 +125,7 @@
     if (over || state[i] === 1 || state[i] === 2) return;
     if (firstClick) {
       firstClick = false;
-      if (mine[i]) { // First click is always safe: move this mine to the first free cell from the top left, like the original.
-        mine[i] = 0;
-        for (let j = 0; j < mine.length; j++) if (!mine[j] && j !== i) { mine[j] = 1; break; }
-        computeAdj();
-      }
+      protectStart(i); // Give opening click a blank-ish 3x3, like polished modern versions.
       startTimer();
     }
     if (mine[i]) return lose(i);
@@ -402,6 +408,7 @@
     AppKit.alert("Minesweeper Help",
       "Uncover all the squares that don't have mines.\n\n" +
       "Left-click a square to uncover it. The number tells you how many mines touch that square.\n" +
+      "Your first click protects its 3x3 area and starts the timer.\n" +
       "Right-click to flag a mine (right-click again for ?).\n" +
       "Click a number with both buttons (or the middle button) to uncover its neighbors once enough are flagged.\n\n" +
       "On a touch screen, press and hold to place a flag.", "info");

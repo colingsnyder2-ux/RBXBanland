@@ -180,6 +180,7 @@
     if (undo.length > 30) undo.shift();
     redo = [];
     dirty = true;
+    setTitle();
   }
   function doUndo() {
     if (sel) { if (sel.lifted) { cancelSelection(); return; } dropSelection(); }
@@ -223,7 +224,7 @@
     M = raster(W, H, x.getImageData(0, 0, W, H));
     sizeCanvases(); render();
   }
-  function setTitle() { document.title = `${fileName} - Paint`; }
+  function setTitle() { document.title = `${dirty ? "* " : ""}${fileName} - Paint`; }
 
   // ---------- Selection ----------
   let sel = null; // { x, y, w, h, r (raster of contents), mask, lifted }
@@ -885,7 +886,7 @@
   });
   function save() {
     dropSelection(); commitText();
-    return new Promise((res) => img.toBlob((b) => { AppKit.download(b, fileName + ".png"); dirty = false; res(); }, "image/png"));
+    return new Promise((res) => img.toBlob((b) => { AppKit.download(b, fileName + ".png"); dirty = false; setTitle(); res(); }, "image/png"));
   }
   async function saveAs() {
     const n = document.createElement("div");
